@@ -1,0 +1,2 @@
+# Buzzpilot - Open source featured social media management app
+This is an open-source social media management platform designed to simplify and optimize the way you handle multiple social media accounts. With a powerful set of features, you can manage your social media presence more efficiently, engage with audiences, and grow your digital footprint.
