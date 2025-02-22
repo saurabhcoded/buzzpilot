@@ -12,6 +12,7 @@ import { fireAuth } from "../../firebase/firebase";
 import { useFormik } from "formik";
 import { FirebaseError } from "firebase/app";
 import notify from "../../utils/notify";
+import { useAuth } from "../../hooks/useAuth";
 
 interface signinInitialValueInterface {
   email: string;
@@ -35,6 +36,7 @@ const signinValidationSchema = Yup.object({
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const { signInWithGoogle } = useAuth();
   const { values, errors, touched, isSubmitting, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: signinInitialValue,
@@ -71,6 +73,13 @@ export default function SignInForm() {
     FormErrors: errors,
     FormTouched: touched
   });
+
+  const handleLoginwithGoogle = async () => {
+    const loggedInUser = await signInWithGoogle();
+    console.log("loggedInUser", loggedInUser);
+  };
+
+
   return (
     <div className="flex flex-col flex-1">
       {/* TODO: Add HomePage Path */}
@@ -95,7 +104,7 @@ export default function SignInForm() {
           </div>
           <div>
             <div className="grid grid-cols-1">
-              <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              <button onClick={handleLoginwithGoogle} className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
                   width="20"
                   height="20"
@@ -194,7 +203,13 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button loading={isSubmitting} disabled={isSubmitting} onClick={handleSubmit} className="w-full" size="sm">
+                  <Button
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    onClick={handleSubmit}
+                    className="w-full"
+                    size="sm"
+                  >
                     Sign in
                   </Button>
                 </div>

@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
-import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+  User
+} from "firebase/auth";
 import { fireAuth } from "../firebase/firebase";
 import notify from "../utils/notify";
+const provider = new GoogleAuthProvider();
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -26,5 +33,14 @@ export const useAuth = () => {
     }
   };
 
-  return { user, isAuthenticated, authStatusLoading: loading, handleLogout };
+  const signInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(fireAuth, provider);
+      return { status: true, user: result.user };
+    } catch (err) {
+      return { status: false, error: err };
+    }
+  };
+
+  return { user, isAuthenticated, authStatusLoading: loading, handleLogout, signInWithGoogle };
 };

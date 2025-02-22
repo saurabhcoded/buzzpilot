@@ -19,6 +19,7 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import { ToastContainer } from "react-toastify";
+import Posts from "./pages/Posts";
 export default function App() {
   return (
     <>
@@ -35,8 +36,8 @@ export default function App() {
             <Route path="calendar" element={<Calendar />} />
             <Route path="blank" element={<Blank />} />
 
-            {/* Forms */}
-            <Route path="form-elements" element={<FormElements />} />
+            {/* Posts */}
+            <Route path="posts" element={<Posts />} />
 
             {/* Tables */}
             <Route path="basic-tables" element={<BasicTables />} />

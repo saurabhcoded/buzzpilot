@@ -18,6 +18,7 @@ import { FirebaseError } from "firebase/app";
 import { avatars } from "../../_constants/data";
 import { generateRandomNumber } from "../../utils";
 import notify from "../../utils/notify";
+import { useAuth } from "../../hooks/useAuth";
 
 interface signupInitialValueInterface {
   firstname: string;
@@ -55,6 +56,7 @@ const signupValidationSchema = Yup.object({
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+
   const { values, errors, touched, isSubmitting, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: signupInitialValue,
@@ -104,6 +106,12 @@ export default function SignUpForm() {
       }
     });
 
+  const { signInWithGoogle } = useAuth();
+  const handleRegisterwithGoogle = async () => {
+    const signupUser = await signInWithGoogle();
+    console.log("registerUser", signupUser);
+  };
+
   const { isFieldError, getFieldError } = useFormikErrors({
     FormErrors: errors,
     FormTouched: touched
@@ -132,7 +140,7 @@ export default function SignUpForm() {
           </div>
           <div className="mb-4">
             <div className="grid grid-cols-1">
-              <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              <button onClick={handleRegisterwithGoogle} className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
                   width="20"
                   height="20"

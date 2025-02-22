@@ -16,7 +16,7 @@ import {
   UserCircleIcon
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import {resources} from "../_constants/data";
+import { resources } from "../_constants/data";
 
 type NavItem = {
   name: string;
@@ -34,10 +34,7 @@ const navItems: NavItem[] = [
   {
     name: "Posts",
     icon: <ListIcon />,
-    subItems: [
-      { name: "Create Post", path: "/form-elements", pro: false },
-      { name: "Manage Posts", path: "/form-elements", pro: false }
-    ]
+    path: "/posts"
   },
   {
     icon: <UserCircleIcon />,
@@ -56,7 +53,7 @@ const othersItems: NavItem[] = [
     icon: <UserCircleIcon />,
     name: "User Profile",
     path: "/profile"
-  },
+  }
   /* {
     icon: <PieChartIcon />,
     name: "Settings",
