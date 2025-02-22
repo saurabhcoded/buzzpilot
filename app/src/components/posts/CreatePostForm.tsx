@@ -63,7 +63,9 @@ const CreatePostForm = () => {
         const YoutubeToken = await getIdToken(user, true);
         const YoutubeUploadRes = await createYoutubePost(YoutubeToken, values);
         console.log(YoutubeUploadRes);
-      } catch (err) {}
+      } catch (err) {
+        console.log(err);
+      }
       helpers.setSubmitting(false);
     }
   });
