@@ -2,6 +2,7 @@ interface ComponentCardProps {
   title: string;
   children: React.ReactNode;
   headerButtons?: React.ReactNode | null;
+  headerDataComp?: React.ReactNode | null;
   className?: string; // Additional custom classes for styling
   desc?: string; // Description text
 }
@@ -11,7 +12,8 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   children,
   className = "",
   desc = "",
-  headerButtons = null
+  headerButtons = null,
+  headerDataComp = null
 }) => {
   return (
     <div
@@ -25,6 +27,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
         </div>
         {headerButtons}
       </div>
+      {headerDataComp}
 
       {/* Card Body */}
       <div className="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">

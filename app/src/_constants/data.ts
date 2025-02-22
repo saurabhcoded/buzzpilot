@@ -1,3 +1,5 @@
+import * as LucideImport from "lucide-react";
+
 export const avatars: { [key: string]: string } = {
   default:
     "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740219181/avatars/Asset_10_gqyhxr.svg",
@@ -21,5 +23,61 @@ export const resources: { [key: string]: string } = {
   full_logo: "/images/logo/logo.png",
   full_dark_logo: "/images/logo/logo-dark.png",
   icon_logo: "/images/logo/logo-icon.png",
-  icon_dark_logo: "/images/logo/logo-icon-dark.png"
+  icon_dark_logo: "/images/logo/logo-icon-dark.png",
+  youtubeLogo:
+    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740246895/connectors/1384060_cppm3f.png",
+  facebookLogo:
+    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740246967/connectors/Facebook_Logo__2019_.png_txaprz.webp",
+  instagramLogo:
+    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740247067/connectors/Instagram_vj5obd.webp",
+  threadsLogo:
+    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740247305/connectors/Threads__app__logo.svg_wscx06.png",
+  linkedinLogo:
+    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740247323/connectors/174857_oohiip.png"
 };
+
+export const connectorsList: {
+  label: string;
+  id: string;
+  image: string;
+  description: string;
+  enabled: boolean;
+}[] = [
+  {
+    label: "Youtube",
+    id: "youtube",
+    image: resources.youtubeLogo,
+    description: "Youtube Data API Connector",
+    enabled: true
+  },
+  {
+    label: "Facebook",
+    id: "facebook",
+    image: resources.facebookLogo,
+    description: "Facebook API Connector",
+    enabled: false
+  },
+  {
+    label: "Instagram",
+    id: "instagram",
+    image: resources.instagramLogo,
+    description: "Instagram API Connector",
+    enabled: false
+  },
+  {
+    label: "Threads",
+    id: "threads",
+    image: resources.threadsLogo,
+    description: "Threads API Connector",
+    enabled: false
+  },
+  {
+    label: "Linkedin",
+    id: "linkedin",
+    image: resources.linkedinLogo,
+    description: "LinkedIn API Connector",
+    enabled: false
+  }
+];
+
+export const LucideIcons = LucideImport;

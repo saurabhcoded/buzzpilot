@@ -13,17 +13,17 @@ import LineChart from "./pages/Charts/LineChart";
 import BarChart from "./pages/Charts/BarChart";
 import Calendar from "./pages/Calendar";
 import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import { ToastContainer } from "react-toastify";
 import Posts from "./pages/Posts";
+import Accounts from "./pages/Accounts";
 export default function App() {
   return (
     <>
-      <ToastContainer position="bottom-right" stacked style={{ fontSize: 12, padding: "10px" }} />
+      <ToastContainer position="bottom-right" stacked style={{ fontSize: 14, padding: "10px" }} />
       <Router>
         <ScrollToTop />
         <Routes>
@@ -34,7 +34,7 @@ export default function App() {
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
             <Route path="calendar" element={<Calendar />} />
-            <Route path="blank" element={<Blank />} />
+            <Route path="accounts" element={<Accounts />} />
 
             {/* Posts */}
             <Route path="posts" element={<Posts />} />
