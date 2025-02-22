@@ -1,0 +1,1135 @@
+{
+	"info": {
+		"_postman_id": "7563a453-7663-4041-ac02-d169f2095a9d",
+		"name": "NODE Starter",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30311196",
+		"_collection_link": "https://grey-comet-512871.postman.co/workspace/Codefire-Projects~7359148d-e04d-424e-9655-a43ef2233e84/collection/30311196-7563a453-7663-4041-ac02-d169f2095a9d?action=share&source=collection_link&creator=30311196"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"console.log(jsonData);",
+									"pm.environment.set(\"auth_token\", jsonData.data.token);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "{{language_code}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"tester@codefire.in\",\n    \"password\": \"Tester@123\"\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "{{language_code}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // \"firstName\" : \"Saurabh\" ,\n    \"lastName\" : \"Sharma\" ,\n    \"email\" : \"saurabh.sharma2@codefire.in\" ,\n    \"password\" : \"Tester@123\" ,\n    \"mobile\":\"9876789765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Account Verification",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"saurabh.sharma@codefire.in\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/account-verify/generate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"account-verify",
+								"generate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Email Verification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "{{language_code}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/account-verify/125a792b-ca28-4761-99d5-132826b817a2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"account-verify",
+								"125a792b-ca28-4761-99d5-132826b817a2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot password Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"saurabh.sharma@codefire.in\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/forgot-password/request",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password Save",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\":\"Tester@123\",\n    \"confirm_password\":\"Tester@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/forgot-password/save/c002fa68-afa7-441d-a3ea-b22ab9f0cddb",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password",
+								"save",
+								"c002fa68-afa7-441d-a3ea-b22ab9f0cddb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "{{language_code}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"oldPassword\" : \"Ashish@123\" ,\n    \"newPassword\" : \"Tester@123\" ,\n    \"confirmPassword\" : \"Tester@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/change-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Upload",
+			"item": [
+				{
+					"name": "Get S3 Signed Url",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fileName\": \"data.xlsx\",\n    \"fileType\": \"xlsx\",\n    \"groupID\": \"codefire123\",\n    \"folder\": \"users\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/upload/s3UploadUrl",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"upload",
+								"s3UploadUrl"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload File to Signed URl",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"warning": "This is a duplicate header and will be overridden by the Content-Type header generated by Postman.",
+								"key": "Content-Type",
+								"value": "txt",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/run/user/1001/doc/a356f6db/test.xlsx"
+							}
+						},
+						"url": {
+							"raw": "https://codefiretesting.s3.ap-south-1.amazonaws.com/users/c8d4f1f1ec2b1a8838dc2a34cd8c80b6_20240413T112721836Z.xlsx?Content-Type=xlsx&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6BJZ3JWVEEO3FZPA%2F20240413%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20240413T112721Z&X-Amz-Expires=3600&X-Amz-Signature=ecfa770b08d410fd3c7949afb5d429df995a8b96d5d563f7390e1746070584f4&X-Amz-SignedHeaders=host",
+							"protocol": "https",
+							"host": [
+								"codefiretesting",
+								"s3",
+								"ap-south-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users",
+								"c8d4f1f1ec2b1a8838dc2a34cd8c80b6_20240413T112721836Z.xlsx"
+							],
+							"query": [
+								{
+									"key": "Content-Type",
+									"value": "xlsx"
+								},
+								{
+									"key": "X-Amz-Algorithm",
+									"value": "AWS4-HMAC-SHA256"
+								},
+								{
+									"key": "X-Amz-Credential",
+									"value": "AKIA6BJZ3JWVEEO3FZPA%2F20240413%2Fap-south-1%2Fs3%2Faws4_request"
+								},
+								{
+									"key": "X-Amz-Date",
+									"value": "20240413T112721Z"
+								},
+								{
+									"key": "X-Amz-Expires",
+									"value": "3600"
+								},
+								{
+									"key": "X-Amz-Signature",
+									"value": "ecfa770b08d410fd3c7949afb5d429df995a8b96d5d563f7390e1746070584f4"
+								},
+								{
+									"key": "X-Amz-SignedHeaders",
+									"value": "host"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get S3 Image",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "url",
+								"value": "https://codefiretesting.s3.ap-south-1.amazonaws.com/users/0811465269926e17aa6469eeb9786e08_20240311T112126133Z.png",
+								"type": "text"
+							},
+							{
+								"key": "documentName",
+								"value": "name",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/upload/image?url=https://codefiretesting.s3.ap-south-1.amazonaws.com/users/c8d4f1f1ec2b1a8838dc2a34cd8c80b6_20240413T112721836Z.xlsx&documentName=data.xlsx",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"upload",
+								"image"
+							],
+							"query": [
+								{
+									"key": "url",
+									"value": "https://codefiretesting.s3.ap-south-1.amazonaws.com/users/c8d4f1f1ec2b1a8838dc2a34cd8c80b6_20240413T112721836Z.xlsx"
+								},
+								{
+									"key": "documentName",
+									"value": "data.xlsx"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get S3 Resource Temporary Access",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "url",
+								"value": "https://codefiretesting.s3.ap-south-1.amazonaws.com/users/0811465269926e17aa6469eeb9786e08_20240311T112126133Z.png",
+								"type": "text"
+							},
+							{
+								"key": "documentName",
+								"value": "name",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/upload/tempurl?key=users/c8d4f1f1ec2b1a8838dc2a34cd8c80b6_20240413T112721836Z.xlsx",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"upload",
+								"tempurl"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "users/c8d4f1f1ec2b1a8838dc2a34cd8c80b6_20240413T112721836Z.xlsx"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "My Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"console.log(jsonData);",
+									"pm.environment.set(\"jwt_token\", jsonData.data.token);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth_token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/self-user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"self-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Complete-Profile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": 49,\n\t\"interests\": [\n\t\t3\n\t],\n\t\"locations\": [\n\t\t9\n\t],\n\t\"profile_desc\": \"abc\",\n\t\"profile_title\": \"abc\",\n\t\"skills\": [\n\t\t1\n\t],\n\t\"time_availability\": 20\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user-management/complete-profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user-management",
+								"complete-profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Self Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "{{language_code}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": " Ashish Rai again",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Codefire",
+									"type": "text"
+								},
+								{
+									"key": "profile_desc",
+									"value": " my name is ashis rai",
+									"type": "text"
+								},
+								{
+									"key": "profile_title",
+									"value": "get digivive",
+									"type": "text"
+								},
+								{
+									"key": "skills",
+									"value": " [450,451,452]",
+									"type": "text"
+								},
+								{
+									"key": "profile",
+									"type": "file",
+									"src": "/home/cf-aditya.rai/Pictures/Screenshot from 2024-02-20 12-50-52.png"
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/home/cf-aditya.rai/Pictures/Screenshot from 2024-02-29 19-15-16.png"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/user/self-user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"self-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit User Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "Ashish Rai",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Codefire",
+									"type": "text"
+								},
+								{
+									"key": "profile_desc",
+									"value": "This is the Description for Profile",
+									"type": "text"
+								},
+								{
+									"key": "profile_title",
+									"value": "Software Developer",
+									"type": "text"
+								},
+								{
+									"key": "url",
+									"value": "https://codefire.in",
+									"type": "text"
+								},
+								{
+									"key": "department_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "skills",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "profile",
+									"type": "file",
+									"src": "/home/cf-aditya.rai/Pictures/Screenshot from 2024-02-20 12-44-21.png"
+								},
+								{
+									"key": "cover",
+									"type": "file",
+									"src": "/home/cf-aditya.rai/Pictures/Screenshot from 2024-02-29 19-04-25.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/user/edit/12",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"edit",
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User View Prifile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\" : \"ashish\",\n    \"lastName\" : \"rai\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/view/12",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"view",
+								"12"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Modules",
+			"item": [
+				{
+					"name": "Email&Notification",
+					"item": [
+						{
+							"name": "Notification List",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/notification/all",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"notification",
+										"all"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Notification List Copy",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/notification/markread",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"notification",
+										"markread"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "This module is defined for a separate set of function managing and sending email and notifications"
+				},
+				{
+					"name": "Excel file",
+					"item": [
+						{
+							"name": "XLSXtoJSON",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"fileurl\":\"users/c8d4f1f1ec2b1a8838dc2a34cd8c80b6_20240413T112721836Z.xlsx\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/feature/xlsx/tojson",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"feature",
+										"xlsx",
+										"tojson"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "JSONtoXLSX",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": [\n        {\n            \"sheetNumber\": 1,\n            \"sheetLabel\": \"Sheet1\",\n            \"data\": [\n                {\n                    \"PM 10 - Concentration\": \"µg/m3\",\n                    \"PM 2.5 - Concentration\": \"µg/m3\",\n                    \"SO2 - Concentration\": \"µg/m3\",\n                    \"NO - Concentration\": \"µg/m3\",\n                    \"NO2 - Concentration\": \"µg/m3\",\n                    \"NOx - Conentration\": \"µg/m3\",\n                    \"CO - Concentration\": \"mg/m3\"\n                },\n                {\n                    \"PM 10 - Concentration\": \"(24 hr Average)\",\n                    \"PM 2.5 - Concentration\": \"(24 hr Average)\",\n                    \"SO2 - Concentration\": \"(24 hr Average)\",\n                    \"NO - Concentration\": \"(24 hr Average)\",\n                    \"NO2 - Concentration\": \"(24 hr Average)\",\n                    \"NOx - Conentration\": \"(24 hr Average)\",\n                    \"CO - Concentration\": \"(24 hr Average)\"\n                },\n                {\n                    \"Subsidiary\": \"NCL\",\n                    \"Project\": \"Khadia\",\n                    \"Station Name\": \"Station1\",\n                    \"Station Category\": \"Residential\",\n                    \"Date\": 45069,\n                    \"PM 10 - Concentration\": 75.55,\n                    \"PM 2.5 - Concentration\": 48.44,\n                    \"SO2 - Concentration\": 4.5,\n                    \"NO - Concentration\": 34.44,\n                    \"NO2 - Concentration\": 33.22,\n                    \"NOx - Conentration\": 45.33,\n                    \"CO - Concentration\": 1.23\n                },\n                {\n                    \"Subsidiary\": \"NCL\",\n                    \"Project\": \"Khadia\",\n                    \"Station Name\": \"Station2\",\n                    \"Station Category\": \"Residential\",\n                    \"Date\": 45068,\n                    \"PM 10 - Concentration\": 76.65,\n                    \"PM 2.5 - Concentration\": 45.97,\n                    \"SO2 - Concentration\": 6.13,\n                    \"NO - Concentration\": 29.31,\n                    \"NO2 - Concentration\": 16.44,\n                    \"NOx - Conentration\": 45.75,\n                    \"CO - Concentration\": 1.76\n                }\n            ]\n        },\n        {\n            \"sheetNumber\": 2,\n            \"sheetLabel\": \"Sheet2\",\n            \"data\": [\n                {\n                    \"Subsidiary\": \"NCL\",\n                    \"Project\": \"Khadia\",\n                    \"Station Name\": \"Station1\",\n                    \"Station Category\": \"Residential\"\n                },\n                {\n                    \"Subsidiary\": \"NCL\",\n                    \"Project\": \"Khadia\",\n                    \"Station Name\": \"Station2\",\n                    \"Station Category\": \"Residential\"\n                }\n            ]\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/feature/xlsx/toxlsx",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"feature",
+										"xlsx",
+										"toxlsx"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "pdf",
+					"item": [
+						{
+							"name": "text2pdf",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\":\"this is a sample of pdf\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/feature/pdf/text2pdf",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"feature",
+										"pdf",
+										"text2pdf"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "html2pdf",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "https://levelup.gitconnected.com/converting-excel-files-to-json-in-react-a-step-by-step-guide-67fba43cff2f",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/feature/pdf/html2pdf",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"feature",
+										"pdf",
+										"html2pdf"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "pdf2text",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/feature/pdf/pdf2text",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"feature",
+										"pdf",
+										"pdf2text"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Index Page",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}",
+					"host": [
+						"{{base_url}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3011"
+		}
+	]
+}

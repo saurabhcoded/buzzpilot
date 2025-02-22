@@ -9,7 +9,6 @@ import useFormikErrors from "../../hooks/useFormikErrors";
 import Button from "../ui/button/Button";
 import { createYoutubePost } from "../../api/connectors/youtube_connector";
 import { getIdToken } from "firebase/auth";
-import { fireAuth } from "../../firebase/firebase";
 import { useAuth } from "../../hooks/useAuth";
 
 interface initialValuesInterface {

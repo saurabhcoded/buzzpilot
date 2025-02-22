@@ -1,0 +1,206 @@
+[
+    { "code": 100, "type": "CONTINUE", "defaultMessage": "Continue" },
+    {
+        "code": 101,
+        "type": "SWITCHINGPROTOCOLS",
+        "defaultMessage": "Switching Protocols"
+    },
+    { "code": 102, "type": "PROCESSING", "defaultMessage": "Processing" },
+    { "code": 103, "type": "EARLYHINTS", "defaultMessage": "Early Hints" },
+    { "code": 200, "type": "SUCCESS", "defaultMessage": "OK" },
+    { "code": 201, "type": "CREATED", "defaultMessage": "Created" },
+    { "code": 202, "type": "ACCEPTED", "defaultMessage": "Accepted" },
+    {
+        "code": 203,
+        "type": "NONAUTHORITATIVEINFORMATION",
+        "defaultMessage": "Non-Authoritative Information"
+    },
+    { "code": 204, "type": "NOCONTENT", "defaultMessage": "No Content" },
+    { "code": 205, "type": "RESETCONTENT", "defaultMessage": "Reset Content" },
+    {
+        "code": 206,
+        "type": "PARTIALCONTENT",
+        "defaultMessage": "Partial Content"
+    },
+    { "code": 207, "type": "MULTISTATUS", "defaultMessage": "Multi-Status" },
+    {
+        "code": 208,
+        "type": "ALREADYREPORTED",
+        "defaultMessage": "Already Reported"
+    },
+    { "code": 226, "type": "IMUSED", "defaultMessage": "IM Used" },
+    {
+        "code": 300,
+        "type": "MULTIPLECHOICES",
+        "defaultMessage": "Multiple Choices"
+    },
+    {
+        "code": 301,
+        "type": "MOVEDPERMANENTLY",
+        "defaultMessage": "Moved Permanently"
+    },
+    { "code": 302, "type": "FOUND", "defaultMessage": "Found" },
+    { "code": 303, "type": "SEEOTHER", "defaultMessage": "See Other" },
+    { "code": 304, "type": "NOTMODIFIED", "defaultMessage": "Not Modified" },
+    { "code": 305, "type": "USEPROXY", "defaultMessage": "Use Proxy" },
+    { "code": 306, "type": "UNUSED", "defaultMessage": "Unused" },
+    {
+        "code": 307,
+        "type": "TEMPORARYREDIRECT",
+        "defaultMessage": "Temporary Redirect"
+    },
+    {
+        "code": 308,
+        "type": "PERMANENTREDIRECT",
+        "defaultMessage": "Permanent Redirect"
+    },
+    { "code": 400, "type": "ERROR", "defaultMessage": "Bad Request" },
+    { "code": 400, "type": "BADREQUEST", "defaultMessage": "Bad Request" },
+    { "code": 401, "type": "UNAUTHORIZED", "defaultMessage": "Unauthorized" },
+    {
+        "code": 402,
+        "type": "PAYMENTREQUIRED",
+        "defaultMessage": "Payment Required"
+    },
+    { "code": 403, "type": "FORBIDDEN", "defaultMessage": "Forbidden" },
+    { "code": 404, "type": "NOTFOUND", "defaultMessage": "Not Found" },
+    {
+        "code": 405,
+        "type": "METHODNOTALLOWED",
+        "defaultMessage": "Method Not Allowed"
+    },
+    {
+        "code": 406,
+        "type": "NOTACCEPTABLE",
+        "defaultMessage": "Not Acceptable"
+    },
+    {
+        "code": 407,
+        "type": "PROXYAUTHENTICATIONREQUIRED",
+        "defaultMessage": "Proxy Authentication Required"
+    },
+    {
+        "code": 408,
+        "type": "REQUESTTIMEOUT",
+        "defaultMessage": "Request Timeout"
+    },
+    { "code": 409, "type": "CONFLICT", "defaultMessage": "Conflict" },
+    { "code": 410, "type": "GONE", "defaultMessage": "Gone" },
+    {
+        "code": 411,
+        "type": "LENGTHREQUIRED",
+        "defaultMessage": "Length Required"
+    },
+    {
+        "code": 412,
+        "type": "PRECONDITIONFAILED",
+        "defaultMessage": "Precondition Failed"
+    },
+    {
+        "code": 413,
+        "type": "PAYLOADTOOLARGE",
+        "defaultMessage": "Payload Too Large"
+    },
+    { "code": 414, "type": "URITOOLONG", "defaultMessage": "URI Too Long" },
+    {
+        "code": 415,
+        "type": "UNSUPPORTEDMEDIATYPE",
+        "defaultMessage": "Unsupported Media Type"
+    },
+    {
+        "code": 416,
+        "type": "RANGENOTSATISFIABLE",
+        "defaultMessage": "Range Not Satisfiable"
+    },
+    {
+        "code": 417,
+        "type": "EXPECTATIONFAILED",
+        "defaultMessage": "Expectation Failed"
+    },
+    { "code": 418, "type": "IMATEAPOT", "defaultMessage": "I'm a teapot" },
+    {
+        "code": 422,
+        "type": "UNPROCESSABLEENTITY",
+        "defaultMessage": "Unprocessable Entity"
+    },
+    { "code": 423, "type": "LOCKED", "defaultMessage": "Locked" },
+    {
+        "code": 424,
+        "type": "FAILEDDEPENDENCY",
+        "defaultMessage": "Failed Dependency"
+    },
+    { "code": 425, "type": "TOOEARLY", "defaultMessage": "Too Early" },
+    {
+        "code": 426,
+        "type": "UPGRADEREQUIRED",
+        "defaultMessage": "Upgrade Required"
+    },
+    {
+        "code": 428,
+        "type": "PRECONDITIONREQUIRED",
+        "defaultMessage": "Precondition Required"
+    },
+    {
+        "code": 429,
+        "type": "TOOMANYREQUESTS",
+        "defaultMessage": "Too Many Requests"
+    },
+    {
+        "code": 431,
+        "type": "REQUESTHEADERFIELDSTOOLARGE",
+        "defaultMessage": "Request Header Fields Too Large"
+    },
+    {
+        "code": 440,
+        "type": "LOGINTIMEOUT",
+        "defaultMessage": "Login Session Expired"
+    },
+    {
+        "code": 451,
+        "type": "UNAVAILABLEFORLEGALREASONS",
+        "defaultMessage": "Unavailable For Legal Reasons"
+    },
+    {
+        "code": 500,
+        "type": "SERVERERROR",
+        "defaultMessage": "Internal Server Error"
+    },
+    {
+        "code": 501,
+        "type": "NOTIMPLEMENTED",
+        "defaultMessage": "Not Implemented"
+    },
+    { "code": 502, "type": "BADGATEWAY", "defaultMessage": "Bad Gateway" },
+    {
+        "code": 503,
+        "type": "SERVICEUNAVAILABLE",
+        "defaultMessage": "Service Unavailable"
+    },
+    {
+        "code": 504,
+        "type": "GATEWAYTIMEOUT",
+        "defaultMessage": "Gateway Timeout"
+    },
+    {
+        "code": 505,
+        "type": "HTTPVERSIONNOTSUPPORTED",
+        "defaultMessage": "HTTP Version Not Supported"
+    },
+    {
+        "code": 506,
+        "type": "VARIANTALSONEGOTIATES",
+        "defaultMessage": "Variant Also Negotiates"
+    },
+    {
+        "code": 507,
+        "type": "INSUFFICIENTSTORAGE",
+        "defaultMessage": "Insufficient Storage"
+    },
+    { "code": 508, "type": "LOOPDETECTED", "defaultMessage": "Loop Detected" },
+    { "code": 510, "type": "NOTEXTENDED", "defaultMessage": "Not Extended" },
+    {
+        "code": 511,
+        "type": "NETWORKAUTHENTICATIONREQUIRED",
+        "defaultMessage": "Network Authentication Required"
+    }
+]

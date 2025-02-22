@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" style="padding: 0; font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; margin: 0;">
+
+<head>
+   <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&family=IBM+Plex+Serif&display=swap" rel="stylesheet">
+   <title>WHOOP</title>
+
+   <style>
+      a{
+         text-decoration:underline !important;
+      }
+   </style>
+   
+</head>
+
+<body itemscope itemtype="http://schema.org/EmailMessage" style="font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; height: 100%; line-height: 1.6em; background-color: #f6f6f6; margin: 0; padding: 0; width: 100%;" bgcolor="#f6f6f6">
+   <table cellpadding="0" cellspacing="0" class="body-wrap" style="padding: 0; font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; width: 100%; background-color: #f6f6f6; margin: 0;" bgcolor="#f6f6f6" width="100%">
+      <tr style="padding: 0; font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; margin: 0;">
+         <td style="padding: 0; font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; margin: 0;" valign="top">
+         </td>
+         <td class="container" width="600" style="padding: 0; font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; margin: 0 auto; display: block; max-width: 600px; clear: both;" valign="top">
+            <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0; box-sizing: border-box; font-size: 16px; margin: 0;">
+               <!-- Product Logo -->
+               <tr style="padding: 0; box-sizing: border-box; margin: 0; display:block;">
+                  <td style="box-sizing: border-box; padding: 30px 10px 15px 10px; margin: 0; display:block; text-align: center;" valign="top" align="center">
+                     <a href="http://localhost:3016/auth/login" target="_blank" style="padding: 0; margin: 0; box-sizing: border-box; display:block; text-align:center;">
+                        <!-- logo -->
+                           <img src="https://whoop-api.ideateplus.com/public/images/mail/whoop-logo.png" alt="Whoop_local" width="100" height="67" style="padding: 0; margin: 0 auto; box-sizing: border-box; max-width: 100%; display: block; width: 100px; height: 67px;">
+                           <!-- logo end-->
+                     </a>
+                  </td>
+               </tr>
+            </table>
+            <div class="content" style="font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; max-width: 600px; display: block; margin: 0 auto; padding: 10px;">
+               <table class="main" width="100%" cellpadding="0" cellspacing="0" style="padding: 0; font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; background-color: #fff; border: 1px solid #ddebe1; border-radius: 16px; margin: 0; overflow: hidden;" bgcolor="#fff">
+                  <tr style="padding: 0; box-sizing: border-box; margin: 0;">
+                     <td class="content-wrap" style="padding: 0; font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; margin: 0;" valign="top">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0; box-sizing: border-box; font-size: 16px; margin: 0;">
+                           <tr style="padding: 0; box-sizing: border-box; margin: 0;">
+                              <td style="font-family: 'IBM Plex Serif', serif; font-size: 45px; font-weight: 400; line-height: 52px; box-sizing: border-box; padding: 0px; vertical-align: top; margin: 0; text-align: left; color: #4F6354;" valign="top" align="left"><img src="https://whoop-api.ideateplus.com/public/images/mail/coverbg.png" width="600" height="160" style="padding: 0; margin: 0; box-sizing: border-box; max-width: 100%; display: block; width: 600px; height: 160px;"></td>
+                           </tr>
+                           </table>
+                           <!-- Title Area -->
+                           <!--  -->
+                                 <!-- Intro or Body Area -->
+                                 <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0; box-sizing: border-box;  margin: 0;">
+                                 <tr style="padding: 0; box-sizing: border-box; margin: 0;">
+                                    <td style="font-family: 'IBM Plex Sans', sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; box-sizing: border-box; color: #0C1F13; padding: 0 30px 10px 30px; vertical-align: top; margin: 0; text-align: center;" valign="top" align="center">
+                                       
+                                       <% if (locals.intro) { %>
+                                          <% intro.forEach(function (introItem) { -%>
+                                             <p><%- introItem %></p>
+                                             <% }) -%>
+                                                <% } %>
+                                        </td>                                               
+                                 </tr>                                                   
+                                 </table>
+                                 <!-- Intro or Buttons -->
+                                 <!-- <tr style="box-sizing: border-box; margin: 0;">
+                                    
+                                                                                    
+                                 </tr> -->
+                        </table>
+                     </div></td>
+                  </tr>
+               </table>
+            
+            <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0; box-sizing: border-box; font-size: 16px; margin: 0;">
+               <tr style="padding: 0; box-sizing: border-box; margin: 0;">
+                  <td style="font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 400; line-height: 16px; box-sizing: border-box; color: #4F6354; padding: 15px 30px 5px 30px; vertical-align: top; margin: 0; text-align: center;" valign="top" align="center">You have received this email because you have a WHOOP account.</td>
+               </tr>
+               <tr style="padding: 0; box-sizing: border-box; margin: 0;">
+                  <td style="box-sizing: border-box; padding: 5px 30px; vertical-align: top; margin: 0; text-align: center;" valign="top" align="center"><a href="#" style="margin: 0; box-sizing: border-box; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 400; line-height: 16px; color: #006D3D; text-decoration: none; padding: 0 2px; display: inline-block;">Terms
+                        and Condition</a> <span style="padding: 0; margin: 0; box-sizing: border-box; color: #4F6354; font-size: 12px; font-weight: 400; line-height: 16px;">|</span> <a href="#" style="margin: 0; box-sizing: border-box; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 400; line-height: 16px; color: #006D3D; text-decoration: none; padding: 0 2px; display: inline-block;">Privacy</a>
+                  </td>
+               </tr>
+               <tr style="padding: 0; box-sizing: border-box; margin: 0;">
+                  <td style="box-sizing: border-box; padding: 5px 30px 30px 30px; vertical-align: top; margin: 0; text-align: center;" valign="top" align="center">
+                     <span style="padding: 0; margin: 0; box-sizing: border-box; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 400; line-height: 16px; color: #4F6354; display: inline-block; padding-right: 3px;">Made with ♡
+                        by</span><a href="#" style="padding: 0; margin: 0; box-sizing: border-box; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 400; line-height: 16px; color: #006D3D; text-decoration: none; display: inline-block;">Ideateplus</a>
+                  </td>
+               </tr>
+            </table>
+         
+         <td style="padding: 0; font-family: 'IBM Plex Sans', sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; margin: 0;" valign="top">
+         </td>
+      
+   
+</body>
+
+</html>

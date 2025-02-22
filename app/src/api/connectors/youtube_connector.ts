@@ -1,5 +1,6 @@
 import { URL_CONFIG } from "../../_constants/url_config";
 import notify from "../../utils/notify";
+import API_CALL, { API_CALL_FORMDATA } from "../ApiTool";
 
 export const createYoutubePost = async (token: string, postData: any) => {
   const postTags = postData?.tags
@@ -18,26 +19,34 @@ export const createYoutubePost = async (token: string, postData: any) => {
     }
   };
   const formData = new FormData();
-  formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+  formData.append("metadata", JSON.stringify(metadata));
   formData.append("file", postData?.document);
 
   try {
-    const response = await fetch(URL_CONFIG.connector.youtube.upload_video, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "X-Upload-Content-Type": "video/*"
-      },
-      body: formData
-    });
-
-    if (response.ok) {
-      notify.success("Video uploaded successfully!");
-    } else {
-      notify.error("Upload failed!");
+    const response = await API_CALL_FORMDATA.post(
+      URL_CONFIG.connector.youtube.create_post,
+      formData,
+      {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      }
+    );
+    if (response?.data?.status === 1) {
+      notify.success(response?.data?.message);
+    } else if (response?.data?.status === 0) {
+      notify.error(response?.data?.message);
     }
-  } catch (error) {
-    console.error("Upload Error:", error);
-    notify.error("Error uploading video.");
+    console.log("response", response?.data);
+    // if (response.ok) {
+    //   notify.success("Video uploaded successfully!");
+    // } else {
+    //   notify.error("Upload failed!");
+    // }
+  } catch (error: any) {
+    console.error(error);
+    let errorMessage =
+      error?.response?.data?.message ?? error?.message ?? "Oops something went wrong!";
+    notify.error(errorMessage);
   }
 };

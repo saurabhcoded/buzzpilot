@@ -9,6 +9,7 @@ import {
 import { fireAuth } from "../firebase/firebase";
 import notify from "../utils/notify";
 const provider = new GoogleAuthProvider();
+provider.addScope("https://www.googleapis.com/auth/youtube.upload");
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
