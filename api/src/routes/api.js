@@ -4,6 +4,7 @@ const api = require('express')();
 // const UploadFile = require('./upload.route');
 // const notifyRouter = require('./notification.route');
 // const featureRouter = require('./features.route');
+const dashboardRouter = require('./dashboard.route');
 const postsRouter = require('./posts.route');
 
 api.get("/", (req, res) => {
@@ -15,5 +16,6 @@ api.get("/", (req, res) => {
 // api.use('/notification', notifyRouter);
 // api.use('/feature', featureRouter);
 api.use('/posts', postsRouter);
+api.use('/dashboard', dashboardRouter);
 
 module.exports = api

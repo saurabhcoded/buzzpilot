@@ -5,8 +5,6 @@ const readline = require("readline");
 const assert = require("assert");
 const { doc, getDoc, setDoc } = require("firebase/firestore");
 const { fireDb } = require("../services/firebaseService");
-const clog = require("../services/ChalkService");
-const OAuth2 = google.auth.OAuth2;
 
 exports.uploadVideotoYoutube = async (req, res) => {
   try {

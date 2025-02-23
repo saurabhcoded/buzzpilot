@@ -24,5 +24,9 @@
 	"Missing video file or authentication token": "Missing video file or authentication token",
 	"Error Uploading Video to YouTube": "Error Uploading Video to YouTube",
 	"Video Uploaded Successfully": "Video Uploaded Successfully",
-	"Youtube account not found": "Youtube account not found"
+	"Youtube account not found": "Youtube account not found",
+	"Error fetching report types": "Error fetching report types",
+	"Reports fetched successfully": "Reports fetched successfully",
+	"Unknown identifier (week) given in field parameters.dimensions.": "Unknown identifier (week) given in field parameters.dimensions.",
+	"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.": "Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project."
 }

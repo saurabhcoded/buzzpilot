@@ -102,7 +102,6 @@ const CreatePostForm = () => {
     FormErrors: errors,
     FormTouched: touched
   });
-  console.log("formErrrors", errors);
 
   const [connectorList, setConnectorList] = useState([]);
   useEffect(() => {

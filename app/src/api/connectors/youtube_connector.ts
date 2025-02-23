@@ -42,7 +42,7 @@ export const createYoutubePost = async (postData: any) => {
     let errorMessage =
       error?.response?.data?.message ?? error?.message ?? "Oops something went wrong!";
     notify.error(errorMessage);
-    return false
+    return false;
   }
 };
 
@@ -50,6 +50,7 @@ export const connectYoutubeAccount = async () => {
   try {
     const provider = new GoogleAuthProvider();
     provider.addScope("https://www.googleapis.com/auth/youtube.force-ssl");
+    provider.addScope("https://www.googleapis.com/auth/yt-analytics.readonly");
 
     // Sign in user with Google OAuth
     const result = await signInWithPopup(fireAuth, provider);
@@ -61,4 +62,14 @@ export const connectYoutubeAccount = async () => {
   } catch (error) {
     console.error("Error connecting YouTube account:", error);
   }
+};
+
+export const loadYoutubeAccountReport = async (accountId: string, configs) => {
+  let youtubeReport = await API_CALL.post("/dashboard/reports/youtube", {
+    accountId,
+    dimensions: "day",
+    startDate: "2025-01-01",
+    endDate: "2025-02-28"
+  });
+  return youtubeReport?.data;
 };

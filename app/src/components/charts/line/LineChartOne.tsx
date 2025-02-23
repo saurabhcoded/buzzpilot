@@ -1,119 +1,61 @@
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-export default function LineChartOne() {
-  const options: ApexOptions = {
-    legend: {
-      show: false, // Hide legend
-      position: "top",
-      horizontalAlign: "left",
-    },
-    colors: ["#465FFF", "#9CB9FF"], // Define line colors
-    chart: {
-      fontFamily: "Outfit, sans-serif",
-      height: 310,
-      type: "line", // Set the chart type to 'line'
-      toolbar: {
-        show: false, // Hide chart toolbar
-      },
-    },
-    stroke: {
-      curve: "straight", // Define the line style (straight, smooth, or step)
-      width: [2, 2], // Line width for each dataset
-    },
+export default function YouTubeAnalyticsChart({ data }) {
+  if (!data?.rows) return null;
 
-    fill: {
-      type: "gradient",
-      gradient: {
-        opacityFrom: 0.55,
-        opacityTo: 0,
-      },
+  // Extract date labels and metric values
+  const categories = data.rows.map((row) => row[0]); // Dates
+  const views = data.rows.map((row) => row[1]);
+  const likes = data.rows.map((row) => row[2]);
+  const dislikes = data.rows.map((row) => row[3]);
+  const comments = data.rows.map((row) => row[4]);
+
+  const options: ApexOptions = {
+    chart: {
+      type: "line",
+      fontFamily: "Outfit, sans-serif",
+      toolbar: { show: false }
+    },
+    colors: ["#465FFF", "#28C76F", "#FF4560", "#FEC400"], // Custom colors
+    stroke: {
+      curve: "smooth",
+      width: 2
     },
     markers: {
-      size: 0, // Size of the marker points
-      strokeColors: "#fff", // Marker border color
-      strokeWidth: 2,
-      hover: {
-        size: 6, // Marker size on hover
-      },
+      size: 4,
+      hover: { size: 6 }
     },
-    grid: {
-      xaxis: {
-        lines: {
-          show: false, // Hide grid lines on x-axis
-        },
-      },
-      yaxis: {
-        lines: {
-          show: true, // Show grid lines on y-axis
-        },
-      },
-    },
-    dataLabels: {
-      enabled: false, // Disable data labels
-    },
-    tooltip: {
-      enabled: true, // Enable tooltip
-      x: {
-        format: "dd MMM yyyy", // Format for x-axis tooltip
-      },
-    },
+    grid: { yaxis: { lines: { show: true } } },
+    dataLabels: { enabled: false },
     xaxis: {
-      type: "category", // Category-based x-axis
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      axisBorder: {
-        show: false, // Hide x-axis border
-      },
-      axisTicks: {
-        show: false, // Hide x-axis ticks
-      },
-      tooltip: {
-        enabled: false, // Disable tooltip for x-axis points
-      },
+      type: "category",
+      categories: categories, // Dynamic dates
+      labels: { rotate: -45 }
     },
-    yaxis: {
-      labels: {
-        style: {
-          fontSize: "12px", // Adjust font size for y-axis labels
-          colors: ["#6B7280"], // Color of the labels
-        },
-      },
-      title: {
-        text: "", // Remove y-axis title
-        style: {
-          fontSize: "0px",
-        },
-      },
-    },
+    yaxis: { labels: { style: { fontSize: "12px", colors: "#6B7280" } } },
+    tooltip: { enabled: true },
+    legend: { position: "top", horizontalAlign: "left" }
   };
 
   const series = [
-    {
-      name: "Sales",
-      data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
-    },
-    {
-      name: "Revenue",
-      data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
-    },
+    { name: "Views", data: views },
+    { name: "Likes", data: likes },
+    { name: "Dislikes", data: dislikes },
+    { name: "Comments", data: comments }
   ];
+
   return (
-    <div className="max-w-full overflow-x-auto custom-scrollbar">
-      <div id="chartEight" className="min-w-[1000px]">
-        <Chart options={options} series={series} type="area" height={310} />
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6 max-w-full overflow-x-auto custom-scrollbar">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Youtube Reports</h3>
+        <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
+          This graph shows the details report of your youtube channel
+        </p>
+      </div>
+      <hr className="my-3" />
+      <div className="min-w-[1000px]">
+        <Chart options={options} series={series} type="line" height={310} />
       </div>
     </div>
   );
