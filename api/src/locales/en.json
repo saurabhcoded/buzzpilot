@@ -22,5 +22,7 @@
 	"Account Email is not verified!": "Account Email is not verified!",
 	"No records found": "No records found",
 	"Missing video file or authentication token": "Missing video file or authentication token",
-	"Error Uploading Video to YouTube": "Error Uploading Video to YouTube"
+	"Error Uploading Video to YouTube": "Error Uploading Video to YouTube",
+	"Video Uploaded Successfully": "Video Uploaded Successfully",
+	"Youtube account not found": "Youtube account not found"
 }

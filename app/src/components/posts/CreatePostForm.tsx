@@ -20,7 +20,9 @@ interface initialValuesInterface {
   title: string;
   description: string;
   tags: string;
+  hashTags: string;
   accounts: string;
+  privacy: string;
   document: any;
   isScheduled: boolean;
   scheduleTime: string | null;
@@ -30,17 +32,21 @@ const defaultValues: initialValuesInterface = {
   title: "",
   description: "",
   tags: "",
+  hashTags: "",
   accounts: "",
   isScheduled: false,
   scheduleTime: null,
-  document: null
+  document: null,
+  privacy: "public"
 };
 
 const postFormValidationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   description: Yup.string().required("Description is required"),
   tags: Yup.string().required("Tags are required"),
+  hashTags: Yup.string().required("Hash Tags are required"),
   accounts: Yup.string().required("Account is required"),
+  privacy: Yup.string().required("Privacy is required"),
   isScheduled: Yup.boolean().required("Scheduling option is required"),
   scheduleTime: Yup.string()
     .nullable()
@@ -157,6 +163,19 @@ const CreatePostForm = () => {
             />
           </div>
           <div>
+            <Label htmlFor="description">Hash tags</Label>
+            <TextArea
+              name="hashTags"
+              id="hashTags"
+              placeholder="Add Post Hash Tags"
+              value={values["hashTags"]}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={isFieldError("hashTags")}
+              hint={getFieldError("hashTags")}
+            />
+          </div>
+          <div>
             <Label>Add media</Label>
             <FileInput
               accept="video/*"
@@ -172,6 +191,18 @@ const CreatePostForm = () => {
             {isFieldError("document") && (
               <span className="text-red-500 text-sm">{getFieldError("document")}</span>
             )}
+          </div>
+          <div>
+            <Checkbox
+              id={"privacy"}
+              checked={values["privacy"] === "privacy"}
+              onChange={(val) => {
+                let value = val ? "privacy" : "public";
+                setFieldValue("privacy", value);
+                setFieldTouched("privacy", true);
+              }}
+              label={"Is Video private"}
+            />
           </div>
           <div>
             <Checkbox
