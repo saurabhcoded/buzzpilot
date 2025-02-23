@@ -3,13 +3,13 @@ let logger = require('morgan');
 let app = express();
 const api = require('./src/routes/api');
 const SecurityMiddleware = require('./src/middleware/securityHeaders');
-const I18nMiddleware = require('./src/middleware/i18nMiddleware');
+// const I18nMiddleware = require('./src/middleware/i18nMiddleware');
 const RestMiddleware = require('./src/middleware/RestMiddleWare');
 // sequelize
 
 /* ---------- MiddleWares ---------- */
 // Internalisation
-I18nMiddleware(app);
+// I18nMiddleware(app);
 //Security and Cors Middleware
 SecurityMiddleware(app);
 // Logger
