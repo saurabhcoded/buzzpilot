@@ -8,9 +8,7 @@ const SecurityMiddleware = (app) => {
   if (commonConfig.allowedCors) {
     allowedOrigins = commonConfig.allowedCors.split(",");
   }
-  app.use(cors({
-      origin: allowedOrigins
-  }))
+  app.use(cors())
   /* TODO: Add Allowed Cors Url to allowlist */
   console.log("Allowed Origins", allowedOrigins);
   // referrer policy
