@@ -34,12 +34,15 @@ export const createYoutubePost = async (postData: any) => {
       notify.success(response?.data?.message);
     } else if (response?.data?.status === 0) {
       notify.error(response?.data?.message);
+      return false;
     }
+    return true;
   } catch (error: any) {
     console.error(error);
     let errorMessage =
       error?.response?.data?.message ?? error?.message ?? "Oops something went wrong!";
     notify.error(errorMessage);
+    return false
   }
 };
 

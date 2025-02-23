@@ -37,7 +37,7 @@ export default function Posts() {
             </div>
           }
         >
-          <Outlet />
+          <Outlet context={{ handleCloseCreateMode: handleGotoPosts }} />
         </ComponentCard>
       </div>
     </div>

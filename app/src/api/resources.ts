@@ -1,6 +1,15 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where
+} from "firebase/firestore";
 import { fireDb } from "../firebase/firebase";
-import { AccountInterface, ConnectorInterface } from "../types";
+import { AccountInterface, ConnectorInterface, PostInterface } from "../types";
 
 export const getAvatarsList = () => {
   //  Firestore.
@@ -120,4 +129,32 @@ export const isAccountNameDuplicate = async (
     console.error("❌ Error checking duplicate account name:", error);
     return false;
   }
+};
+
+// Posts Data
+export const getPostsList = async (userId: string): Promise<PostInterface[]> => {
+  const userRef = doc(fireDb, "users", userId);
+  const querySnapshot = await getDocs(
+    query(collection(fireDb, "posts"))
+    // query(collection(fireDb, "posts"), where("user", "==", userRef))
+  );
+
+  const postsList: PostInterface[] = await Promise.all(
+    querySnapshot.docs.map(async (doc) => {
+      try {
+        let docData = doc.data();
+        return {
+          id: doc.id,
+          ...docData
+        };
+      } catch (Err) {
+        console.error(Err);
+        return {
+          id: doc.id,
+          ...doc.data()
+        };
+      }
+    })
+  );
+  return postsList;
 };

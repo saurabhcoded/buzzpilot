@@ -15,6 +15,7 @@ import Checkbox from "../form/input/Checkbox";
 import MultiSelect from "../form/MultiSelect";
 import { useEffect, useState } from "react";
 import { getAccountsList, getConnectorsList } from "../../api/resources";
+import { useOutletContext } from "react-router";
 
 interface initialValuesInterface {
   title: string;
@@ -68,6 +69,7 @@ const postFormValidationSchema = Yup.object({
 });
 
 const CreatePostForm = () => {
+  const { handleCloseCreateMode } = useOutletContext();
   const { user } = useAuth();
   const {
     values,
@@ -86,9 +88,10 @@ const CreatePostForm = () => {
     onSubmit: async (values, helpers): Promise<void> => {
       helpers.setSubmitting(true);
       try {
-        console.log("Post values", values);
-        const YoutubeUploadRes = await createYoutubePost(values);
-        console.log(YoutubeUploadRes);
+        const createPostStatus = await createYoutubePost(values);
+        if (createPostStatus) {
+          handleCloseCreateMode?.();
+        }
       } catch (err) {
         console.log(err);
       }
@@ -195,9 +198,9 @@ const CreatePostForm = () => {
           <div>
             <Checkbox
               id={"privacy"}
-              checked={values["privacy"] === "privacy"}
+              checked={values["privacy"] === "unlisted"}
               onChange={(val) => {
-                let value = val ? "privacy" : "public";
+                let value = val ? "unlisted" : "public";
                 setFieldValue("privacy", value);
                 setFieldTouched("privacy", true);
               }}

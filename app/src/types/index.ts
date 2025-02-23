@@ -15,3 +15,12 @@ export interface AccountInterface {
   user: string;
   connector: string;
 }
+
+export interface PostInterface {
+  id: string;
+  title: string;
+  description: string;
+  metadata: any;
+  updatedAt: string;
+  createdAt: string;
+}
