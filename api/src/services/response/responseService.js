@@ -19,9 +19,10 @@ REST_METHODS.forEach(method => {
             Second : {msg: string , msgReplace:{replacements(key:replacement)}}
         */
         if (typeof msg === "object") {
-            responseData.message = this.req.__(msg?.msg ?? method.defaultMessage, msg?.msgReplace ?? {})
+            responseData.message = msg?.msg ?? method.defaultMessage;
+            // responseData.message = this.req.__(msg?.msg ?? method.defaultMessage, msg?.msgReplace ?? {})
         } else {
-            responseData.message = this.req.__(msg ?? method.defaultMessage)
+            responseData.message = msg?.msg ?? method.defaultMessage;
         }
         if (data) {
             responseData.data = data
