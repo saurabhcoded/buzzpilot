@@ -9,16 +9,27 @@ import { ColumnDef } from "@tanstack/react-table";
 import { LucideIcons, resources } from "../_constants/data";
 import notify from "../utils/notify";
 import AddAccountForm from "./AddAccountForm";
+import { deleteAccountDoc, getAccountsList } from "../api/resources";
+import { AccountInterface } from "../types";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Accounts() {
-  const [accountList, setAccountList] = useState([]);
+  const [accountList, setAccountList] = useState<AccountInterface[]>([]);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
-  const loadAccountsList = () => {};
+  const { user } = useAuth();
+  const loadAccountsList = async () => {
+    if (user?.uid) {
+      const AccountList = await getAccountsList(user?.uid);
+      console.log("AccountList", AccountList);
+      setAccountList(AccountList);
+    }
+  };
   useEffect(() => {
     loadAccountsList();
-  }, []);
+  }, [user?.uid]);
 
   const [testingAcc, setTestingAcc] = useState({ isTesting: false, rowIndex: null });
+  const [deletingAcc, setDeletingAcc] = useState({ isDeleting: false, rowIndex: null });
   const handleTestAccount = (accountData: any, rowIndex: number) => () => {
     setTestingAcc({ isTesting: true, rowIndex });
     setTimeout(() => {
@@ -26,28 +37,52 @@ export default function Accounts() {
       notify.success("Account Connection Success!");
     }, 2000);
   };
-  // Define columns dynamically
+
+  const handleToggleAddAccount = () => setAddAccountOpen(!addAccountOpen);
+  const handleDeleteAccount = (accountId: string, rowIndex: number) => async () => {
+    if (accountId) {
+      setDeletingAcc({ rowIndex: rowIndex, isDeleting: true });
+      let deleteResponse = await deleteAccountDoc(accountId);
+      if (deleteResponse?.status) {
+        notify.success(deleteResponse?.message);
+      } else {
+        notify.error(deleteResponse?.message);
+      }
+      setDeletingAcc({ isDeleting: false, rowIndex: null });
+      loadAccountsList();
+    }
+  };
+
+  // Table Columns
   const columns: ColumnDef<Order>[] = [
     {
       header: "Account",
-      accessorKey: "account",
-      cell: ({ getValue }) => {
-        const account = getValue() as Order["account"];
+      accessorKey: "connector",
+      cell: ({ row, getValue }) => {
+        const account = getValue() as Order["connector"];
         return (
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 overflow-hidden">
               <img width={40} height={40} src={account.image} alt={account.name} />
             </div>
-            <div>
+            <div className="max-w-60">
               <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                {account.name}
+                {row?.original?.name} [{account.name}]
               </span>
               <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                {account.description}
+                {row?.original?.description}
               </span>
             </div>
           </div>
         );
+      }
+    },
+    {
+      header: "Connector",
+      accessorKey: "connector",
+      cell: ({ row, getValue }) => {
+        const account = getValue() as Order["connector"];
+        return <>{account.name}</>;
       }
     },
     {
@@ -56,9 +91,10 @@ export default function Accounts() {
     },
     {
       header: "Status",
-      accessorKey: "status",
+      accessorKey: "active",
       cell: ({ getValue }) => {
-        const status = getValue() as string;
+        const status = getValue() === true ? "Active" : "Pending";
+
         return (
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -80,6 +116,7 @@ export default function Accounts() {
       cell: ({ row }) => {
         let AccountData = row?.original;
         const isTestingAcc = testingAcc?.isTesting && row?.index === testingAcc?.rowIndex;
+        const isDeletingAcc = deletingAcc?.isDeleting && row?.index === deletingAcc?.rowIndex;
         return (
           <div className="flex items-center gap-3">
             <Button
@@ -92,14 +129,19 @@ export default function Accounts() {
             >
               Test
             </Button>
+            <button
+              className="btn btn-circle btn-outline btn-error btn-xs"
+              onClick={handleDeleteAccount(AccountData?.id, row?.index)}
+              disabled={isDeletingAcc}
+            >
+              {isDeletingAcc ? <LucideIcons.Loader /> : <LucideIcons.Trash size={14} />}
+            </button>
           </div>
         );
       }
     }
   ];
 
-  const handleToggleAddAccount = () => setAddAccountOpen(!addAccountOpen);
-  const handleOpenAddAccount = () => setAddAccountOpen(true);
   return (
     <div>
       <PageMeta title="Buzzpilot" description="" />
@@ -125,9 +167,18 @@ export default function Accounts() {
               )}
             </div>
           }
-          headerDataComp={addAccountOpen && <AddAccountForm />}
+          headerDataComp={
+            addAccountOpen && (
+              <AddAccountForm
+                handleClose={() => {
+                  handleToggleAddAccount();
+                  loadAccountsList();
+                }}
+              />
+            )
+          }
         >
-          <BasicTableOne columns={columns} data={tableData} />
+          <BasicTableOne columns={columns} data={accountList} />
         </ComponentCard>
       </div>
     </div>
@@ -137,25 +188,14 @@ export default function Accounts() {
 // Define the Type for an Order
 interface Order {
   id: number;
-  account: {
-    image: string;
+  connector: {
+    id: string;
     name: string;
+    image: string;
     description: string;
+    enabled: string;
   };
   auth_type: string;
-  status: string;
+  active: string;
+  metadata: string;
 }
-
-// Define table data
-const tableData: Order[] = [
-  {
-    id: 1,
-    account: {
-      image: resources.youtubeLogo,
-      name: "Youtube",
-      description: "Youtube Post, Community, Videos, Analytics"
-    },
-    auth_type: "OAuth",
-    status: "Active"
-  }
-];

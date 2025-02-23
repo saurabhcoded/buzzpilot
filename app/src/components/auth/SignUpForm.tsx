@@ -12,13 +12,14 @@ import {
   sendEmailVerification,
   updateProfile
 } from "firebase/auth";
-import { fireAuth } from "../../firebase/firebase";
+import { fireAuth, fireDb } from "../../firebase/firebase";
 import Button from "../ui/button/Button";
 import { FirebaseError } from "firebase/app";
 import { avatars } from "../../_constants/data";
 import { generateRandomNumber } from "../../utils";
 import notify from "../../utils/notify";
 import { useAuth } from "../../hooks/useAuth";
+import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 
 interface signupInitialValueInterface {
   firstname: string;
@@ -53,6 +54,35 @@ const signupValidationSchema = Yup.object({
     .matches(/[0-9]/, "Password must contain at least one number")
 });
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | number;
+  photoURL?: string;
+  role?: string;
+  createdAt?: number;
+}
+
+export const createUserinDB = async (userData: User): Promise<void> => {
+  try {
+    const userRef = doc(fireDb, "users", userData.id);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      console.log("⚠️ User already exists with ID:", userData.id);
+      return; 
+    }
+    // Save data to Firestore
+    await setDoc(userRef, {
+      ...userData,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    });
+    console.log("User created with ID:", userRef.id);
+  } catch (error) {
+    console.error("Error creating user:", error);
+  }
+};
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -90,6 +120,16 @@ export default function SignUpForm() {
               photoURL: photoAvatar
             });
 
+            // Creating the User Section in the FireDB
+            await createUserinDB({
+              id: userCredential.user?.uid,
+              name: [values.firstname, values.lastname].join(" "),
+              email: values?.email,
+              phone: values?.phone_number,
+              role: "social media manager",
+              photoURL: photoAvatar,
+              createdAt: Date.now()
+            });
             // TODO: Update Phone number to user details: phoneNumber: values.phone_number
 
             // Send email verification
@@ -110,6 +150,18 @@ export default function SignUpForm() {
   const handleRegisterwithGoogle = async () => {
     const signupUser = await signInWithGoogle();
     console.log("registerUser", signupUser);
+    if (signupUser.status && signupUser?.user?.uid) {
+      let RegisteredUser = signupUser?.user;
+      await createUserinDB({
+        id: RegisteredUser?.uid,
+        name: RegisteredUser?.displayName ?? "",
+        email: RegisteredUser?.email ?? "",
+        phone: RegisteredUser?.phoneNumber ?? "",
+        role: "social media manager",
+        photoURL: RegisteredUser?.photoURL ?? "",
+        createdAt: Date.now()
+      });
+    }
   };
 
   const { isFieldError, getFieldError } = useFormikErrors({
@@ -140,7 +192,10 @@ export default function SignUpForm() {
           </div>
           <div className="mb-4">
             <div className="grid grid-cols-1">
-              <button onClick={handleRegisterwithGoogle} className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              <button
+                onClick={handleRegisterwithGoogle}
+                className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10"
+              >
                 <svg
                   width="20"
                   height="20"

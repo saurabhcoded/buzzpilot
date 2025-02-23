@@ -33,7 +33,9 @@ export const resources: { [key: string]: string } = {
   threadsLogo:
     "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740247305/connectors/Threads__app__logo.svg_wscx06.png",
   linkedinLogo:
-    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740247323/connectors/174857_oohiip.png"
+    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740247323/connectors/174857_oohiip.png",
+  youtubeDemo:
+    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740252184/WhatsApp_Image_2025-02-23_at_12.52.41_AM_zbj5rt.jpg"
 };
 
 export const connectorsList: {

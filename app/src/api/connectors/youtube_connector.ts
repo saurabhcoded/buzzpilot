@@ -1,6 +1,8 @@
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { URL_CONFIG } from "../../_constants/url_config";
 import notify from "../../utils/notify";
 import API_CALL, { API_CALL_FORMDATA } from "../ApiTool";
+import { fireAuth } from "../../firebase/firebase";
 
 export const createYoutubePost = async (token: string, postData: any) => {
   const postTags = postData?.tags
@@ -48,5 +50,23 @@ export const createYoutubePost = async (token: string, postData: any) => {
     let errorMessage =
       error?.response?.data?.message ?? error?.message ?? "Oops something went wrong!";
     notify.error(errorMessage);
+  }
+};
+
+export const connectYoutubeAccount = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+    provider.addScope("https://www.googleapis.com/auth/youtube.force-ssl");
+
+    // Sign in user with Google OAuth
+    const result = await signInWithPopup(fireAuth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+
+    if (!credential) throw new Error("No credentials received");
+
+    return credential;
+
+  } catch (error) {
+    console.error("Error connecting YouTube account:", error);
   }
 };

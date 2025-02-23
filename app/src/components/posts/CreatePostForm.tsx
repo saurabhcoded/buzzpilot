@@ -10,6 +10,7 @@ import Button from "../ui/button/Button";
 import { createYoutubePost } from "../../api/connectors/youtube_connector";
 import { getIdToken } from "firebase/auth";
 import { useAuth } from "../../hooks/useAuth";
+import { LucideIcons, resources } from "../../_constants/data";
 
 interface initialValuesInterface {
   title: string;
@@ -74,72 +75,73 @@ const CreatePostForm = () => {
   });
   return (
     <ComponentCard title="Create New Post">
-      <div className="space-y-6">
-        <div>
-          <Label htmlFor="title">Post title</Label>
-          <Input
-            type="text"
-            name="title"
-            id="title"
-            placeholder="post title"
-            value={values["title"]}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={isFieldError("title")}
-            hint={getFieldError("title")}
-          />
-        </div>
-        <div>
-          <Label htmlFor="description">Post description</Label>
-          <TextArea
-            name="description"
-            id="description"
-            placeholder="Describe your post"
-            value={values["description"]}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={isFieldError("description")}
-            hint={getFieldError("description")}
-          />
-        </div>
-        <div>
-          <Label htmlFor="description">Post tags</Label>
-          <Input
-            type="text"
-            name="tags"
-            id="tags"
-            placeholder="Add Post Tags in comma separated"
-            value={values["tags"]}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={isFieldError("tags")}
-            hint={getFieldError("tags")}
-          />
-        </div>
-        <div>
-          <Label>Add Media</Label>
-          <FileInput
-            accept="video/*"
-            onChange={(e) => {
-              setFieldTouched("document", true);
-              if (e?.target?.files?.[0]) {
-                setFieldValue("document", e?.target?.files?.[0]);
-                // e.target.value = ""; // Resetting the Input
-              }
-              validateField("document");
-            }}
-          />
-          {isFieldError("document") && (
-            <span className="text-red-500 text-sm">{getFieldError("document")}</span>
-          )}
-          {/* <Select
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-6">
+          <div>
+            <Label htmlFor="title">Post title</Label>
+            <Input
+              type="text"
+              name="title"
+              id="title"
+              placeholder="post title"
+              value={values["title"]}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={isFieldError("title")}
+              hint={getFieldError("title")}
+            />
+          </div>
+          <div>
+            <Label htmlFor="description">Post description</Label>
+            <TextArea
+              name="description"
+              id="description"
+              placeholder="Describe your post"
+              value={values["description"]}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={isFieldError("description")}
+              hint={getFieldError("description")}
+            />
+          </div>
+          <div>
+            <Label htmlFor="description">Post tags</Label>
+            <Input
+              type="text"
+              name="tags"
+              id="tags"
+              placeholder="Add Post Tags in comma separated"
+              value={values["tags"]}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={isFieldError("tags")}
+              hint={getFieldError("tags")}
+            />
+          </div>
+          <div>
+            <Label>Add Media</Label>
+            <FileInput
+              accept="video/*"
+              onChange={(e) => {
+                setFieldTouched("document", true);
+                if (e?.target?.files?.[0]) {
+                  setFieldValue("document", e?.target?.files?.[0]);
+                  // e.target.value = ""; // Resetting the Input
+                }
+                validateField("document");
+              }}
+            />
+            {isFieldError("document") && (
+              <span className="text-red-500 text-sm">{getFieldError("document")}</span>
+            )}
+            {/* <Select
             options={options}
             placeholder="Select an option"
             onChange={handleSelectChange}
             className="dark:bg-dark-900"
           /> */}
-        </div>
-        {/* <div>
+          </div>
+          {/* <div>
         <Label>Password Input</Label>
         <div className="relative">
           <Input
@@ -211,9 +213,25 @@ const CreatePostForm = () => {
           </span>
         </div>
       </div> */}
-        <Button loading={isSubmitting} disabled={isSubmitting} onClick={handleSubmit}>
-          Save Post
-        </Button>
+          <Button loading={isSubmitting} disabled={isSubmitting} onClick={handleSubmit}>
+            Save Post
+          </Button>
+        </div>
+        <div className="flex flex-col gap-3 items-center justify-center bg-blue-light-25 p-2 pb-4">
+          <div >
+            <h3 className="text-base font-medium text-gray-800 dark:text-white/90 inline-flex gap-1">
+              <LucideIcons.Eye /> Preview
+            </h3>
+          </div>
+          <div className="mockup-phone mx-auto w-fit">
+            <div className="camera"></div>
+            <div className="display">
+              <div className="artboard artboard-demo phone-1">
+                <img src={resources.youtubeDemo} height={"100%"} className="height" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </ComponentCard>
   );

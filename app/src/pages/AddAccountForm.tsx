@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connectorsList, LucideIcons } from "../_constants/data";
 import notify from "../utils/notify";
-import { useFormik } from "formik";
+import { isFunction, useFormik } from "formik";
 import * as Yup from "yup";
 import useFormikErrors from "../hooks/useFormikErrors";
 import Select from "../components/form/Select";
 import Label from "../components/form/Label";
 import Input from "../components/form/input/InputField";
 import Button from "../components/ui/button/Button";
+import { createAccountDoc, getConnectorsList, isAccountNameDuplicate } from "../api/resources";
+import { ConnectorInterface } from "../types";
+import { connectYoutubeAccount } from "../api/connectors/youtube_connector";
+import { useAuth } from "../hooks/useAuth";
+import API_CALL from "../api/ApiTool";
 
 interface defaultValuesI {
   auth_type: string;
-  client_id: string;
-  client_secret: string;
+  name: string;
+  description: string;
 }
 
 const AuthenticationOptions: { label: string; value: string }[] = [
@@ -21,29 +26,39 @@ const AuthenticationOptions: { label: string; value: string }[] = [
 
 const defaultValues: defaultValuesI = {
   auth_type: "oauth",
-  client_id: "",
-  client_secret: ""
+  name: "",
+  description: ""
 };
 
-const accountValidationSchema = Yup.object().shape({
-  auth_type: Yup.string().required("Auth Type is required"),
-  client_id: Yup.string()
-    .min(5, "Client ID must be at least 5 characters")
-    .required("Client ID is required"),
-  client_secret: Yup.string()
-    .min(8, "Client Secret must be at least 8 characters")
-    .required("Client Secret is required")
-});
+const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
+  const { user } = useAuth();
+  const [selectedConnector, setSelectedConnector] = useState<ConnectorInterface | null>(null);
+  const [connectorList, setConnectorList] = useState<ConnectorInterface[] | null>([]);
 
-const AddAccountForm = () => {
-  const [selectedConnector, setSelectedConnector] = useState<string | null>("youtube");
+  const accountValidationSchema = Yup.object().shape({
+    auth_type: Yup.string().required("Auth Type is required"),
+    name: Yup.string().required("Account name is required"),
+    description: Yup.string().required("Account description is required")
+  });
 
-  const handleConnectorClick = (connector: { label: string; enabled: boolean }) => {
+  const loadConnectorList = async () => {
+    let connData: ConnectorInterface[] = await getConnectorsList();
+    console.log("connData", connData);
+    let anyActivConn = connData?.find((item) => item?.enabled === true);
+    if (anyActivConn?.id) setSelectedConnector(anyActivConn);
+    setConnectorList(connData);
+  };
+
+  useEffect(() => {
+    loadConnectorList();
+  }, []);
+
+  const handleConnectorClick = (connector: { id: string; label: string; enabled: boolean }) => {
     if (!connector.enabled) {
       notify.error(`${connector.label} integration is not supported yet.`);
       return;
     }
-    setSelectedConnector(connector.label);
+    setSelectedConnector(connector);
   };
 
   const {
@@ -59,12 +74,34 @@ const AddAccountForm = () => {
   } = useFormik({
     initialValues: defaultValues,
     validationSchema: accountValidationSchema,
-    onSubmit: (values, helpers) => {
+    onSubmit: async (values, helpers) => {
       helpers.setSubmitting(true);
       try {
-        console.log("Connect Account", values);
+        // Validate Account Name
+        let accNameValid = await isAccountNameDuplicate(values?.name, selectedConnector?.id);
+        console.log("accNameValid", accNameValid);
+        // return;
+        if (selectedConnector?.name === "youtube") {
+          let credentials = await connectYoutubeAccount();
+          console.log("YoutubeCredentials", credentials);
+          // Send token to Node.js API for storage
+          let accountData = {
+            userId: user?.uid,
+            metadata: JSON.stringify(credentials),
+            provider: "youtube",
+            name: values?.name,
+            description: values?.description,
+            auth_type: values?.auth_type,
+            connector: selectedConnector?.id
+          };
+          const AccountSave = createAccountDoc(accountData);
+          console.log("response", AccountSave);
+          notify.success(`YouTube account[${values?.name}] is connected successfully`);
+          if (isFunction(handleClose)) handleClose?.();
+        }
       } catch (Err) {
         console.error(Err);
+        notify.error(`Error while connecting account`);
       }
       helpers.setSubmitting(false);
     }
@@ -73,7 +110,7 @@ const AddAccountForm = () => {
   const handleTestConnection = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      setTouched({ auth_type: true, client_id: true, client_secret: true });
+      setTouched({ auth_type: true, name: true, description: true });
       validateForm(values).then((validateResult) => {
         setErrors(validateResult);
         console.log("validateResult", validateResult);
@@ -95,7 +132,7 @@ const AddAccountForm = () => {
         Here you can connect your accounts to use BuzzPilot successfully.
       </p>
       <div className="grid grid-cols-7 gap-3 mt-4">
-        {connectorsList.map((connector, connIndex) => (
+        {connectorList.map((connector, connIndex) => (
           <React.Fragment key={connIndex}>
             <ConnectorCheckCard
               connector={connector}
@@ -123,42 +160,40 @@ const AddAccountForm = () => {
             />
           </div>
           <div>
-            <Label>Client id</Label>
+            <Label>Account name</Label>
             <Input
-              placeholder={`Write your ${selectedConnector} client id`}
               onChange={handleChange}
               onBlur={handleBlur}
-              value={values?.client_id}
-              id="client_id"
-              name="client_id"
-              error={isFieldError("client_id")}
-              hint={getFieldError("client_id")}
+              value={values?.name}
+              id="name"
+              name="name"
+              error={isFieldError("name")}
+              hint={getFieldError("name")}
               className="dark:bg-dark-900"
             />
           </div>
           <div>
-            <Label>Client secret</Label>
+            <Label>Account description</Label>
             <Input
-              placeholder={`Write your ${selectedConnector} client secret`}
               onChange={handleChange}
               onBlur={handleBlur}
-              value={values?.client_secret}
-              id="client_secret"
-              name="client_secret"
-              error={isFieldError("client_secret")}
-              hint={getFieldError("client_secret")}
+              value={values?.description}
+              id="description"
+              name="description"
+              error={isFieldError("description")}
+              hint={getFieldError("description")}
               className="dark:bg-dark-900"
             />
           </div>
           <div className="flex flex-row gap-2">
-            <Button
+            {/* <Button
               onClick={handleTestConnection}
               size="sm"
               className="bg-success-400 hover:bg-success-500"
               startIcon={<LucideIcons.Zap />}
             >
               Test Account
-            </Button>
+            </Button> */}
             <Button onClick={handleSubmit} size="sm" startIcon={<LucideIcons.LucideSave />}>
               Save Account
             </Button>
@@ -171,11 +206,19 @@ const AddAccountForm = () => {
 
 export default AddAccountForm;
 
-const ConnectorCheckCard = ({ connector, selectedConnector, handleConnectorClick }) => {
-  const isConnectorSelected = connector.id === selectedConnector;
+const ConnectorCheckCard = ({
+  connector,
+  selectedConnector,
+  handleConnectorClick
+}: {
+  connector: ConnectorInterface;
+  selectedConnector: ConnectorInterface;
+  handleConnectorClick: Function;
+}) => {
+  const isConnectorSelected = connector.id === selectedConnector?.id;
   return (
     <div
-      key={connector.label}
+      key={connector.name}
       onClick={() => handleConnectorClick(connector)}
       className={`flex flex-col gap-1 p-3 py-5 border items-center justify-center rounded-md 
           transition cursor-pointer ${
@@ -185,9 +228,9 @@ const ConnectorCheckCard = ({ connector, selectedConnector, handleConnectorClick
             isConnectorSelected ? "border-success-500 ring-2 ring-success-300" : "border-gray-200"
           }`}
     >
-      <img src={connector.image} className="h-15 w-15" alt={connector.label} />
+      <img src={connector.image} className="h-15 w-15" alt={connector.name} />
       <span className="mt-1 text-base text-gray-700 dark:text-gray-400 font-semibold">
-        {connector.label}
+        {connector.name}
       </span>
     </div>
   );

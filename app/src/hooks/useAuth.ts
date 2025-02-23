@@ -6,8 +6,9 @@ import {
   signOut,
   User
 } from "firebase/auth";
-import { fireAuth } from "../firebase/firebase";
+import { fireAuth, fireDb } from "../firebase/firebase";
 import notify from "../utils/notify";
+import { doc, getDoc } from "firebase/firestore";
 const provider = new GoogleAuthProvider();
 provider.addScope("https://www.googleapis.com/auth/youtube.upload");
 
@@ -16,9 +17,20 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const isAuthenticated = Boolean(user);
 
+  console.log("Current User", user);
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(fireAuth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(fireAuth, async (user): Promise<void> => {
+      let userData = user;
+      try {
+        let userDbDoc = doc(fireDb, "users", user?.uid);
+        let userDetailData = await getDoc(userDbDoc);
+        if (userDetailData.exists()) {
+          userData.details = userDetailData.data();
+        }
+      } catch (Error) {
+        console.error(Error);
+      }
+      setUser(userData);
       setLoading(false);
     });
     return unsubscribe;
