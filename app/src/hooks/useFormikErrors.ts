@@ -1,8 +1,8 @@
 import { FormikErrors, FormikTouched, isString } from "formik";
 
 interface UseFormikProps {
-  FormErrors: FormikErrors<{ [key: string]: string }>;
-  FormTouched: FormikTouched<{ [key: string]: string }>;
+  FormErrors: FormikErrors<any>;
+  FormTouched: FormikTouched<any>;
 }
 const useFormikErrors = ({ FormErrors, FormTouched }: UseFormikProps) => {
   const isFieldError = (fieldName: string) => {

@@ -12,8 +12,8 @@ export interface AccountInterface {
   metadata: string;
   auth_type: string;
   active: boolean;
-  user: string;
-  connector: string;
+  user: string | any;
+  connector: string | any;
 }
 
 export interface PostInterface {

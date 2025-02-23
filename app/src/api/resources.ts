@@ -17,7 +17,7 @@ export const getAvatarsList = () => {
 
 export const getConnectorsList = async (): Promise<ConnectorInterface[]> => {
   const querySnapshot = await getDocs(collection(fireDb, "connectors"));
-  const connectorList: ConnectorInterface[] = querySnapshot.docs.map((doc) => ({
+  const connectorList: ConnectorInterface[] | any[] = querySnapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data()
   }));
@@ -29,7 +29,7 @@ export const getAccountsList = async (userId: string): Promise<AccountInterface[
     query(collection(fireDb, "accounts"), where("user", "==", userRef))
   );
 
-  const accountsList: AccountInterface[] = await Promise.all(
+  const accountsList: AccountInterface[] | any[] = await Promise.all(
     querySnapshot.docs.map(async (doc) => {
       try {
         let docData = doc.data();
@@ -139,14 +139,14 @@ export const getPostsList = async (userId: string): Promise<PostInterface[]> => 
     // query(collection(fireDb, "posts"), where("user", "==", userRef))
   );
 
-  const postsList: PostInterface[] = await Promise.all(
+  const postsList: PostInterface[] | any[] = await Promise.all(
     querySnapshot.docs.map(async (doc) => {
       try {
         let docData = doc.data();
         return {
           id: doc.id,
           ...docData
-        };
+        } as PostInterface;
       } catch (Err) {
         console.error(Err);
         return {

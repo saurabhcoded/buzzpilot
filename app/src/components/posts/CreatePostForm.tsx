@@ -69,7 +69,7 @@ const postFormValidationSchema = Yup.object({
 });
 
 const CreatePostForm = () => {
-  const { handleCloseCreateMode } = useOutletContext();
+  const { handleCloseCreateMode } = useOutletContext<any>();
   const { user } = useAuth();
   const {
     values,

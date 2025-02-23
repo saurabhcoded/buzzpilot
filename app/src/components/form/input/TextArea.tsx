@@ -6,8 +6,8 @@ interface TextareaProps {
   placeholder?: string; // Placeholder text
   rows?: number; // Number of rows
   value?: string; // Current value
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; // Change handler
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void; // Change handler
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void; // Change handler
+  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void; // Change handler
   className?: string; // Additional CSS classes
   disabled?: boolean; // Disabled state
   error?: boolean; // Error state
