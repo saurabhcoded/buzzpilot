@@ -39,13 +39,13 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`relative inline-flex items-center justify-center gap-2 rounded-lg transition ${className} ${
+      className={`relative transition-all inline-flex items-center justify-center gap-2 rounded-lg ${className} ${
         sizeClasses[size]
       } ${variantClasses[variant]} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
       onClick={onClick}
       disabled={disabled}
     >
-      {loading && <span className="loading loading-spinner loading-sm absolute left-5"></span>}
+      {loading && <span className="loading loading-spinner loading-sm"></span>}
       {startIcon && <span className="flex items-center">{startIcon}</span>}
       {children}
       {endIcon && <span className="flex items-center">{endIcon}</span>}

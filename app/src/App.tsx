@@ -20,6 +20,9 @@ import Home from "./pages/Dashboard/Home";
 import { ToastContainer } from "react-toastify";
 import Posts from "./pages/Posts";
 import Accounts from "./pages/Accounts";
+import PostsList from "./pages/PostsList";
+import CreatePostForm from "./components/posts/CreatePostForm";
+import FormElements from "./pages/Forms/FormElements";
 export default function App() {
   return (
     <>
@@ -37,10 +40,13 @@ export default function App() {
             <Route path="accounts" element={<Accounts />} />
 
             {/* Posts */}
-            <Route path="posts" element={<Posts />} />
+            <Route path="posts" element={<Posts />}>
+              <Route index element={<PostsList />} />
+              <Route path="create" element={<CreatePostForm />} />
+            </Route>
 
             {/* Tables */}
-            <Route path="basic-tables" element={<BasicTables />} />
+            <Route path="basic-tables" element={<FormElements />} />
 
             {/* Ui Elements */}
             <Route path="alerts" element={<Alerts />} />

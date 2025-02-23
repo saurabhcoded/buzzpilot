@@ -17,7 +17,6 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const isAuthenticated = Boolean(user);
 
-  console.log("Current User", user);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(fireAuth, async (user): Promise<void> => {
       let userData = user;

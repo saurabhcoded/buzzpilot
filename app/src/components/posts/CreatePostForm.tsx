@@ -11,18 +11,28 @@ import { createYoutubePost } from "../../api/connectors/youtube_connector";
 import { getIdToken } from "firebase/auth";
 import { useAuth } from "../../hooks/useAuth";
 import { LucideIcons, resources } from "../../_constants/data";
+import Checkbox from "../form/input/Checkbox";
+import MultiSelect from "../form/MultiSelect";
+import { useEffect, useState } from "react";
+import { getAccountsList, getConnectorsList } from "../../api/resources";
 
 interface initialValuesInterface {
   title: string;
   description: string;
   tags: string;
+  accounts: string;
   document: any;
+  isScheduled: boolean;
+  scheduleTime: string | null;
 }
 
 const defaultValues: initialValuesInterface = {
   title: "",
   description: "",
   tags: "",
+  accounts: "",
+  isScheduled: false,
+  scheduleTime: null,
   document: null
 };
 
@@ -30,13 +40,24 @@ const postFormValidationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   description: Yup.string().required("Description is required"),
   tags: Yup.string().required("Tags are required"),
+  accounts: Yup.string().required("Account is required"),
+  isScheduled: Yup.boolean().required("Scheduling option is required"),
+  scheduleTime: Yup.string()
+    .nullable()
+    .test("isScheduledEnabled", "Schedule timer is required", (value, context) => {
+      if (value === null && context.parent.isScheduled) {
+        return false;
+      } else {
+        return true;
+      }
+    }),
   document: Yup.mixed()
     .required("A video file is required")
     .test("fileType", "Only video files are allowed", (file: any) =>
       file ? file.type.startsWith("video/") : false
     )
-    .test("fileSize", "File size must be under 100MB", (file: any) =>
-      file ? file.size <= 100 * 1024 * 1024 : false
+    .test("fileSize", "File size must be under 20MB", (file: any) =>
+      file ? file.size <= 20 * 1024 * 1024 : false
     )
 });
 
@@ -60,8 +81,7 @@ const CreatePostForm = () => {
       helpers.setSubmitting(true);
       try {
         console.log("Post values", values);
-        const YoutubeToken = await getIdToken(user, true);
-        const YoutubeUploadRes = await createYoutubePost(YoutubeToken, values);
+        const YoutubeUploadRes = await createYoutubePost(values);
         console.log(YoutubeUploadRes);
       } catch (err) {
         console.log(err);
@@ -73,6 +93,24 @@ const CreatePostForm = () => {
     FormErrors: errors,
     FormTouched: touched
   });
+  console.log("formErrrors", errors);
+
+  const [connectorList, setConnectorList] = useState([]);
+  useEffect(() => {
+    if (user?.uid)
+      getAccountsList(user?.uid).then((accounts) => {
+        let formmatedAccount = accounts.map((item) => {
+          return {
+            value: item?.id,
+            text: item?.name,
+            selected: false,
+            icon: item?.connector?.image ?? ""
+          };
+        });
+        setConnectorList(formmatedAccount);
+      });
+  }, [user?.uid]);
+
   return (
     <ComponentCard title="Create New Post">
       <div className="grid grid-cols-2 gap-4">
@@ -83,7 +121,7 @@ const CreatePostForm = () => {
               type="text"
               name="title"
               id="title"
-              placeholder="post title"
+              placeholder="Post title"
               value={values["title"]}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -119,7 +157,7 @@ const CreatePostForm = () => {
             />
           </div>
           <div>
-            <Label>Add Media</Label>
+            <Label>Add media</Label>
             <FileInput
               accept="video/*"
               onChange={(e) => {
@@ -134,91 +172,53 @@ const CreatePostForm = () => {
             {isFieldError("document") && (
               <span className="text-red-500 text-sm">{getFieldError("document")}</span>
             )}
-            {/* <Select
-            options={options}
-            placeholder="Select an option"
-            onChange={handleSelectChange}
-            className="dark:bg-dark-900"
-          /> */}
           </div>
-          {/* <div>
-        <Label>Password Input</Label>
-        <div className="relative">
-          <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
-          />
-          <button
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
-          >
-            {showPassword ? (
-              <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
-            ) : (
-              <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
+          <div>
+            <Checkbox
+              id={"isScheduled"}
+              checked={values["isScheduled"]}
+              onChange={(val) => {
+                setFieldValue("isScheduled", val);
+                setFieldTouched("isScheduled", true);
+              }}
+              label={"Schedule post"}
+            />
+            {values["isScheduled"] && (
+              <div className="mt-4">
+                <Label>Choose post publish date</Label>
+                <Input
+                  type="date"
+                  name="scheduleTime"
+                  id="scheduleTime"
+                  value={values["scheduleTime"]}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={isFieldError("scheduleTime")}
+                  hint={getFieldError("scheduleTime")}
+                />
+              </div>
             )}
-          </button>
-        </div>
-      </div>
-      <div>
-        <Label htmlFor="datePicker">Date Picker Input</Label>
-        <div className="relative w-full flatpickr-wrapper">
-          <Flatpickr
-            value={dateOfBirth} // Set the value to the state
-            onChange={handleDateChange} // Handle the date change
-            options={{
-              dateFormat: "Y-m-d" // Set the date format
-            }}
-            placeholder="Select an option"
-            className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-none focus:ring  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30  bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700  dark:focus:border-brand-800"
-          />
-          <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-            <CalenderIcon className="size-6" />
-          </span>
-        </div>
-      </div>
-      <div>
-        <Label htmlFor="tm">Date Picker Input</Label>
-        <div className="relative">
-          <Input
-            type="time"
-            id="tm"
-            name="tm"
-            onChange={(e) => console.log(e.target.value)}
-          />
-          <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-            <TimeIcon className="size-6" />
-          </span>
-        </div>
-      </div>
-      <div>
-        <Label htmlFor="tm">Input with Payment</Label>
-        <div className="relative">
-          <Input type="text" placeholder="Card number" className="pl-[62px]" />
-          <span className="absolute left-0 top-1/2 flex h-11 w-[46px] -translate-y-1/2 items-center justify-center border-r border-gray-200 dark:border-gray-800">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle cx="6.25" cy="10" r="5.625" fill="#E80B26" />
-              <circle cx="13.75" cy="10" r="5.625" fill="#F59D31" />
-              <path
-                d="M10 14.1924C11.1508 13.1625 11.875 11.6657 11.875 9.99979C11.875 8.33383 11.1508 6.8371 10 5.80713C8.84918 6.8371 8.125 8.33383 8.125 9.99979C8.125 11.6657 8.84918 13.1625 10 14.1924Z"
-                fill="#FC6020"
-              />
-            </svg>
-          </span>
-        </div>
-      </div> */}
+          </div>
+          <hr />
+          <div>
+            <MultiSelect
+              options={connectorList}
+              label={"Choose Account"}
+              onChange={(selectedAccounts) => {
+                setFieldValue("accounts", selectedAccounts.join(","));
+                setFieldTouched("accounts", true);
+              }}
+            />
+            {isFieldError("accounts") && (
+              <span className="text-red-500 text-sm">{getFieldError("accounts")}</span>
+            )}
+          </div>
           <Button loading={isSubmitting} disabled={isSubmitting} onClick={handleSubmit}>
-            Save Post
+            {values["isScheduled"] ? "Schedule Post" : "Publish Post"}
           </Button>
         </div>
         <div className="flex flex-col gap-3 items-center justify-center bg-blue-light-25 p-2 pb-4">
-          <div >
+          <div>
             <h3 className="text-base font-medium text-gray-800 dark:text-white/90 inline-flex gap-1">
               <LucideIcons.Eye /> Preview
             </h3>
