@@ -23,6 +23,9 @@ app.use(express.urlencoded({extended: false}))
 app.use(RestMiddleware)
 
 /* ----------- Api Routes ----------- */
+app.get("/", (req, res) => {
+    res.send('Hello Node Server🌎 Home...');
+})
 app.use('/api/v1', api);
 // We Can add Multiple versions here for api versioning
 
