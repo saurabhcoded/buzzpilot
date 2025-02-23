@@ -43,7 +43,6 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
 
   const loadConnectorList = async () => {
     let connData: ConnectorInterface[] = await getConnectorsList();
-    console.log("connData", connData);
     let anyActivConn = connData?.find((item) => item?.enabled === true);
     if (anyActivConn?.id) setSelectedConnector(anyActivConn);
     setConnectorList(connData);
@@ -53,9 +52,9 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
     loadConnectorList();
   }, []);
 
-  const handleConnectorClick = (connector: { id: string; label: string; enabled: boolean }) => {
+  const handleConnectorClick = (connector: ConnectorInterface) => {
     if (!connector.enabled) {
-      notify.error(`${connector.label} integration is not supported yet.`);
+      notify.error(`${connector.name} integration is not supported yet.`);
       return;
     }
     setSelectedConnector(connector);

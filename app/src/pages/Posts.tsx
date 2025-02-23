@@ -8,7 +8,7 @@ import { Outlet, useLocation, useNavigate } from "react-router";
 export default function Posts() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const isCreatePost = useMemo(() => pathname.includes("/posts/create"));
+  const isCreatePost = useMemo(() => pathname.includes("/posts/create"), []);
   const handleCreatePost = () => navigate("/posts/create");
   const handleGotoPosts = () => navigate("/posts");
   return (

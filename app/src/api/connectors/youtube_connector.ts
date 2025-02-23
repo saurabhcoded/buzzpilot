@@ -64,7 +64,7 @@ export const connectYoutubeAccount = async () => {
   }
 };
 
-export const loadYoutubeAccountReport = async (accountId: string, configs) => {
+export const loadYoutubeAccountReport = async (accountId: string) => {
   let youtubeReport = await API_CALL.post("/dashboard/reports/youtube", {
     accountId,
     dimensions: "day",

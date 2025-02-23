@@ -4,6 +4,7 @@ import { getPostsList } from "../api/resources";
 import { PostInterface } from "../types";
 import BasicTableOne from "../components/tables/BasicTables/BasicTableOne";
 import { LucideIcons } from "../_constants/data";
+import { ColumnDef } from "@tanstack/react-table";
 
 const PostsList = () => {
   const [postsList, setPostsList] = useState<PostInterface[]>([]);
@@ -28,15 +29,16 @@ const PostsList = () => {
   }, [user?.uid]);
 
   // Table Columns
-  const columns: ColumnDef<Order>[] = [
+  const columns: ColumnDef<PostInterface>[] = [
     {
       header: "Title",
       accessorKey: "title",
       cell: ({ row, getValue }) => {
         let Metadata = row?.original?.metadata;
+        let value = getValue() as string;
         return (
           <a className="link link-primary" target="_blank" href={Metadata?.postUrl}>
-            {getValue()}
+            {value}
           </a>
         );
       }
@@ -49,7 +51,7 @@ const PostsList = () => {
       header: "Updated At",
       accessorKey: "updatedAt",
       cell: ({ getValue }) => {
-        const CurrDate = getValue();
+        const CurrDate = getValue() as string;
         return <span>{CurrDate}</span>;
       }
     },
@@ -57,7 +59,7 @@ const PostsList = () => {
       header: "Created at",
       accessorKey: "createdAt",
       cell: ({ getValue }) => {
-        const CurrDate = getValue();
+        const CurrDate = getValue() as string;
         return <span>{CurrDate}</span>;
       }
     },

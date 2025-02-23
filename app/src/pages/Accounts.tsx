@@ -54,7 +54,7 @@ export default function Accounts() {
   };
 
   // Table Columns
-  const columns: ColumnDef<Order>[] = [
+  const columns: ColumnDef<AccountInterface>[] = [
     {
       header: "Account",
       accessorKey: "connector",

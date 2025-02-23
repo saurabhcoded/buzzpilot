@@ -24,7 +24,8 @@ export const useAuth = () => {
         let userDbDoc = doc(fireDb, "users", user?.uid);
         let userDetailData = await getDoc(userDbDoc);
         if (userDetailData.exists()) {
-          userData.details = userDetailData.data();
+          Object.assign(userData, { details: userDetailData.data() });
+          // userData.details = ;
         }
       } catch (Error) {
         console.error(Error);
