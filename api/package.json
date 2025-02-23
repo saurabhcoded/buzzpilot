@@ -8,8 +8,7 @@
   },
   "scripts": {
     "dev": "nodemon ./bin/www",
-    "staging": "set NODE_ENV=staging nodemon ./bin/www",
-    "production": "set NODE_ENV=production node ./bin/www"
+    "start": "nodemon ./bin/www"
   },
   "author": "Codefire",
   "license": "ISC",
