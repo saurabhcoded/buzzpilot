@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, OAuthCredential, signInWithPopup } from "firebase/auth";
 import { URL_CONFIG } from "../../_constants/url_config";
 import notify from "../../utils/notify";
 import API_CALL, { API_CALL_FORMDATA } from "../ApiTool";
@@ -48,58 +48,33 @@ export const createYoutubePost = async (postData: any) => {
   }
 };
 
-// export const connectYoutubeAccount = async () => {
-//   try {
-//     const provider = new GoogleAuthProvider();
-//     provider.addScope("https://www.googleapis.com/auth/youtube.force-ssl");
-//     provider.addScope("https://www.googleapis.com/auth/yt-analytics.readonly");
-
-//     // Sign in user with Google OAuth
-//     const result = await signInWithPopup(fireAuth, provider);
-//     const credential = GoogleAuthProvider.credentialFromResult(result);
-
-//     if (!credential) throw new Error("No credentials received");
-
-//     return credential;
-//   } catch (error) {
-//     console.error("Error connecting YouTube account:", error);
-//   }
-// };
-// Version 2
-
+// Version 1 Fix: Issue: Updating the Logged in User
 export const connectYoutubeAccount = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+    provider.addScope("https://www.googleapis.com/auth/youtube.force-ssl");
+    provider.addScope("https://www.googleapis.com/auth/yt-analytics.readonly");
+    
+    // Sign in user with Google OAuth
+    const result = await signInWithPopup(fireAuth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+
+    if (!credential) throw new Error("No credentials received");
+
+    return credential;
+  } catch (error) {
+    console.error("Error connecting YouTube account:", error);
+  }
+};
+
+// Version 2
+export const connectYoutubeAccountV2 = async () => {
   try {
     const gapi = await loadGapiInsideDOM();
     let connectScopes =
       "https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/yt-analytics.readonly";
-    // const provider = new GoogleAuthProvider();
-    // provider.addScope("https://www.googleapis.com/auth/youtube.force-ssl");
-    // provider.addScope("https://www.googleapis.com/auth/yt-analytics.readonly");
-
-    // // Sign in user with Google OAuth
-    // const result = await signInWithPopup(fireAuth, provider);
-    // const credential = GoogleAuthProvider.credentialFromResult(result);
-
-    // if (!credential) throw new Error("No credentials received");
-
-    // return credential;
-    // Initialize OAuth client
-    console.log("authCreds", projectEnums.google_clientId,connectScopes);
     let auth2 = await loadAuth2(gapi, projectEnums.google_clientId, connectScopes);
-    console.log("authResult", auth2);
-    // window?.gapi?.load?.("client:auth2", async () => {
-    //   await window.gapi.client.init({
-    //     clientId: import.meta.env.FIREBASE_CLIENT_ID,
-    //     scope:
-    //       "https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/yt-analytics.readonly"
-    //   });
-    //   const authInstance = await window.gapi.auth2.getAuthInstance();
-    //   const user = await authInstance.signIn(); // Prompt account selection
-    //   const credential = user.getAuthResponse();
-    //   if (!credential) throw new Error("No credentials received");
-    //   console.log("credential", credential);
-    //   return credential;
-    // });
+    return auth2;
   } catch (error) {
     console.error("Error connecting YouTube account:", error);
   }
