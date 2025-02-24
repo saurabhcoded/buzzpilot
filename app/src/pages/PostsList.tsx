@@ -5,12 +5,16 @@ import { PostInterface } from "../types";
 import BasicTableOne from "../components/tables/BasicTables/BasicTableOne";
 import { LucideIcons } from "../_constants/data";
 import { ColumnDef } from "@tanstack/react-table";
+import { isEmptyArray } from "formik";
+import FallbackCard from "../components/ui/cards/FallbackCard";
 
 const PostsList = () => {
+  const [isLoadingpostsList, setIsLoadingPostsList] = useState<boolean>(true);
   const [postsList, setPostsList] = useState<PostInterface[]>([]);
   const { user } = useAuth();
   useEffect(() => {
-    if (user?.uid)
+    if (user?.uid) {
+      setIsLoadingPostsList(true);
       getPostsList(user?.uid)
         .then((response) => {
           console.log("response", response);
@@ -26,6 +30,8 @@ const PostsList = () => {
         .catch((Err) => {
           console.error(Err);
         });
+      setIsLoadingPostsList(false);
+    }
   }, [user?.uid]);
 
   // Table Columns
@@ -84,9 +90,15 @@ const PostsList = () => {
     }
   ];
 
+  const isNoDataAvailable = isEmptyArray(postsList);
+
   return (
     <div>
-      <BasicTableOne columns={columns} data={postsList} />
+      {isNoDataAvailable ? (
+        <FallbackCard loading={isLoadingpostsList} message="No posts available" />
+      ) : (
+        <BasicTableOne columns={columns} data={postsList} />
+      )}
     </div>
   );
 };

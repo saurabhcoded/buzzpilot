@@ -72,6 +72,7 @@ exports.uploadVideotoYoutube = async (req, res) => {
       title: postData?.title,
       description: postData?.description,
       metadata: JSON.stringify(postMetadata),
+      user: accountData?.data()?.user,
       createdAt: Date.now(),
       updatedAt: Date.now()
     });

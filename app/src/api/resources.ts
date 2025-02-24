@@ -135,8 +135,7 @@ export const isAccountNameDuplicate = async (
 export const getPostsList = async (userId: string): Promise<PostInterface[]> => {
   const userRef = doc(fireDb, "users", userId);
   const querySnapshot = await getDocs(
-    query(collection(fireDb, "posts"))
-    // query(collection(fireDb, "posts"), where("user", "==", userRef))
+    query(collection(fireDb, "posts"), where("user", "==", userRef))
   );
 
   const postsList: PostInterface[] | any[] = await Promise.all(
