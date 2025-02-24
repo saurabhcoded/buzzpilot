@@ -14,6 +14,7 @@ import YouTubeAnalyticsChart from "../../components/charts/line/LineChartOne";
 import Button from "../../components/ui/button/Button";
 import { Link } from "react-router";
 import { Loader } from "lucide-react";
+import FallbackCard from "../../components/ui/cards/FallbackCard";
 
 export default function Home() {
   const [showNoReports, setShowNoReports] = useState(false);
@@ -52,11 +53,7 @@ export default function Home() {
       <PageMeta title="Buzzpilot" description="" />
       <div className="grid grid-cols-12 gap-4 md:gap-6">
         <div className="col-span-12 ">
-          {loadingReport && (
-            <span className="flex flex-row justify-center py-8 text-center mx-auto gap-2">
-              <Loader /> Loading Report
-            </span>
-          )}
+          {loadingReport && <FallbackCard loading={true} />}
           {showNoReports && (
             <div className="flex flex-col justify-center items-center gap-2 py-10">
               <img

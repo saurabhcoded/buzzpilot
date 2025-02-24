@@ -12,16 +12,21 @@ import AddAccountForm from "./AddAccountForm";
 import { deleteAccountDoc, getAccountsList } from "../api/resources";
 import { AccountInterface } from "../types";
 import { useAuth } from "../hooks/useAuth";
+import FallbackCard from "../components/ui/cards/FallbackCard";
+import { isEmptyArray } from "formik";
 
 export default function Accounts() {
   const [accountList, setAccountList] = useState<AccountInterface[]>([]);
+  const [loadingAccountList, setLoadingAccountList] = useState<boolean>(true);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const { user } = useAuth();
   const loadAccountsList = async () => {
     if (user?.uid) {
+      setLoadingAccountList(true);
       const AccountList = await getAccountsList(user?.uid);
       console.log("AccountList", AccountList);
       setAccountList(AccountList);
+      setLoadingAccountList(false);
     }
   };
   useEffect(() => {
@@ -142,6 +147,7 @@ export default function Accounts() {
     }
   ];
 
+  const isNoDataAvailable = isEmptyArray(accountList);
   return (
     <div>
       <PageMeta title="Buzzpilot" description="" />
@@ -167,18 +173,19 @@ export default function Accounts() {
               )}
             </div>
           }
-          headerDataComp={
-            addAccountOpen && (
-              <AddAccountForm
-                handleClose={() => {
-                  handleToggleAddAccount();
-                  loadAccountsList();
-                }}
-              />
-            )
-          }
         >
-          <BasicTableOne columns={columns} data={accountList} />
+          {addAccountOpen ? (
+            <AddAccountForm
+              handleClose={() => {
+                handleToggleAddAccount();
+                loadAccountsList();
+              }}
+            />
+          ) : isNoDataAvailable ? (
+            <FallbackCard loading={loadingAccountList}/>
+          ) : (
+            <BasicTableOne columns={columns} data={accountList} />
+          )}
         </ComponentCard>
       </div>
     </div>

@@ -125,12 +125,12 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
   });
 
   return (
-    <div className="px-5 py-3 border-t">
+    <div className="px-5 py-3">
       <h4 className="text-base font-medium text-gray-800 dark:text-white/90">Connect Account</h4>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Here you can connect your accounts to use BuzzPilot successfully.
       </p>
-      <div className="grid grid-cols-7 gap-3 mt-4">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 mt-4">
         {connectorList.map((connector, connIndex) => (
           <React.Fragment key={connIndex}>
             <ConnectorCheckCard
@@ -227,7 +227,7 @@ const ConnectorCheckCard = ({
             isConnectorSelected ? "border-success-500 ring-2 ring-success-300" : "border-gray-200"
           }`}
     >
-      <img src={connector.image} className="h-15 w-15" alt={connector.name} />
+      <img src={connector.image} className="h-10 w-10" alt={connector.name} />
       <span className="mt-1 text-base text-gray-700 dark:text-gray-400 font-semibold">
         {connector.name}
       </span>
