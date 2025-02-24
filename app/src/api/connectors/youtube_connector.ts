@@ -67,9 +67,9 @@ export const createYoutubePost = async (postData: any) => {
 // };
 // Version 2
 
-const gapi = await loadGapiInsideDOM();
 export const connectYoutubeAccount = async () => {
   try {
+    const gapi = await loadGapiInsideDOM();
     let connectScopes =
       "https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/yt-analytics.readonly";
     // const provider = new GoogleAuthProvider();
