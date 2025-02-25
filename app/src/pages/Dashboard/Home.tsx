@@ -15,42 +15,66 @@ import Button from "../../components/ui/button/Button";
 import { Link } from "react-router";
 import { Loader } from "lucide-react";
 import FallbackCard from "../../components/ui/cards/FallbackCard";
+import { AccountInterface } from "../../types";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
+import moment from "moment";
+
+interface AccountReportI extends AccountInterface {
+  accountReport?: any;
+}
 
 export default function Home() {
-  const [showNoReports, setShowNoReports] = useState(false);
-  const [loadingReport, setLoadingReport] = useState(true);
-  const [youtubeReport, setYoutubeReport] = useState(null);
+  const [showNoReports, setShowNoReports] = useState<boolean>(false);
+  const [dataConfigs, setDataConfigs] = useState({
+    startDate: moment().startOf("month").format("YYYY-MM-DD"),
+    endDate: moment().endOf("month").format("YYYY-MM-DD")
+  });
+  const [accountsData, setAccountsData] = useState<AccountInterface[]>([]);
+  const [loadingReport, setLoadingReport] = useState<boolean>(true);
+  const [youtubeReport, setYoutubeReport] = useState<AccountReportI[] | null>(null);
   const { user } = useAuth();
-  let loadAccountReport = async (userId: string) => {
-    let accounts = await getAccountsList(userId);
-    if (accounts?.[0]) {
-      setShowNoReports(false);
-      loadYoutubeAccountReport(accounts?.[0]?.id)
-        .then((reportData) => {
-          if (reportData?.status === 1) {
-            setYoutubeReport(reportData?.data);
-            setLoadingReport(false);
-          } else {
-            notify.error(reportData?.message);
-          }
-        })
-        .catch((Err) => {
-          notify.error(Err);
-          setLoadingReport(false);
-        });
-    } else {
-      setShowNoReports(true);
-      setLoadingReport(false);
-    }
-  };
+
   useEffect(() => {
-    if (user?.uid) loadAccountReport(user?.uid);
+    if (user?.uid) {
+      getAccountsList(user?.uid).then((accounts) => {
+        setAccountsData(accounts);
+      });
+    }
   }, [user?.uid]);
 
-  console.log("youtubeReport", youtubeReport);
+  let loadAccountReport = async () => {
+    setShowNoReports(false);
+    let reportsData: AccountReportI[] = [];
+    if (accountsData?.length === 0) {
+      setShowNoReports(true);
+    } else {
+      setShowNoReports(false);
+    }
+    for (let ii = 0; ii < accountsData.length; ii++) {
+      try {
+        const currAccount = accountsData[ii] as AccountReportI;
+        let reportData = await loadYoutubeAccountReport(currAccount?.id, dataConfigs);
+        if (reportData?.status === 1) {
+          currAccount.accountReport = reportData?.data;
+          reportsData.push(currAccount);
+        } else {
+          notify.error(reportData?.message);
+        }
+      } catch (Err) {
+        console.error(Err);
+      }
+    }
+    setYoutubeReport(reportsData);
+    setLoadingReport(false);
+  };
+  useEffect(() => {
+    if (Array.isArray(accountsData) && accountsData?.length > 0) loadAccountReport();
+  }, [accountsData?.length]);
+
   return (
     <>
       <PageMeta title="Buzzpilot" description="" />
+      <PageBreadcrumb pageTitle="Dashboard" />
       <div className="grid grid-cols-12 gap-4 md:gap-6">
         <div className="col-span-12 ">
           {loadingReport && <FallbackCard loading={true} />}
@@ -68,12 +92,30 @@ export default function Home() {
             </div>
           )}
         </div>
-        <div className="col-span-12 ">
-          <YouTubeAnalyticsChart data={youtubeReport} />
-          {/* <EcommerceMetrics />
+        {Array.isArray(youtubeReport) &&
+          youtubeReport.map((accountReport) => {
+            return (
+              <div className="col-span-12" key={accountReport?.id}>
+                <YouTubeAnalyticsChart
+                  label={
+                    <span className="inline-flex gap-2 items-center">
+                      <span className="inline-flex items-center capitalize gap-1 py-1 px-3 bg-gray-100 rounded-full text-sm">
+                        <img
+                          src={accountReport?.connector?.image}
+                          alt={accountReport?.connector?.name}
+                          className="h-5 w-5"
+                        />
+                        {accountReport?.connector?.name}
+                      </span>
+                      <span>{accountReport?.name + " Report"}</span>
+                    </span>
+                  }
+                  data={accountReport?.accountReport}
+                />
+              </div>
+            );
+          })}
 
-          <MonthlySalesChart /> */}
-        </div>
         {/* 
         <div className="col-span-12 xl:col-span-5">
           <MonthlyTarget />

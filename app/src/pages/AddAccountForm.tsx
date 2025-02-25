@@ -82,9 +82,6 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
         // return;
         if (selectedConnector?.name === "youtube") {
           let credentials = await connectYoutubeAccount();
-          console.log("YoutubeCredentials", credentials);
-          helpers.setSubmitting(false);
-          return;
           // Send token to Node.js API for storage
           let accountData = {
             userId: user?.uid,
