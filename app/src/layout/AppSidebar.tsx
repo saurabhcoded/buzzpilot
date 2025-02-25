@@ -245,24 +245,24 @@ const AppSidebar: React.FC = () => {
         lg:translate-x-0`}
     >
       <div
-        className={`py-4 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}
+        className={`py-5 hidden sm:flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}
       >
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <img
-                className="dark:hidden"
+                className="dark:hidden object-contain"
                 src={resources.full_logo}
                 alt="Logo"
-                width={150}
-                height={40}
+                width={120}
+                height={30}
               />
               <img
-                className="hidden dark:block"
+                className="hidden dark:block object-contain"
                 src={resources.full_dark_logo}
                 alt="Logo"
-                width={150}
-                height={40}
+                width={130}
+                height={30}
               />
             </>
           ) : (

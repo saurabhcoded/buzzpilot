@@ -4,6 +4,7 @@ import NotificationDropdown from "./NotificationDropdown";
 import UserDropdown from "./UserDropdown";
 import { Link } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
+import {resources} from "../../_constants/data";
 
 // Define the interface for the props
 interface HeaderProps {
@@ -80,8 +81,8 @@ const Header: React.FC<HeaderProps> = ({ onClick, onToggle }) => {
           </button>
 
           <Link to="/" className="lg:hidden">
-            <img className="dark:hidden" src="./images/logo/logo.svg" alt="Logo" />
-            <img className="hidden dark:block" src="./images/logo/logo-dark.svg" alt="Logo" />
+            <img className="dark:hidden" src={resources.full_dark_logo} alt="Logo" />
+            <img className="hidden dark:block" src={resources.full_logo} alt="Logo" />
           </Link>
 
           <button

@@ -1,23 +1,15 @@
-import EcommerceMetrics from "../../components/ecommerce/EcommerceMetrics";
-import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
-import StatisticsChart from "../../components/ecommerce/StatisticsChart";
-import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
-import RecentOrders from "../../components/ecommerce/RecentOrders";
-import DemographicCard from "../../components/ecommerce/DemographicCard";
-import PageMeta from "../../components/common/PageMeta";
-import { useEffect, useState } from "react";
-import { getAccountsList } from "../../api/resources";
-import { useAuth } from "../../hooks/useAuth";
-import { loadYoutubeAccountReport } from "../../api/connectors/youtube_connector";
-import notify from "../../utils/notify";
-import YouTubeAnalyticsChart from "../../components/charts/line/LineChartOne";
-import Button from "../../components/ui/button/Button";
-import { Link } from "react-router";
-import { Loader } from "lucide-react";
-import FallbackCard from "../../components/ui/cards/FallbackCard";
-import { AccountInterface } from "../../types";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
+import { loadYoutubeAccountReport } from "../../api/connectors/youtube_connector";
+import { getAccountsList } from "../../api/resources";
+import YouTubeAnalyticsChart from "../../components/charts/line/LineChartOne";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
+import PageMeta from "../../components/common/PageMeta";
+import FallbackCard from "../../components/ui/cards/FallbackCard";
+import { useAuth } from "../../hooks/useAuth";
+import { AccountInterface } from "../../types";
+import notify from "../../utils/notify";
 
 interface AccountReportI extends AccountInterface {
   accountReport?: any;
@@ -76,44 +68,50 @@ export default function Home() {
       <PageMeta title="Buzzpilot" description="" />
       <PageBreadcrumb pageTitle="Dashboard" />
       <div className="grid grid-cols-12 gap-4 md:gap-6">
-        <div className="col-span-12 ">
-          {loadingReport && <FallbackCard loading={true} />}
-          {showNoReports && (
-            <div className="flex flex-col justify-center items-center gap-2 py-10">
-              <img
-                className="w-80 rounded-lg bg-white"
-                src="/public/images/icons/noreports.jpg"
-                alt=""
-              />
-              <h4 className="text-lg">To view your report please add a account</h4>
-              <Link to={"/accounts"} className="btn btn-primary">
-                Add Account
-              </Link>
-            </div>
-          )}
-        </div>
+        {(showNoReports || loadingReport) && (
+          <div className="col-span-12">
+            {loadingReport && <FallbackCard loading={true} />}
+            {showNoReports && (
+              <div className="flex flex-col justify-center items-center gap-2 py-10">
+                <img
+                  className="w-80 rounded-lg bg-white"
+                  src="/public/images/icons/noreports.jpg"
+                  alt=""
+                />
+                <h4 className="text-lg">To view your report please add a account</h4>
+                <Link to={"/accounts"} className="btn btn-primary">
+                  Add Account
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
         {Array.isArray(youtubeReport) &&
           youtubeReport.map((accountReport) => {
-            return (
-              <div className="col-span-12" key={accountReport?.id}>
-                <YouTubeAnalyticsChart
-                  label={
-                    <span className="inline-flex gap-2 items-center">
-                      <span className="inline-flex items-center capitalize gap-1 py-1 px-3 bg-gray-100 rounded-full text-sm">
-                        <img
-                          src={accountReport?.connector?.image}
-                          alt={accountReport?.connector?.name}
-                          className="h-5 w-5"
-                        />
-                        {accountReport?.connector?.name}
+            if (accountReport?.accountReport) {
+              return (
+                <div className="col-span-12" key={accountReport?.id}>
+                  <YouTubeAnalyticsChart
+                    label={
+                      <span className="inline-flex gap-2 items-center">
+                        <span className="inline-flex items-center capitalize gap-1 py-1 px-3 bg-gray-100 rounded-full text-sm">
+                          <img
+                            src={accountReport?.connector?.image}
+                            alt={accountReport?.connector?.name}
+                            className="h-5 w-5"
+                          />
+                          {accountReport?.connector?.name}
+                        </span>
+                        <span>{accountReport?.name + " Report"}</span>
                       </span>
-                      <span>{accountReport?.name + " Report"}</span>
-                    </span>
-                  }
-                  data={accountReport?.accountReport}
-                />
-              </div>
-            );
+                    }
+                    data={accountReport?.accountReport}
+                  />
+                </div>
+              );
+            } else {
+              return null;
+            }
           })}
 
         {/* 
