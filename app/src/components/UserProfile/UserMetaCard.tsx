@@ -28,7 +28,7 @@ export default function UserMetaCard() {
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Social Media Manager</p>
                 <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">DU Hacks</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Buzz Pilot</p>
               </div>
             </div>
             {/* <div className="flex items-center order-2 gap-2 grow xl:order-3 xl:justify-end">
