@@ -38,6 +38,20 @@ API_CALL.interceptors.request.use(
   },
   (error: AxiosError) => Promise.reject(error)
 );
+// Request Interceptor
+API_CALL_FORMDATA.interceptors.request.use(
+  (request: any) => {
+    const Auth_Token = localStorage.getItem("authToken");
+    if (Auth_Token) {
+      request.headers = {
+        ...request.headers,
+        Authorization: `Bearer ${Auth_Token}`,
+      };
+    }
+    return request;
+  },
+  (error: AxiosError) => Promise.reject(error)
+);
 
 // Function to Clear User Data & Redirect
 // const handleFlushDataAndRedirect = () => {

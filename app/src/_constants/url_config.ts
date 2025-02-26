@@ -7,5 +7,10 @@ export const URL_CONFIG = {
     createAccount: "/account/create",
     editAccount: "/account/update",
     deleteAccount: "/account/delete",
-  }
+  },
+  posts: {
+    youtube: {
+      createpost: "/posts/createpost/youtube",
+    },
+  },
 };

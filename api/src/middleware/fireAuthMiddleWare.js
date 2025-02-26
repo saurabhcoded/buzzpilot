@@ -11,7 +11,6 @@ const authenticateFirebaseUser = async (req, res, next) => {
     }
     const idToken = authHeader.split("Bearer ")[1];
     const decodedToken = await fireAdmin.auth().verifyIdToken(idToken);
-    console.log("user", decodedToken);
 
     if (!decodedToken) {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });
