@@ -1,4 +1,9 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from "axios";
 import { URL_CONFIG } from "../_constants/url_config";
 
 // Define API Response Type
@@ -10,35 +15,29 @@ import { URL_CONFIG } from "../_constants/url_config";
 
 // Create Axios Instance
 const API_CALL: AxiosInstance = axios.create({
-  baseURL: URL_CONFIG.api_base_url
+  baseURL: URL_CONFIG.api_base_url,
 });
 export const API_CALL_FORMDATA: AxiosInstance = axios.create({
   baseURL: URL_CONFIG.api_base_url,
   headers: {
-    "Content-Type": "multipart/form-data"
-  }
+    "Content-Type": "multipart/form-data",
+  },
 });
 
 // Request Interceptor
-// API_CALL.interceptors.request.use(
-//   (request: AxiosRequestConfig) => {
-//     const storeData = store.getState();
-//     const isAdminRoute = request.url?.includes("/admin");
-//     const Auth_Token = isAdminRoute
-//       ? storeData?.admin?.details?.token
-//       : storeData?.user?.details?.access_token;
-
-//     if (Auth_Token) {
-//       request.headers = {
-//         ...request.headers,
-//         Authorization: `Bearer ${Auth_Token}`,
-//       };
-//     }
-
-//     return request;
-//   },
-//   (error: AxiosError) => Promise.reject(error)
-// );
+API_CALL.interceptors.request.use(
+  (request: any) => {
+    const Auth_Token = localStorage.getItem("authToken");
+    if (Auth_Token) {
+      request.headers = {
+        ...request.headers,
+        Authorization: `Bearer ${Auth_Token}`,
+      };
+    }
+    return request;
+  },
+  (error: AxiosError) => Promise.reject(error)
+);
 
 // Function to Clear User Data & Redirect
 // const handleFlushDataAndRedirect = () => {

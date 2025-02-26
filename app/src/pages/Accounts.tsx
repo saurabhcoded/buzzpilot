@@ -20,6 +20,7 @@ export default function Accounts() {
   const [loadingAccountList, setLoadingAccountList] = useState<boolean>(true);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const { user } = useAuth();
+  console.log("window", window.location.href);
   const loadAccountsList = async () => {
     if (user?.uid) {
       setLoadingAccountList(true);
@@ -33,8 +34,14 @@ export default function Accounts() {
     loadAccountsList();
   }, [user?.uid]);
 
-  const [testingAcc, setTestingAcc] = useState({ isTesting: false, rowIndex: null });
-  const [deletingAcc, setDeletingAcc] = useState({ isDeleting: false, rowIndex: null });
+  const [testingAcc, setTestingAcc] = useState({
+    isTesting: false,
+    rowIndex: null,
+  });
+  const [deletingAcc, setDeletingAcc] = useState({
+    isDeleting: false,
+    rowIndex: null,
+  });
   const handleTestAccount = (accountData: any, rowIndex: number) => () => {
     setTestingAcc({ isTesting: true, rowIndex });
     setTimeout(() => {
@@ -44,19 +51,20 @@ export default function Accounts() {
   };
 
   const handleToggleAddAccount = () => setAddAccountOpen(!addAccountOpen);
-  const handleDeleteAccount = (accountId: string, rowIndex: number) => async () => {
-    if (accountId) {
-      setDeletingAcc({ rowIndex: rowIndex, isDeleting: true });
-      let deleteResponse = await deleteAccountDoc(accountId);
-      if (deleteResponse?.status) {
-        notify.success(deleteResponse?.message);
-      } else {
-        notify.error(deleteResponse?.message);
+  const handleDeleteAccount =
+    (accountId: string, rowIndex: number) => async () => {
+      if (accountId) {
+        setDeletingAcc({ rowIndex: rowIndex, isDeleting: true });
+        let deleteResponse = await deleteAccountDoc(accountId);
+        if (deleteResponse?.status) {
+          notify.success(deleteResponse?.message);
+        } else {
+          notify.error(deleteResponse?.message);
+        }
+        setDeletingAcc({ isDeleting: false, rowIndex: null });
+        loadAccountsList();
       }
-      setDeletingAcc({ isDeleting: false, rowIndex: null });
-      loadAccountsList();
-    }
-  };
+    };
 
   // Table Columns
   const columns: ColumnDef<AccountInterface>[] = [
@@ -68,7 +76,12 @@ export default function Accounts() {
         return (
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 overflow-hidden">
-              <img width={40} height={40} src={account.image} alt={account.name} />
+              <img
+                width={40}
+                height={40}
+                src={account.image}
+                alt={account.name}
+              />
             </div>
             <div className="max-w-60">
               <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
@@ -80,7 +93,7 @@ export default function Accounts() {
             </div>
           </div>
         );
-      }
+      },
     },
     {
       header: "Connector",
@@ -88,11 +101,11 @@ export default function Accounts() {
       cell: ({ row, getValue }) => {
         const account = getValue() as Order["connector"];
         return <>{account.name}</>;
-      }
+      },
     },
     {
       header: "Authentication",
-      accessorKey: "auth_type"
+      accessorKey: "auth_type",
     },
     {
       header: "Status",
@@ -113,15 +126,17 @@ export default function Accounts() {
             {status}
           </span>
         );
-      }
+      },
     },
     {
       header: "Action",
       accessorKey: "action",
       cell: ({ row }) => {
         let AccountData = row?.original;
-        const isTestingAcc = testingAcc?.isTesting && row?.index === testingAcc?.rowIndex;
-        const isDeletingAcc = deletingAcc?.isDeleting && row?.index === deletingAcc?.rowIndex;
+        const isTestingAcc =
+          testingAcc?.isTesting && row?.index === testingAcc?.rowIndex;
+        const isDeletingAcc =
+          deletingAcc?.isDeleting && row?.index === deletingAcc?.rowIndex;
         return (
           <div className="flex items-center gap-3">
             <Button
@@ -139,12 +154,16 @@ export default function Accounts() {
               onClick={handleDeleteAccount(AccountData?.id, row?.index)}
               disabled={isDeletingAcc}
             >
-              {isDeletingAcc ? <LucideIcons.Loader /> : <LucideIcons.Trash size={14} />}
+              {isDeletingAcc ? (
+                <LucideIcons.Loader />
+              ) : (
+                <LucideIcons.Trash size={14} />
+              )}
             </button>
           </div>
         );
-      }
-    }
+      },
+    },
   ];
 
   const isNoDataAvailable = isEmptyArray(accountList);
@@ -182,7 +201,7 @@ export default function Accounts() {
               }}
             />
           ) : isNoDataAvailable ? (
-            <FallbackCard loading={loadingAccountList}/>
+            <FallbackCard loading={loadingAccountList} />
           ) : (
             <BasicTableOne columns={columns} data={accountList} />
           )}

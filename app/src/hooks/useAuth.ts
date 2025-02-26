@@ -4,7 +4,7 @@ import {
   onAuthStateChanged,
   signInWithPopup,
   signOut,
-  User
+  User,
 } from "firebase/auth";
 import { fireAuth, fireDb } from "../firebase/firebase";
 import notify from "../utils/notify";
@@ -17,21 +17,26 @@ export const useAuth = () => {
   const isAuthenticated = Boolean(user);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(fireAuth, async (user): Promise<void> => {
-      let userData = user;
-      try {
-        let userDbDoc = doc(fireDb, "users", user?.uid);
-        let userDetailData = await getDoc(userDbDoc);
-        if (userDetailData.exists()) {
-          Object.assign(userData, { details: userDetailData.data() });
-          // userData.details = ;
+    const unsubscribe = onAuthStateChanged(
+      fireAuth,
+      async (user): Promise<void> => {
+        let userData = user;
+        try {
+          let userDbDoc = doc(fireDb, "users", user?.uid);
+          let userDetailData = await getDoc(userDbDoc);
+          if (userDetailData.exists()) {
+            Object.assign(userData, { details: userDetailData.data() });
+            // userData.details = ;
+          }
+        } catch (Error) {
+          console.error(Error);
         }
-      } catch (Error) {
-        console.error(Error);
+        const userToken = await userData.getIdToken();
+        localStorage.setItem("authToken", userToken);
+        setUser(userData);
+        setLoading(false);
       }
-      setUser(userData);
-      setLoading(false);
-    });
+    );
     return unsubscribe;
   }, []);
 
@@ -54,5 +59,11 @@ export const useAuth = () => {
     }
   };
 
-  return { user, isAuthenticated, authStatusLoading: loading, handleLogout, signInWithGoogle };
+  return {
+    user,
+    isAuthenticated,
+    authStatusLoading: loading,
+    handleLogout,
+    signInWithGoogle,
+  };
 };

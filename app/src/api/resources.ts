@@ -6,10 +6,12 @@ import {
   getDoc,
   getDocs,
   query,
-  where
+  where,
 } from "firebase/firestore";
 import { fireDb } from "../firebase/firebase";
 import { AccountInterface, ConnectorInterface, PostInterface } from "../types";
+import API_CALL from "./ApiTool";
+import { URL_CONFIG } from "../_constants/url_config";
 
 export const getAvatarsList = () => {
   //  Firestore.
@@ -17,13 +19,17 @@ export const getAvatarsList = () => {
 
 export const getConnectorsList = async (): Promise<ConnectorInterface[]> => {
   const querySnapshot = await getDocs(collection(fireDb, "connectors"));
-  const connectorList: ConnectorInterface[] | any[] = querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+  const connectorList: ConnectorInterface[] | any[] = querySnapshot.docs.map(
+    (doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })
+  );
   return connectorList;
 };
-export const getAccountsList = async (userId: string): Promise<AccountInterface[]> => {
+export const getAccountsList = async (
+  userId: string
+): Promise<AccountInterface[]> => {
   const userRef = doc(fireDb, "users", userId);
   const querySnapshot = await getDocs(
     query(collection(fireDb, "accounts"), where("user", "==", userRef))
@@ -36,7 +42,9 @@ export const getAccountsList = async (userId: string): Promise<AccountInterface[
         const userSnap = await getDoc(docData.user);
         const connectorSnap = await getDoc(docData.connector);
         let userData: any = userSnap.exists() ? userSnap.data() : null;
-        let connectorData: any = connectorSnap.exists() ? connectorSnap.data() : null;
+        let connectorData: any = connectorSnap.exists()
+          ? connectorSnap.data()
+          : null;
         try {
           userData.id = docData?.user?.id;
           connectorData.id = docData?.connector?.id;
@@ -47,13 +55,13 @@ export const getAccountsList = async (userId: string): Promise<AccountInterface[
           id: doc.id,
           ...docData,
           user: userData,
-          connector: connectorData
+          connector: connectorData,
         };
       } catch (Err) {
         console.error(Err);
         return {
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         };
       }
     })
@@ -61,27 +69,29 @@ export const getAccountsList = async (userId: string): Promise<AccountInterface[
   return accountsList;
 };
 
-export const createAccountDoc = async (accountData: any): Promise<string | null> => {
+export const createAccountDoc = async (
+  accountData: any
+): Promise<{ status: boolean; data: string }> => {
   try {
-    const userRef = doc(fireDb, "users", accountData.userId);
-    const connectorRef = doc(fireDb, "connectors", accountData.connector);
-    const accountRef = await addDoc(collection(fireDb, "accounts"), {
-      user: userRef,
-      connector: connectorRef,
+    const accountPayload = {
       name: accountData.name,
       description: accountData.description,
-      active: true,
-      auth_type: accountData?.auth_type,
       metadata: accountData?.metadata,
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    });
-
-    console.log("Account document created with ID:", accountRef.id);
-    return accountRef.id;
+      auth_type: accountData?.auth_type,
+      connectorId: accountData.connector,
+    };
+    const createAccountRes = await API_CALL.post(
+      URL_CONFIG.account.createAccount,
+      accountPayload
+    );
+    if (createAccountRes?.data?.status === 1) {
+      return { status: true, data: createAccountRes?.data?.data?.accountId };
+    } else {
+      return { status: false, data: createAccountRes?.data?.message };
+    }
   } catch (error) {
     console.error("Error creating account document:", error);
-    return null;
+    return { status: false, data: "Error creating account document" };
   }
 };
 
@@ -89,15 +99,22 @@ type deleteAccountType = {
   status: boolean;
   message: string;
 };
-export const deleteAccountDoc = async (accountId: string): Promise<deleteAccountType> => {
+export const deleteAccountDoc = async (
+  accountId: string
+): Promise<deleteAccountType> => {
   let result = true,
     resultMessage = "";
   try {
-    const accountRef = doc(fireDb, "accounts", accountId);
-    await deleteDoc(accountRef);
-
-    resultMessage = `✅ Account ${accountId} deleted successfully.`;
-    result = true;
+    const deleteRes = await API_CALL.post(URL_CONFIG.account.deleteAccount, {
+      accountId,
+    });
+    if(deleteRes?.data?.status === 1){
+      resultMessage = `✅ Account ${accountId} deleted successfully.`;
+      result = true;
+    }else{
+      resultMessage = deleteRes?.data?.message;
+      result = false;
+    }
   } catch (error) {
     console.error(error);
     resultMessage = "❌ Error deleting account:";
@@ -132,7 +149,9 @@ export const isAccountNameDuplicate = async (
 };
 
 // Posts Data
-export const getPostsList = async (userId: string): Promise<PostInterface[]> => {
+export const getPostsList = async (
+  userId: string
+): Promise<PostInterface[]> => {
   const userRef = doc(fireDb, "users", userId);
   const querySnapshot = await getDocs(
     query(collection(fireDb, "posts"), where("user", "==", userRef))
@@ -144,13 +163,13 @@ export const getPostsList = async (userId: string): Promise<PostInterface[]> => 
         let docData = doc.data();
         return {
           id: doc.id,
-          ...docData
+          ...docData,
         } as PostInterface;
       } catch (Err) {
         console.error(Err);
         return {
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         };
       }
     })
