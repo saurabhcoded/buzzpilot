@@ -8,7 +8,11 @@ import Select from "../components/form/Select";
 import Label from "../components/form/Label";
 import Input from "../components/form/input/InputField";
 import Button from "../components/ui/button/Button";
-import { createAccountDoc, getConnectorsList, isAccountNameDuplicate } from "../api/resources";
+import {
+  createAccountDoc,
+  getConnectorsList,
+  isAccountNameDuplicate,
+} from "../api/resources";
 import { ConnectorInterface } from "../types";
 import { connectYoutubeAccount } from "../api/connectors/youtube_connector";
 import { useAuth } from "../hooks/useAuth";
@@ -21,24 +25,27 @@ interface defaultValuesI {
 }
 
 const AuthenticationOptions: { label: string; value: string }[] = [
-  { label: "Oauth", value: "oauth" }
+  { label: "Oauth", value: "oauth" },
 ];
 
 const defaultValues: defaultValuesI = {
   auth_type: "oauth",
   name: "",
-  description: ""
+  description: "",
 };
 
 const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
   const { user } = useAuth();
-  const [selectedConnector, setSelectedConnector] = useState<ConnectorInterface | null>(null);
-  const [connectorList, setConnectorList] = useState<ConnectorInterface[] | null>([]);
+  const [selectedConnector, setSelectedConnector] =
+    useState<ConnectorInterface | null>(null);
+  const [connectorList, setConnectorList] = useState<
+    ConnectorInterface[] | null
+  >([]);
 
   const accountValidationSchema = Yup.object().shape({
     auth_type: Yup.string().required("Auth Type is required"),
     name: Yup.string().required("Account name is required"),
-    description: Yup.string().required("Account description is required")
+    description: Yup.string().required("Account description is required"),
   });
 
   const loadConnectorList = async () => {
@@ -69,7 +76,7 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
     handleSubmit,
     validateForm,
     setTouched,
-    setErrors
+    setErrors,
   } = useFormik({
     initialValues: defaultValues,
     validationSchema: accountValidationSchema,
@@ -77,32 +84,43 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
       helpers.setSubmitting(true);
       try {
         // Validate Account Name
-        let accNameValid = await isAccountNameDuplicate(values?.name, selectedConnector?.id);
-        console.log("accNameValid", accNameValid);
-        // return;
-        if (selectedConnector?.name === "youtube") {
-          let credentials = await connectYoutubeAccount();
-          // Send token to Node.js API for storage
-          let accountData = {
-            userId: user?.uid,
-            metadata: JSON.stringify(credentials),
-            provider: "youtube",
-            name: values?.name,
-            description: values?.description,
-            auth_type: values?.auth_type,
-            connector: selectedConnector?.id
-          };
-          const AccountSave = createAccountDoc(accountData);
-          console.log("response", AccountSave);
-          notify.success(`YouTube account[${values?.name}] is connected successfully`);
-          if (isFunction(handleClose)) handleClose?.();
+        let accountNameDuplicate = await isAccountNameDuplicate(
+          values?.name,
+          selectedConnector?.id
+        );
+        if (accountNameDuplicate) {
+          helpers.setFieldError(
+            "name",
+            "Account with this name already exists"
+          );
+          helpers.setSubmitting(false);
+          return;
         }
+        let accountData = {
+          name: values?.name,
+          description: values?.description,
+          metadata: null,
+          auth_type: values?.auth_type,
+          connector: selectedConnector?.id,
+        };
+        if (selectedConnector?.connector_id === "youtube") {
+          let credentials = await connectYoutubeAccount();
+          accountData.metadata = JSON.stringify(credentials);
+        }
+        console.log("accountData", accountData);
+        return;
+        const AccountSave = await createAccountDoc(accountData);
+        console.log("AccountSave", AccountSave);
+        notify.success(
+          `YouTube account[${values?.name}] is connected successfully`
+        );
+        if (isFunction(handleClose)) handleClose?.();
       } catch (Err) {
         console.error(Err);
         notify.error(`Error while connecting account`);
       }
       helpers.setSubmitting(false);
-    }
+    },
   });
 
   const handleTestConnection = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -120,12 +138,14 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
 
   const { isFieldError, getFieldError } = useFormikErrors({
     FormErrors: errors,
-    FormTouched: touched
+    FormTouched: touched,
   });
 
   return (
     <div className="px-5 py-3">
-      <h4 className="text-base font-medium text-gray-800 dark:text-white/90">Connect Account</h4>
+      <h4 className="text-base font-medium text-gray-800 dark:text-white/90">
+        Connect Account
+      </h4>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Here you can connect your accounts to use BuzzPilot successfully.
       </p>
@@ -192,7 +212,11 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
             >
               Test Account
             </Button> */}
-            <Button onClick={handleSubmit} size="sm" startIcon={<LucideIcons.LucideSave />}>
+            <Button
+              onClick={handleSubmit}
+              size="sm"
+              startIcon={<LucideIcons.LucideSave />}
+            >
               Save Account
             </Button>
           </div>
@@ -207,7 +231,7 @@ export default AddAccountForm;
 const ConnectorCheckCard = ({
   connector,
   selectedConnector,
-  handleConnectorClick
+  handleConnectorClick,
 }: {
   connector: ConnectorInterface;
   selectedConnector: ConnectorInterface;
@@ -220,10 +244,14 @@ const ConnectorCheckCard = ({
       onClick={() => handleConnectorClick(connector)}
       className={`flex flex-col gap-1 p-3 py-5 border items-center justify-center rounded-md 
           transition cursor-pointer ${
-            !connector.enabled ? "opacity-50 cursor-not-allowed" : "hover:border-gray-400"
+            !connector.enabled
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:border-gray-400"
           } 
           ${
-            isConnectorSelected ? "border-success-500 ring-2 ring-success-300" : "border-gray-200"
+            isConnectorSelected
+              ? "border-success-500 ring-2 ring-success-300"
+              : "border-gray-200"
           }`}
     >
       <img src={connector.image} className="h-10 w-10" alt={connector.name} />

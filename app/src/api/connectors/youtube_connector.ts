@@ -1,4 +1,8 @@
-import { GoogleAuthProvider, OAuthCredential, signInWithPopup } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  OAuthCredential,
+  signInWithPopup,
+} from "firebase/auth";
 import { URL_CONFIG } from "../../_constants/url_config";
 import notify from "../../utils/notify";
 import API_CALL, { API_CALL_FORMDATA } from "../ApiTool";
@@ -16,11 +20,11 @@ export const createYoutubePost = async (postData: any) => {
       title: postData?.title,
       description: postData?.description,
       tags: postTags,
-      categoryId: "22"
+      categoryId: "22",
     },
     status: {
-      privacyStatus: "public"
-    }
+      privacyStatus: "public",
+    },
   };
   const formData = new FormData();
   formData.append("postData", JSON.stringify(postData));
@@ -42,7 +46,9 @@ export const createYoutubePost = async (postData: any) => {
   } catch (error: any) {
     console.error(error);
     let errorMessage =
-      error?.response?.data?.message ?? error?.message ?? "Oops something went wrong!";
+      error?.response?.data?.message ??
+      error?.message ??
+      "Oops something went wrong!";
     notify.error(errorMessage);
     return false;
   }
@@ -51,17 +57,16 @@ export const createYoutubePost = async (postData: any) => {
 // Version 1 Fix: Issue: Updating the Logged in User
 export const connectYoutubeAccount = async () => {
   try {
-    const provider = new GoogleAuthProvider();
-    provider.addScope("https://www.googleapis.com/auth/youtube.force-ssl");
-    provider.addScope("https://www.googleapis.com/auth/yt-analytics.readonly");
-
-    // Sign in user with Google OAuth
-    const result = await signInWithPopup(fireAuth, provider);
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-
-    if (!credential) throw new Error("No credentials received");
-
-    return credential;
+    const authurl_res = await API_CALL.get(
+      URL_CONFIG.account.youtube.getAuthUrl
+    );
+    if (authurl_res?.data?.status) {
+      
+      return { status: false, message: authurl_res?.data?.message };
+    } else {
+      return { status: false, message: authurl_res?.data?.message };
+    }
+    console.log("authurl_res", authurl_res);
   } catch (error) {
     console.error("Error connecting YouTube account:", error);
   }
@@ -73,7 +78,11 @@ export const connectYoutubeAccountV2 = async () => {
     const gapi = await loadGapiInsideDOM();
     let connectScopes =
       "https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/yt-analytics.readonly";
-    let auth2 = await loadAuth2(gapi, projectEnums.google_clientId, connectScopes);
+    let auth2 = await loadAuth2(
+      gapi,
+      projectEnums.google_clientId,
+      connectScopes
+    );
     return auth2;
   } catch (error) {
     console.error("Error connecting YouTube account:", error);
@@ -88,7 +97,7 @@ export const loadYoutubeAccountReport = async (
     accountId,
     dimensions: "day",
     startDate: configs?.startDate ?? "2025-01-01",
-    endDate: configs?.endDate ?? "2025-02-28"
+    endDate: configs?.endDate ?? "2025-02-28",
   });
   return youtubeReport?.data;
 };

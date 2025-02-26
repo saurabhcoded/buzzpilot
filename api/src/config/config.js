@@ -27,3 +27,12 @@ exports.commonConfig = {
   },
 };
 
+exports.backendProjectEnums = {
+  connectorTypes: {
+    youtube: "youtube",
+    linkedin: "linkedin",
+    facebook: "facebook",
+    threads: "threads",
+    instagram: "instagram",
+  },
+};

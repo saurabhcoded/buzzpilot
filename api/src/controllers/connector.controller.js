@@ -35,22 +35,23 @@ exports.connectYoutubeAccount = async (req, res) => {
 };
 exports.getYoutubeAccessTokenfromAuthCode = async (auth_code) => {
   try {
+    console.log("auth_code", auth_code);
     if (!auth_code)
       return {
         status: false,
-        message: "Authentication Code not found",
+        data: "Authentication Code not found",
       };
+
     let credentials = await oauth2Client.getToken(auth_code);
     return {
       status: true,
-      message: "Credentials generated",
-      data: credentials,
+      data: credentials?.tokens,
     };
   } catch (Err) {
-    clog.error(Err);
+    let errorData = Err?.response?.data?.error || Err?.message || Err;
     return {
       status: false,
-      error: Err,
+      data: errorData,
     };
   }
 };

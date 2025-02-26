@@ -3,7 +3,9 @@ export const URL_CONFIG = {
   account: {
     youtube: {
       getAuthUrl: "/connector/youtube",
-    }
-    createAccount: "/posts/createpost/youtube"
+    },
+    createAccount: "/account/create",
+    editAccount: "/account/update",
+    deleteAccount: "/account/delete",
   }
 };
