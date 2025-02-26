@@ -12,7 +12,7 @@ const firebaseConfig = {
   storageBucket: projectEnums.firebase_storageBucket,
   messagingSenderId: projectEnums.firebase_messagingSenderId,
   appId: projectEnums.firebase_appId,
-  measurementId: projectEnums.firebase_measurementId
+  measurementId: projectEnums.firebase_measurementId,
 };
 
 const app = initializeApp(firebaseConfig);

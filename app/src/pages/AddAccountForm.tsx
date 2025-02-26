@@ -104,7 +104,6 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
           auth_type: values?.auth_type,
           connector: selectedConnector?.id,
         };
-        debugger;
         if (selectedConnector?.connector_id === "youtube") {
           setOauthLoading(true);
           let credentials = await connectYoutubeAccount();

@@ -1,4 +1,10 @@
-const { doc, addDoc, collection, deleteDoc, getDoc } = require("firebase/firestore");
+const {
+  doc,
+  addDoc,
+  collection,
+  deleteDoc,
+  getDoc,
+} = require("firebase/firestore");
 const { backendProjectEnums } = require("../config/config");
 const clog = require("../services/ChalkService");
 const { getYoutubeAccessTokenfromAuthCode } = require("./connector.controller");
@@ -9,12 +15,13 @@ let userId = "91S8xRjNxsTQujwxU5kVMBiC4zl2"; //TODO: Take it from Firebase Verif
 // To Create the Account of User
 exports.createUserAccount = async (req, res) => {
   try {
+    const userData = req?.user;
+    console.log('userData',userData)
     let accountData = {
       name: req.body?.name,
       description: req.body?.description,
       metadata: req.body?.metadata,
       auth_type: req.body?.auth_type,
-      userId: userId,
       connector: req.body?.connectorId,
     };
     let connectorRef = doc(fireDb, "connectors", accountData?.connector);
@@ -25,7 +32,8 @@ exports.createUserAccount = async (req, res) => {
     // Generate Authentication Credentials
     // 1. Youtube
     if (
-      connectorDocData.connector_id === backendProjectEnums.connectorTypes.youtube
+      connectorDocData.connector_id ===
+      backendProjectEnums.connectorTypes.youtube
     ) {
       let authCredsRes = await getYoutubeAccessTokenfromAuthCode(
         accountData?.metadata?.auth_code
@@ -50,9 +58,8 @@ exports.createUserAccount = async (req, res) => {
     accountData.metadata.credentials = authCreds;
 
     // Create Account Doc
-    let userRef = doc(fireDb, "users", userId);
     const accountRef = await addDoc(collection(fireDb, "accounts"), {
-      user: userRef,
+      user: userData,
       connector: connectorRef,
       name: accountData.name,
       description: accountData.description,
