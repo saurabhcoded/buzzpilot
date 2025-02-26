@@ -16,6 +16,9 @@ const clog = {
     sql: async function (...attr) {
         log(chalk.white.bgMagenta(' SQL '), ...attr)
     },
+    table: async function (...attr){
+        console.table(...attr)
+    }
 }
 
 

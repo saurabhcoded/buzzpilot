@@ -1,4 +1,5 @@
 const api = require('express')();
+const connectorRouter = require('./connector.route');
 // const UserRouter = require('./user.route');
 // const AuthRouter = require('./auth.route');
 // const UploadFile = require('./upload.route');
@@ -17,5 +18,6 @@ api.get("/", (req, res) => {
 // api.use('/feature', featureRouter);
 api.use('/posts', postsRouter);
 api.use('/dashboard', dashboardRouter);
+api.use('/connector', connectorRouter);
 
 module.exports = api

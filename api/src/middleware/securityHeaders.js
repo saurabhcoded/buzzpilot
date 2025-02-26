@@ -1,6 +1,7 @@
 const helmet = require("helmet");
 const cors = require("cors");
 const { commonConfig } = require("../config/config");
+const clog = require("../services/ChalkService");
 
 const SecurityMiddleware = (app) => {
   app.use(helmet());
@@ -9,8 +10,7 @@ const SecurityMiddleware = (app) => {
     allowedOrigins = commonConfig.allowedCors.split(",");
   }
   app.use(cors())
-  /* TODO: Add Allowed Cors Url to allowlist */
-  console.log("Allowed Origins", allowedOrigins);
+  clog.warn("🔐 Allowed origins", allowedOrigins);
   // referrer policy
   app.use(
     helmet.referrerPolicy({
