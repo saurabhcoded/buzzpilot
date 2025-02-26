@@ -33,7 +33,7 @@ export const createYoutubePost = async (postData: any) => {
 
   try {
     const response = await API_CALL_FORMDATA.post(
-      URL_CONFIG.connector.youtube.create_post,
+      URL_CONFIG.posts.youtube.createpost,
       formData
     );
     if (response?.data?.status === 1) {

@@ -5,11 +5,12 @@ const readline = require("readline");
 const assert = require("assert");
 const { doc, getDoc, setDoc } = require("firebase/firestore");
 const { fireDb } = require("../services/firebaseService");
+const { getValidGoogleAccessToken } = require("../services/connectorService");
 
 exports.uploadVideotoYoutube = async (req, res) => {
   try {
     const { metadata: _metadata, postData: _postData } = req.body;
-    let token = req.firebaseToken;
+    
     const videoFile = req.file; // Get uploaded video buffer
 
     if (!videoFile || !_metadata || !_postData) {
@@ -19,18 +20,29 @@ exports.uploadVideotoYoutube = async (req, res) => {
     const accountId = postData?.accounts?.split(",")?.[0];
     let accountRef = doc(fireDb, "accounts", accountId);
     let accountData = await getDoc(accountRef);
+    console.log("accountData", accountData);
     if (!accountData.exists()) {
-      return res.REST.BADREQUEST(0, "Youtube account not found", { accountId, accountData });
+      return res.REST.BADREQUEST(0, "Youtube account not found", {
+        accountId,
+        accountData,
+      });
     }
     let accountMetadata = accountData?.data()?.metadata;
     accountMetadata = JSON.parse(accountMetadata);
-    let AccessToken = accountMetadata?.accessToken,
-      IdToken = accountMetadata?.idToken;
+    console.log("accountMetadata", accountMetadata);
+
+    let AccessToken = await getValidGoogleAccessToken(
+      accountMetadata?.credentials
+    );
+    console.log("AccessToken", AccessToken);
     if (!AccessToken) {
-      return res.REST.BADREQUEST(0, "No Access token found", { accountId, accountData });
+      return res.REST.BADREQUEST(0, "No Access token found", {
+        accountId,
+        accountData,
+      });
     }
     const oauth2Client = new google.auth.OAuth2({});
-    oauth2Client.setCredentials({ access_token: AccessToken, id_token: IdToken });
+    oauth2Client.setCredentials({ access_token: AccessToken });
     const youtube = google.youtube({ version: "v3", auth: oauth2Client });
 
     const bufferStream = new Readable();
@@ -47,15 +59,15 @@ exports.uploadVideotoYoutube = async (req, res) => {
           title: postData?.title,
           description: finalDescription,
           tags: postData.tags?.split(","),
-          categoryId: "22" // Category: People & Blogs
+          categoryId: "22", // Category: People & Blogs
         },
         status: {
-          privacyStatus: postData?.privacy || "public"
-        }
+          privacyStatus: postData?.privacy || "public",
+        },
       },
       media: {
-        body: bufferStream
-      }
+        body: bufferStream,
+      },
     });
 
     let postId = response.data.id,
@@ -65,7 +77,7 @@ exports.uploadVideotoYoutube = async (req, res) => {
       postUrl: youtubeLink,
       accountId: postData?.accounts,
       tags: postData.tags,
-      privacy: postData?.privacy || "public"
+      privacy: postData?.privacy || "public",
     };
     await setDoc(postRef, {
       id: postId,
@@ -74,15 +86,15 @@ exports.uploadVideotoYoutube = async (req, res) => {
       metadata: JSON.stringify(postMetadata),
       user: accountData?.data()?.user,
       createdAt: Date.now(),
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     });
     return res.REST.SUCCESS(1, "Video Uploaded Successfully", {
       videoId: response.data.id,
-      youtubeLink
+      youtubeLink,
     });
   } catch (error) {
     console.error("YouTube Upload Error:", error);
-    res.REST.SERVERERROR(0, "Error Uploading Video to YouTube", error);
+    return res.REST.SERVERERROR(0, "Error Uploading Video to YouTube", error);
   }
 };
 
@@ -90,7 +102,7 @@ exports.uploadVideotoYoutube = async (req, res) => {
 const categoryIds = {
   Entertainment: 24,
   Education: 27,
-  ScienceTechnology: 28
+  ScienceTechnology: 28,
 };
 
 // If modifying these scopes, delete your previously saved credentials in client_oauth_token.json
@@ -134,15 +146,15 @@ function uploadVideo(auth, title, description, tags) {
           tags,
           categoryId: categoryIds.ScienceTechnology,
           defaultLanguage: "en",
-          defaultAudioLanguage: "en"
+          defaultAudioLanguage: "en",
         },
         status: {
-          privacyStatus: "private"
-        }
+          privacyStatus: "private",
+        },
       },
       media: {
-        body: fs.createReadStream(videoFilePath)
-      }
+        body: fs.createReadStream(videoFilePath),
+      },
     },
     function (err, response) {
       if (err) {
@@ -157,8 +169,8 @@ function uploadVideo(auth, title, description, tags) {
           auth: auth,
           videoId: response.data.id,
           media: {
-            body: fs.createReadStream(thumbFilePath)
-          }
+            body: fs.createReadStream(thumbFilePath),
+          },
         },
         function (err, response) {
           if (err) {
