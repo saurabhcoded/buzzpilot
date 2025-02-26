@@ -23,13 +23,21 @@ import Accounts from "./pages/Accounts";
 import PostsList from "./pages/PostsList";
 import CreatePostForm from "./components/posts/CreatePostForm";
 import FormElements from "./pages/Forms/FormElements";
+import CallbackComp from "./components/auth/CallbackComp";
 export default function App() {
   return (
     <>
-      <ToastContainer position="bottom-right" stacked style={{ fontSize: 14, padding: "10px" }} />
+      <ToastContainer
+        position="bottom-right"
+        stacked
+        style={{ fontSize: 14, padding: "10px" }}
+      />
       <Router>
         <ScrollToTop />
         <Routes>
+          {/* Page for the Oauth Callbacks */}
+          <Route path="accounts/callback" element={<CallbackComp />} />
+
           {/* Dashboard Layout */}
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Home />} />

@@ -84,7 +84,7 @@ export const createAccountDoc = async (
       URL_CONFIG.account.createAccount,
       accountPayload
     );
-    if (createAccountRes?.status === 1) {
+    if (createAccountRes?.data?.status === 1) {
       return { status: true, data: createAccountRes?.data?.data?.accountId };
     } else {
       return { status: false, data: createAccountRes?.data?.message };

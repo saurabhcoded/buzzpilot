@@ -54,6 +54,50 @@ export const createYoutubePost = async (postData: any) => {
   }
 };
 
+function authenticate(authUrl) {
+  return new Promise((resolve, reject) => {
+    if (!authUrl) {
+      return reject({ status: false, message: "Invalid authentication URL" });
+    }
+
+    // Open OAuth login window
+    let authWindow = window.open(authUrl, "_blank", "width=600,height=700");
+
+    if (!authWindow) {
+      return reject({ status: false, message: "Popup blocked by browser" });
+    }
+
+    // Listen for messages from the OAuth popup
+    function eventListener(event) {
+      if (event.origin !== window.location.origin) return; // Security check
+
+      const authData = event.data;
+      if (authData?.status === "success") {
+        resolve(authData); // Return authentication response
+      } else {
+        reject(authData);
+      }
+
+      authWindow.close();
+      window.removeEventListener("message", eventListener);
+    }
+
+    window.addEventListener("message", eventListener);
+
+    // Detect if the user closes the popup manually
+    let checkPopup = setInterval(() => {
+      console.log("authWindow", authWindow, authWindow.document);
+      if (!authWindow || authWindow.closed) {
+        clearInterval(checkPopup);
+        reject({
+          status: false,
+          message: "Authentication window closed by user",
+        });
+      }
+    }, 500);
+  });
+}
+
 // Version 1 Fix: Issue: Updating the Logged in User
 export const connectYoutubeAccount = async () => {
   try {
@@ -61,12 +105,26 @@ export const connectYoutubeAccount = async () => {
       URL_CONFIG.account.youtube.getAuthUrl
     );
     if (authurl_res?.data?.status) {
-      
-      return { status: false, message: authurl_res?.data?.message };
+      let authenticationUrl = authurl_res?.data?.data;
+      let authResponse: any = await authenticate(
+        authenticationUrl
+      );
+      console.log("authResponse", authResponse);
+      if (authResponse?.status === "success") {
+        return {
+          status: true,
+          message: "Authentication successfull",
+          code: authResponse?.token,
+        };
+      } else {
+        return {
+          status: false,
+          message: "Authentication Failed",
+        };
+      }
     } else {
       return { status: false, message: authurl_res?.data?.message };
     }
-    console.log("authurl_res", authurl_res);
   } catch (error) {
     console.error("Error connecting YouTube account:", error);
   }

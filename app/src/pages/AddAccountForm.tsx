@@ -67,6 +67,7 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
     setSelectedConnector(connector);
   };
 
+  const [isOauthLoading, setOauthLoading] = useState(false);
   const {
     values,
     errors,
@@ -103,17 +104,27 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
           auth_type: values?.auth_type,
           connector: selectedConnector?.id,
         };
+        debugger;
         if (selectedConnector?.connector_id === "youtube") {
+          setOauthLoading(true);
           let credentials = await connectYoutubeAccount();
-          accountData.metadata = JSON.stringify(credentials);
+          if (credentials?.status) {
+            accountData.metadata = { auth_code: credentials?.code };
+          } else {
+            setOauthLoading(false);
+            console.error(credentials);
+            return;
+          }
+          setOauthLoading(false);
         }
-        console.log("accountData", accountData);
-        return;
         const AccountSave = await createAccountDoc(accountData);
-        console.log("AccountSave", AccountSave);
-        notify.success(
-          `YouTube account[${values?.name}] is connected successfully`
-        );
+        if (AccountSave?.status) {
+          notify.success(
+            `YouTube account[${values?.name}] is connected`
+          );
+        } else {
+          notify.error(AccountSave?.data);
+        }
         if (isFunction(handleClose)) handleClose?.();
       } catch (Err) {
         console.error(Err);
@@ -144,7 +155,7 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
   return (
     <div className="px-5 py-3">
       <h4 className="text-base font-medium text-gray-800 dark:text-white/90">
-        Connect Account
+        Connect Account {isOauthLoading && "Connecting...."}
       </h4>
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Here you can connect your accounts to use BuzzPilot successfully.
