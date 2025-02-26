@@ -3,8 +3,8 @@ const { commonConfig } = require("../config/config");
 
 // Function to get a valid access token
 const getValidGoogleAccessToken = async (credentials) => {
-  const refreshToken = credentials?.refreshToken;
-  let accessToken = credentials?.accessToken;
+  const refreshToken = credentials?.refresh_token;
+  let accessToken = credentials?.access_token;
 
   if (!refreshToken) {
     throw new Error("No refresh token available.");
