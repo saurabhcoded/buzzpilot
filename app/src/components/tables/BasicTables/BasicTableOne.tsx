@@ -1,11 +1,19 @@
-import { useReactTable, getCoreRowModel, flexRender, ColumnDef } from "@tanstack/react-table";
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+  ColumnDef,
+} from "@tanstack/react-table";
 
 interface BasicTableProps<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
 }
 
-export default function BasicTableOne<TData>({ columns, data }: BasicTableProps<TData>) {
+export default function BasicTableOne<TData>({
+  columns,
+  data,
+}: BasicTableProps<TData>) {
   // Initialize TanStack Table
   const table = useReactTable({
     columns,
@@ -22,10 +30,16 @@ export default function BasicTableOne<TData>({ columns, data }: BasicTableProps<
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                  <th
+                    key={header.id}
+                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                  >
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </th>
                 ))}
               </tr>
@@ -37,7 +51,11 @@ export default function BasicTableOne<TData>({ columns, data }: BasicTableProps<
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-3 py-3 sm:px-4 text-start text-theme-xs">
+                  <td
+                    key={cell.id}
+                    className="px-3 py-3 sm:px-4 text-start text-theme-xs text-gray-800
+dark:text-white/90"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
