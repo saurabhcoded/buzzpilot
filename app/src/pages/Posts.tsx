@@ -26,11 +26,11 @@ export default function Posts() {
           headerButtons={
             <div>
               {isCreatePost ? (
-                <Button size="sm" onClick={handleGotoPosts}>
+                <Button size="xs" className="rounded-md" onClick={handleGotoPosts}>
                   Go to Posts
                 </Button>
               ) : (
-                <Button size="sm" onClick={handleCreatePost}>
+                <Button size="xs" className="rounded-md" onClick={handleCreatePost}>
                   Create Post
                 </Button>
               )}

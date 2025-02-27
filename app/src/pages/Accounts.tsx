@@ -1,19 +1,18 @@
+import { ColumnDef } from "@tanstack/react-table";
+import { isEmptyArray } from "formik";
 import { useEffect, useState } from "react";
+import { LucideIcons } from "../_constants/data";
+import { deleteAccountDoc, getAccountsList } from "../api/resources";
 import ComponentCard from "../components/common/ComponentCard";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import PageMeta from "../components/common/PageMeta";
-import CreatePostForm from "../components/posts/CreatePostForm";
 import BasicTableOne from "../components/tables/BasicTables/BasicTableOne";
 import Button from "../components/ui/button/Button";
-import { ColumnDef } from "@tanstack/react-table";
-import { LucideIcons, resources } from "../_constants/data";
+import FallbackCard from "../components/ui/cards/FallbackCard";
+import { useAuth } from "../hooks/useAuth";
+import { AccountInterface } from "../types";
 import notify from "../utils/notify";
 import AddAccountForm from "./AddAccountForm";
-import { deleteAccountDoc, getAccountsList } from "../api/resources";
-import { AccountInterface } from "../types";
-import { useAuth } from "../hooks/useAuth";
-import FallbackCard from "../components/ui/cards/FallbackCard";
-import { isEmptyArray } from "formik";
 
 export default function Accounts() {
   const [accountList, setAccountList] = useState<AccountInterface[]>([]);
@@ -75,16 +74,17 @@ export default function Accounts() {
         const account = getValue() as Order["connector"];
         return (
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 overflow-hidden">
+            <div className="w-10 h-10 overflow-hidden p-2 rounded-full border bg-blue-100">
               <img
-                width={40}
-                height={40}
+                width={'100%'}
+                height={'100%'}
+                className="object-contain"
                 src={account.image}
                 alt={account.name}
               />
             </div>
-            <div className="max-w-60">
-              <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+            <div className="flex-1 ">
+              <span className="block font-medium text-gray-800 text-theme-xs dark:text-white/90">
                 {row?.original?.name} [{account.name}]
               </span>
               <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
@@ -140,7 +140,7 @@ export default function Accounts() {
         return (
           <div className="flex items-center gap-3">
             <Button
-              className="bg-success-400 hover:bg-success-500 disabled:bg-success-300 rounded-none"
+              className="bg-success-400 hover:bg-success-500 disabled:bg-success-300 rounded-md"
               size="xs"
               startIcon={<LucideIcons.Zap size={14} />}
               onClick={handleTestAccount(AccountData, row?.index)}
@@ -179,14 +179,14 @@ export default function Accounts() {
             <div>
               {addAccountOpen ? (
                 <Button
-                  className="bg-red-500 hover:bg-red-600"
+                  className="bg-red-500 hover:bg-red-600 rounded-md"
                   onClick={handleToggleAddAccount}
-                  size="sm"
+                  size="xs"
                 >
                   Cancel
                 </Button>
               ) : (
-                <Button onClick={handleToggleAddAccount} size="sm">
+                <Button onClick={handleToggleAddAccount} size="xs" className="rounded-md">
                   Add Account
                 </Button>
               )}

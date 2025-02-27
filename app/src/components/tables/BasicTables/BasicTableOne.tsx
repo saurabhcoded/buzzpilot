@@ -37,7 +37,7 @@ export default function BasicTableOne<TData>({ columns, data }: BasicTableProps<
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-5 py-4 sm:px-6 text-start">
+                  <td key={cell.id} className="px-3 py-3 sm:px-4 text-start text-theme-xs">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

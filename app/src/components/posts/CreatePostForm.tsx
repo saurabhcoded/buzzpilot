@@ -16,8 +16,15 @@ import MultiSelect from "../form/MultiSelect";
 import { useEffect, useState } from "react";
 import { getAccountsList, getConnectorsList } from "../../api/resources";
 import { useOutletContext } from "react-router";
+import TabGroup from "../form/TabGroup";
+import { Eye, File } from "lucide-react";
+import PostPreview from "./PostPreview";
 
-interface initialValuesInterface {
+type PostFormTabOptionsType = {
+  form: "form";
+  preview: "preview";
+};
+export interface postFormValuesInterface {
   title: string;
   description: string;
   tags: string;
@@ -29,7 +36,7 @@ interface initialValuesInterface {
   scheduleTime: string | null;
 }
 
-const defaultValues: initialValuesInterface = {
+const defaultValues: postFormValuesInterface = {
   title: "",
   description: "",
   tags: "",
@@ -38,7 +45,7 @@ const defaultValues: initialValuesInterface = {
   isScheduled: false,
   scheduleTime: null,
   document: null,
-  privacy: "public"
+  privacy: "public",
 };
 
 const postFormValidationSchema = Yup.object({
@@ -51,13 +58,17 @@ const postFormValidationSchema = Yup.object({
   isScheduled: Yup.boolean().required("Scheduling option is required"),
   scheduleTime: Yup.string()
     .nullable()
-    .test("isScheduledEnabled", "Schedule timer is required", (value, context) => {
-      if (value === null && context.parent.isScheduled) {
-        return false;
-      } else {
-        return true;
+    .test(
+      "isScheduledEnabled",
+      "Schedule timer is required",
+      (value, context) => {
+        if (value === null && context.parent.isScheduled) {
+          return false;
+        } else {
+          return true;
+        }
       }
-    }),
+    ),
   document: Yup.mixed()
     .required("A video file is required")
     .test("fileType", "Only video files are allowed", (file: any) =>
@@ -65,7 +76,7 @@ const postFormValidationSchema = Yup.object({
     )
     .test("fileSize", "File size must be under 20MB", (file: any) =>
       file ? file.size <= 20 * 1024 * 1024 : false
-    )
+    ),
 });
 
 const CreatePostForm = () => {
@@ -81,7 +92,7 @@ const CreatePostForm = () => {
     handleSubmit,
     setFieldValue,
     setFieldTouched,
-    validateField
+    validateField,
   } = useFormik({
     initialValues: defaultValues,
     validationSchema: postFormValidationSchema,
@@ -96,11 +107,11 @@ const CreatePostForm = () => {
         console.log(err);
       }
       helpers.setSubmitting(false);
-    }
+    },
   });
   const { isFieldError, getFieldError } = useFormikErrors({
     FormErrors: errors,
-    FormTouched: touched
+    FormTouched: touched,
   });
 
   const [connectorList, setConnectorList] = useState([]);
@@ -112,16 +123,34 @@ const CreatePostForm = () => {
             value: item?.id,
             text: item?.name,
             selected: false,
-            icon: item?.connector?.image ?? ""
+            icon: item?.connector?.image ?? "",
           };
         });
         setConnectorList(formmatedAccount);
       });
   }, [user?.uid]);
 
+  const postformTabOptions: PostFormTabOptionsType = {
+    form: "form",
+    preview: "preview",
+  };
+  const [postFormTab, setPostFormTab] = useState<keyof PostFormTabOptionsType>(
+    postformTabOptions.form
+  );
+
   return (
     <ComponentCard title="Create New Post">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="flex justify-start">
+        <TabGroup
+          activeTab={postFormTab}
+          setActiveTab={setPostFormTab}
+          tabOptions={[
+            { icon: File, label: "Form", value: postformTabOptions?.form },
+            { icon: Eye, label: "Preview", value: postformTabOptions?.preview },
+          ]}
+        />
+      </div>
+      {postFormTab === postformTabOptions.form && (
         <div className="space-y-6">
           <div>
             <Label htmlFor="title">Post title</Label>
@@ -191,7 +220,9 @@ const CreatePostForm = () => {
               }}
             />
             {isFieldError("document") && (
-              <span className="text-red-500 text-sm">{getFieldError("document")}</span>
+              <span className="text-red-500 text-sm">
+                {getFieldError("document")}
+              </span>
             )}
           </div>
           <div>
@@ -243,29 +274,21 @@ const CreatePostForm = () => {
               }}
             />
             {isFieldError("accounts") && (
-              <span className="text-red-500 text-sm">{getFieldError("accounts")}</span>
+              <span className="text-red-500 text-sm">
+                {getFieldError("accounts")}
+              </span>
             )}
           </div>
-          <Button loading={isSubmitting} disabled={isSubmitting} onClick={handleSubmit}>
+          <Button
+            loading={isSubmitting}
+            disabled={isSubmitting}
+            onClick={handleSubmit}
+          >
             {values["isScheduled"] ? "Schedule Post" : "Publish Post"}
           </Button>
         </div>
-        <div className="flex flex-col gap-3 items-center justify-center bg-blue-light-25 p-2 pb-4">
-          <div>
-            <h3 className="text-base font-medium text-gray-800 dark:text-white/90 inline-flex gap-1">
-              <LucideIcons.Eye /> Preview
-            </h3>
-          </div>
-          <div className="mockup-phone mx-auto w-fit">
-            <div className="camera"></div>
-            <div className="display">
-              <div className="artboard artboard-demo phone-1">
-                <img src={resources.youtubeDemo} height={"100%"} className="height" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
+      {postFormTab === postformTabOptions.preview && <PostPreview postData={values}/>}
     </ComponentCard>
   );
 };

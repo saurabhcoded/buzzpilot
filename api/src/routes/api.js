@@ -5,7 +5,7 @@ const dashboardRouter = require('./dashboard.route');
 const postsRouter = require('./posts.route');
 
 api.get("/", (req, res) => {
-    res.send('Hello Node Server🌎 is Working Fine here...');
+    res.send('buzzpilot api version 1');
 })
 api.use('/posts', postsRouter);
 api.use('/dashboard', dashboardRouter);

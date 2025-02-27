@@ -9,11 +9,10 @@ const { getValidGoogleAccessToken } = require("../services/connectorService");
 
 exports.uploadVideotoYoutube = async (req, res) => {
   try {
-    const { metadata: _metadata, postData: _postData } = req.body;
-    
-    const videoFile = req.file; // Get uploaded video buffer
+    const { postData: _postData } = req.body;
+    const videoFile = req.files;
 
-    if (!videoFile || !_metadata || !_postData) {
+    if (!videoFile || !_postData) {
       return res.REST.BADREQUEST(0, "Missing video file or metadata");
     }
     const postData = JSON.parse(_postData);
