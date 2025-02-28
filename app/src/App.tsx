@@ -24,6 +24,7 @@ import PostsList from "./pages/PostsList";
 import CreatePostForm from "./components/posts/CreatePostForm";
 import FormElements from "./pages/Forms/FormElements";
 import CallbackComp from "./components/auth/CallbackComp";
+import AccountDetails from "./pages/AccountDetails";
 export default function App() {
   return (
     <>
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="profile" element={<UserProfiles />} />
             <Route path="calendar" element={<Calendar />} />
             <Route path="accounts" element={<Accounts />} />
+            <Route path="accounts/:accountId" element={<AccountDetails />} />
 
             {/* Posts */}
             <Route path="posts" element={<Posts />}>

@@ -13,6 +13,10 @@ import { useAuth } from "../hooks/useAuth";
 import { AccountInterface } from "../types";
 import notify from "../utils/notify";
 import AddAccountForm from "./AddAccountForm";
+import { Link, useNavigate } from "react-router";
+import { Menu } from "lucide-react";
+import { Dropdown } from "../components/ui/dropdown/Dropdown";
+import { DropdownItem } from "../components/ui/dropdown/DropdownItem";
 
 export default function Accounts() {
   const [accountList, setAccountList] = useState<AccountInterface[]>([]);
@@ -24,7 +28,6 @@ export default function Accounts() {
     if (user?.uid) {
       setLoadingAccountList(true);
       const AccountList = await getAccountsList(user?.uid);
-      console.log("AccountList", AccountList);
       setAccountList(AccountList);
       setLoadingAccountList(false);
     }
@@ -65,33 +68,48 @@ export default function Accounts() {
       }
     };
 
+  const [showActionMenu, setShowActionMenu] = useState<boolean | null>(false);
+  const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
+  const handleShowActionMenu = (rowIndex: number) => {
+    setSelectedAccount(rowIndex);
+    setShowActionMenu(true);
+  };
+  const handleCloseActionMenu = () => {
+    setSelectedAccount(null);
+    setShowActionMenu(false);
+  };
+
+  const navigate = useNavigate();
   // Table Columns
   const columns: ColumnDef<AccountInterface>[] = [
     {
       header: "Account",
       accessorKey: "connector",
       cell: ({ row, getValue }) => {
-        const account = getValue() as Order["connector"];
+        const connector = getValue() as Order["connector"];
         return (
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 overflow-hidden p-2 rounded-full border bg-blue-100">
+          <Link
+            to={`/accounts/${row?.original?.id}`}
+            className="flex items-center gap-3"
+          >
+            <div className="w-8 h-8 overflow-hidden p-1.5 rounded-full border bg-blue-100">
               <img
-                width={'100%'}
-                height={'100%'}
+                width={"100%"}
+                height={"100%"}
                 className="object-contain"
-                src={account.image}
-                alt={account.name}
+                src={connector.image}
+                alt={connector.name}
               />
             </div>
             <div className="flex-1 ">
               <span className="block font-medium text-gray-800 text-theme-xs dark:text-white/90">
-                {row?.original?.name} [{account.name}]
+                {row?.original?.name}
               </span>
               <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
                 {row?.original?.description}
               </span>
             </div>
-          </div>
+          </Link>
         );
       },
     },
@@ -138,28 +156,51 @@ export default function Accounts() {
         const isDeletingAcc =
           deletingAcc?.isDeleting && row?.index === deletingAcc?.rowIndex;
         return (
-          <div className="flex items-center gap-3">
+          <div className="">
             <Button
-              className="bg-success-400 hover:bg-success-500 disabled:bg-success-300 rounded-md"
               size="xs"
-              startIcon={<LucideIcons.Zap size={14} />}
-              onClick={handleTestAccount(AccountData, row?.index)}
-              loading={isTestingAcc}
-              disabled={isTestingAcc}
+              variant="outline"
+              className="rounded-full me-0"
+              onClick={() => handleShowActionMenu(row?.index)}
             >
-              Test
+              <Menu size={12} />
             </Button>
-            <button
-              className="btn btn-circle btn-outline btn-error btn-xs"
-              onClick={handleDeleteAccount(AccountData?.id, row?.index)}
-              disabled={isDeletingAcc}
+            <Dropdown
+              isOpen={row?.index === selectedAccount}
+              onClose={handleCloseActionMenu}
+              className="rounded-md"
             >
-              {isDeletingAcc ? (
-                <LucideIcons.Loader />
-              ) : (
-                <LucideIcons.Trash size={14} />
-              )}
-            </button>
+              <DropdownItem
+                onClick={() => navigate(`/accounts/${row?.original?.id}`)}
+                className="flex items-center gap-x-2 text-nowrap"
+              >
+                <LucideIcons.File size={14} />
+                <span className="text-sm">View details</span>
+              </DropdownItem>
+              <DropdownItem
+                onClick={handleTestAccount(AccountData, row?.index)}
+                className="flex items-center gap-x-2 text-nowrap"
+              >
+                {isTestingAcc ? (
+                  <LucideIcons.Loader size={14} />
+                ) : (
+                  <LucideIcons.Zap size={14} />
+                )}
+                <span className="text-sm">Test account</span>
+              </DropdownItem>
+              <DropdownItem
+                disabled={isDeletingAcc}
+                onClick={handleDeleteAccount(AccountData?.id, row?.index)}
+                className="flex items-center gap-x-2 text-nowrap"
+              >
+                {isDeletingAcc ? (
+                  <LucideIcons.Loader size={14} />
+                ) : (
+                  <LucideIcons.Trash size={14} />
+                )}
+                <span className="text-sm">Delete account</span>
+              </DropdownItem>
+            </Dropdown>
           </div>
         );
       },
@@ -186,7 +227,11 @@ export default function Accounts() {
                   Cancel
                 </Button>
               ) : (
-                <Button onClick={handleToggleAddAccount} size="xs" className="rounded-md">
+                <Button
+                  onClick={handleToggleAddAccount}
+                  size="xs"
+                  className="rounded-md"
+                >
                   Add Account
                 </Button>
               )}

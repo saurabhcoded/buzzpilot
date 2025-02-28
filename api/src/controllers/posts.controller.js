@@ -13,6 +13,7 @@ exports.uploadVideotoYoutube = async (req, res) => {
     // const thumbnail = req.files?.thumbnail?.[0];
 
     if (!videoFile || !_postData) {
+      console.log("Missing video file or metadata");
       return res.REST.BADREQUEST(0, "Missing video file or metadata");
     }
     const videoPath = videoFile.path,
@@ -24,6 +25,7 @@ exports.uploadVideotoYoutube = async (req, res) => {
     let accountRef = doc(fireDb, "accounts", accountId);
     let accountData = await getDoc(accountRef);
     if (!accountData.exists()) {
+      console.log("Youtube account not found");
       return res.REST.BADREQUEST(0, "Youtube account not found", {
         accountId,
         accountData,
@@ -36,6 +38,7 @@ exports.uploadVideotoYoutube = async (req, res) => {
       accountMetadata?.credentials
     );
     if (!access_token) {
+      console.log("No Access token found");
       return res.REST.BADREQUEST(0, "No Access token found", {
         accountId,
         accountData,
