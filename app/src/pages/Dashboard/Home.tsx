@@ -19,11 +19,13 @@ export default function Home() {
   const [showNoReports, setShowNoReports] = useState<boolean>(false);
   const [dataConfigs, setDataConfigs] = useState({
     startDate: moment().startOf("month").format("YYYY-MM-DD"),
-    endDate: moment().endOf("month").format("YYYY-MM-DD")
+    endDate: moment().endOf("month").format("YYYY-MM-DD"),
   });
   const [accountsData, setAccountsData] = useState<AccountInterface[]>([]);
   const [loadingReport, setLoadingReport] = useState<boolean>(true);
-  const [youtubeReport, setYoutubeReport] = useState<AccountReportI[] | null>(null);
+  const [youtubeReport, setYoutubeReport] = useState<AccountReportI[] | null>(
+    null
+  );
   const { user } = useAuth();
 
   useEffect(() => {
@@ -45,7 +47,10 @@ export default function Home() {
     for (let ii = 0; ii < accountsData.length; ii++) {
       try {
         const currAccount = accountsData[ii] as AccountReportI;
-        let reportData = await loadYoutubeAccountReport(currAccount?.id, dataConfigs);
+        let reportData = await loadYoutubeAccountReport(
+          currAccount?.id,
+          dataConfigs
+        );
         if (reportData?.status === 1) {
           currAccount.accountReport = reportData?.data;
           reportsData.push(currAccount);
@@ -60,7 +65,8 @@ export default function Home() {
     setLoadingReport(false);
   };
   useEffect(() => {
-    if (Array.isArray(accountsData) && accountsData?.length > 0) loadAccountReport();
+    if (Array.isArray(accountsData) && accountsData?.length > 0)
+      loadAccountReport();
   }, [accountsData?.length]);
 
   return (
@@ -78,7 +84,9 @@ export default function Home() {
                   src="/public/images/icons/noreports.jpg"
                   alt=""
                 />
-                <h4 className="text-lg">To view your report please add a account</h4>
+                <h4 className="text-lg">
+                  To view your report please add a account
+                </h4>
                 <Link to={"/accounts"} className="btn btn-primary">
                   Add Account
                 </Link>
@@ -92,6 +100,7 @@ export default function Home() {
               return (
                 <div className="col-span-12" key={accountReport?.id}>
                   <YouTubeAnalyticsChart
+                    description="This chart shows the performance of your channel"
                     label={
                       <span className="inline-flex gap-2 items-center">
                         <span className="inline-flex items-center capitalize gap-1 py-1 px-3 bg-gray-100 rounded-full text-sm">

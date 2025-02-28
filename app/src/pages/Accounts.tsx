@@ -174,29 +174,31 @@ export default function Accounts() {
                 onClick={() => navigate(`/accounts/${row?.original?.id}`)}
                 className="flex items-center gap-x-2 text-nowrap"
               >
-                <LucideIcons.File size={14} />
+                <LucideIcons.File size={16} />
                 <span className="text-sm">View details</span>
               </DropdownItem>
+              <hr />
               <DropdownItem
                 onClick={handleTestAccount(AccountData, row?.index)}
                 className="flex items-center gap-x-2 text-nowrap"
               >
                 {isTestingAcc ? (
-                  <LucideIcons.Loader size={14} />
+                  <LucideIcons.Loader size={16} />
                 ) : (
-                  <LucideIcons.Zap size={14} />
+                  <LucideIcons.Zap size={16} />
                 )}
                 <span className="text-sm">Test account</span>
               </DropdownItem>
+              <hr />
               <DropdownItem
                 disabled={isDeletingAcc}
                 onClick={handleDeleteAccount(AccountData?.id, row?.index)}
                 className="flex items-center gap-x-2 text-nowrap"
               >
                 {isDeletingAcc ? (
-                  <LucideIcons.Loader size={14} />
+                  <LucideIcons.Loader size={16} />
                 ) : (
-                  <LucideIcons.Trash size={14} />
+                  <LucideIcons.Trash size={16} />
                 )}
                 <span className="text-sm">Delete account</span>
               </DropdownItem>

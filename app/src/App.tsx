@@ -25,6 +25,9 @@ import CreatePostForm from "./components/posts/CreatePostForm";
 import FormElements from "./pages/Forms/FormElements";
 import CallbackComp from "./components/auth/CallbackComp";
 import AccountDetails from "./pages/AccountDetails";
+import Maketting from "./pages/Marketting/Maketting";
+import Settings from "./pages/Settings/Settings";
+import ManageUsers from "./pages/users/ManageUsers";
 export default function App() {
   return (
     <>
@@ -55,20 +58,10 @@ export default function App() {
               <Route path="create" element={<CreatePostForm />} />
             </Route>
 
-            {/* Tables */}
-            <Route path="basic-tables" element={<FormElements />} />
-
-            {/* Ui Elements */}
-            <Route path="alerts" element={<Alerts />} />
-            <Route path="avatars" element={<Avatars />} />
-            <Route path="badge" element={<Badges />} />
-            <Route path="buttons" element={<Buttons />} />
-            <Route path="images" element={<Images />} />
-            <Route path="videos" element={<Videos />} />
-
-            {/* Charts */}
-            <Route path="line-chart" element={<LineChart />} />
-            <Route path="bar-chart" element={<BarChart />} />
+            {/* Posts */}
+            <Route path="marketing" element={<Maketting />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="manageusers" element={<ManageUsers />} />
           </Route>
 
           {/* Auth Layout */}

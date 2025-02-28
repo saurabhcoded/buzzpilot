@@ -10,8 +10,10 @@ import {
   GridIcon,
   HorizontaLDots,
   ListIcon,
+  PaperPlaneIcon,
   UserCircleIcon
 } from "../icons";
+import { AtSign, CalendarDays, Clapperboard, Group, LayoutDashboard, MessageSquareShare, PodcastIcon, Settings, Share, UserCircle, UsersRound } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -22,42 +24,48 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    icon: <GridIcon />,
+    icon: <LayoutDashboard />,
     name: "Dashboard",
     path: "/"
   },
   {
     name: "Posts",
-    icon: <ListIcon />,
+    icon: <Clapperboard />,
     path: "/posts"
   },
   {
-    icon: <UserCircleIcon />,
+    icon: <AtSign />,
     name: "Accounts",
     path: "/accounts"
   },
   {
-    icon: <CalenderIcon />,
+    icon: <CalendarDays />,
     name: "Schedules",
     path: "/calendar"
+  },
+  {
+    icon: <MessageSquareShare/>,
+    name: "Marketing",
+    path: "/marketing"
+  },
+  {
+    icon: <UsersRound/>,
+    name: "Manage users",
+    path: "/manageusers"
   }
 ];
 
 const othersItems: NavItem[] = [
   {
-    icon: <UserCircleIcon />,
+    icon: <UserCircle />,
     name: "User Profile",
     path: "/profile"
-  }
-  /* {
-    icon: <PieChartIcon />,
+  },
+  {
+    icon: <Settings />,
     name: "Settings",
-    path: "/line-chart"
-    // subItems: [
-    //   { name: "Line Chart", path: "/line-chart", pro: false },
-    //   { name: "Bar Chart", path: "/bar-chart", pro: false }
-    // ]
-  } */
+    path: "/settings"
+  }
 ];
 
 const AppSidebar: React.FC = () => {
@@ -120,7 +128,7 @@ const AppSidebar: React.FC = () => {
   };
 
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
-    <ul className="flex flex-col gap-4">
+    <ul className="flex flex-col gap-2">
       {items.map((nav, index) => (
         <li key={nav.name}>
           {nav.subItems ? (

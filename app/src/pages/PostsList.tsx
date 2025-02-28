@@ -146,10 +146,26 @@ const PostsList = () => {
             >
               <DropdownItem
                 onClick={() => window.open(Metadata?.postUrl)}
-                className="flex items-center gap-x-1 text-nowrap"
+                className="flex items-center gap-x-2 text-nowrap"
               >
-                <LucideIcons.LucideYoutube className="text-red-600" size={16} />
-                <span className="text-sm">Youtube preview</span>
+                <LucideIcons.File size={16} />
+                <span className="text-sm">Post details</span>
+              </DropdownItem>
+              <hr />
+              <DropdownItem
+                onClick={() => window.open(Metadata?.postUrl)}
+                className="flex items-center gap-x-2 text-nowrap"
+              >
+                <LucideIcons.LineChart size={16} />
+                <span className="text-sm">Post analytics</span>
+              </DropdownItem>
+              <hr />
+              <DropdownItem
+                onClick={() => window.open(Metadata?.postUrl)}
+                className="flex items-center gap-x-2 text-nowrap"
+              >
+                <LucideIcons.Eye size={16} />
+                <span className="text-sm">View post</span>
               </DropdownItem>
             </Dropdown>
           </div>
