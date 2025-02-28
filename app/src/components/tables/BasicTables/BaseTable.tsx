@@ -5,15 +5,15 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 
-interface BasicTableProps<TData> {
+interface BaseTableProps<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
 }
 
-export default function BasicTableOne<TData>({
+export default function BaseTable<TData>({
   columns,
   data,
-}: BasicTableProps<TData>) {
+}: BaseTableProps<TData>) {
   // Initialize TanStack Table
   const table = useReactTable({
     columns,

@@ -7,7 +7,7 @@ const {
 } = require("firebase/firestore");
 const { backendProjectEnums } = require("../config/config");
 const clog = require("../services/ChalkService");
-const { getYoutubeAccessTokenfromAuthCode } = require("./connector.controller");
+const { getGoogleAccessTokenfromAuthCode } = require("./connector.controller");
 const { fireDb } = require("../services/firebaseService");
 
 let userId = "91S8xRjNxsTQujwxU5kVMBiC4zl2"; //TODO: Take it from Firebase Verifier middleware
@@ -35,7 +35,7 @@ exports.createUserAccount = async (req, res) => {
       connectorDocData.connector_id ===
       backendProjectEnums.connectorTypes.youtube
     ) {
-      let authCredsRes = await getYoutubeAccessTokenfromAuthCode(
+      let authCredsRes = await getGoogleAccessTokenfromAuthCode(
         accountData?.metadata?.auth_code
       );
       if (authCredsRes?.status) {

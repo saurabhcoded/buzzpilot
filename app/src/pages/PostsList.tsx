@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { getPostsList } from "../api/resources";
 import { PostInterface } from "../types";
-import BasicTableOne from "../components/tables/BasicTables/BasicTableOne";
+import BaseTable from "../components/tables/BasicTables/BaseTable";
 import { LucideIcons } from "../_constants/data";
 import { ColumnDef } from "@tanstack/react-table";
 import { isEmptyArray } from "formik";
 import FallbackCard from "../components/ui/cards/FallbackCard";
+import moment from "moment";
+import { projectEnums } from "../_constants/project_enums";
 
 const PostsList = () => {
   const [isLoadingpostsList, setIsLoadingPostsList] = useState<boolean>(true);
@@ -43,31 +45,37 @@ const PostsList = () => {
         let Metadata = row?.original?.metadata;
         let value = getValue() as string;
         return (
-          <a className="link link-primary" target="_blank" href={Metadata?.postUrl}>
+          <a
+            className="link link-primary"
+            target="_blank"
+            href={Metadata?.postUrl}
+          >
             {value}
           </a>
         );
-      }
+      },
     },
     {
       header: "Description",
-      accessorKey: "description"
+      accessorKey: "description",
     },
     {
       header: "Updated At",
       accessorKey: "updatedAt",
       cell: ({ getValue }) => {
         const CurrDate = getValue() as string;
-        return <span>{CurrDate}</span>;
-      }
+        return (
+          <span>{moment(CurrDate).format(projectEnums.datetime_format)}</span>
+        );
+      },
     },
     {
       header: "Created at",
       accessorKey: "createdAt",
       cell: ({ getValue }) => {
         const CurrDate = getValue() as string;
-        return <span>{CurrDate}</span>;
-      }
+        return <span>{moment(CurrDate).format(projectEnums.datetime_format)}</span>;
+      },
     },
     {
       header: "Action",
@@ -86,8 +94,8 @@ const PostsList = () => {
             </a>
           </div>
         );
-      }
-    }
+      },
+    },
   ];
 
   const isNoDataAvailable = isEmptyArray(postsList);
@@ -95,9 +103,12 @@ const PostsList = () => {
   return (
     <div>
       {isNoDataAvailable ? (
-        <FallbackCard loading={isLoadingpostsList} message="No posts available" />
+        <FallbackCard
+          loading={isLoadingpostsList}
+          message="No posts available"
+        />
       ) : (
-        <BasicTableOne columns={columns} data={postsList} />
+        <BaseTable columns={columns} data={postsList} />
       )}
     </div>
   );

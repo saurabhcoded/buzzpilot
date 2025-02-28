@@ -6,7 +6,7 @@ import { deleteAccountDoc, getAccountsList } from "../api/resources";
 import ComponentCard from "../components/common/ComponentCard";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import PageMeta from "../components/common/PageMeta";
-import BasicTableOne from "../components/tables/BasicTables/BasicTableOne";
+import BaseTable from "../components/tables/BasicTables/BaseTable";
 import Button from "../components/ui/button/Button";
 import FallbackCard from "../components/ui/cards/FallbackCard";
 import { useAuth } from "../hooks/useAuth";
@@ -203,7 +203,7 @@ export default function Accounts() {
           ) : isNoDataAvailable ? (
             <FallbackCard loading={loadingAccountList} />
           ) : (
-            <BasicTableOne columns={columns} data={accountList} />
+            <BaseTable columns={columns} data={accountList} />
           )}
         </ComponentCard>
       </div>

@@ -95,6 +95,7 @@ const CreatePostForm = () => {
     validateField,
   } = useFormik({
     initialValues: defaultValues,
+    validateOnChange: true,
     validationSchema: postFormValidationSchema,
     onSubmit: async (values, helpers): Promise<void> => {
       helpers.setSubmitting(true);
@@ -181,8 +182,7 @@ const CreatePostForm = () => {
           </div>
           <div>
             <Label htmlFor="description">Post tags</Label>
-            <Input
-              type="text"
+            <TextArea
               name="tags"
               id="tags"
               placeholder="Add Post Tags in comma separated"

@@ -1,39 +1,28 @@
-const { doc, getDoc } = require("firebase/firestore");
-const { fireDb } = require("../services/firebaseService");
 const { google } = require("googleapis");
 const clog = require("../services/ChalkService");
 const { commonConfig } = require("../config/config");
 
 // Function will return the callback data and query to frontend
 exports.connectCallbackController = async (req, res) => {
-  res.json({ body: req?.body, query: req?.query });
+  let code = req?.query?.code;
+  let credentials = await this.getGoogleAccessTokenfromAuthCode(code);
+  if (!credentials?.status) {
+    return res.REST.BADREQUEST(
+      0,
+      "Error while getting credentials",
+      credentials?.data
+    );
+  }
+  return res.json({ body: req?.body, query: req?.query, credentials });
 };
 
-// Manage Youtube Connector
 const oauth2Client = new google.auth.OAuth2(
   commonConfig.googleClientId,
   commonConfig.googleClientSecret,
   commonConfig.googleCallbackUrl
 );
 
-exports.connectYoutubeAccount = async (req, res) => {
-  try {
-    const youtubeAuthurl = oauth2Client.generateAuthUrl({
-      access_type: "offline",
-      scope: commonConfig.connector.youtube.scopes,
-    });
-    return res.REST.SUCCESS(
-      1,
-      "Auth url generated successfully",
-      youtubeAuthurl
-    );
-  } catch (Err) {
-    clog.error(Err);
-    let errorMessage = Err?.message;
-    return res.REST.SERVERERROR(0, errorMessage, Err);
-  }
-};
-exports.getYoutubeAccessTokenfromAuthCode = async (auth_code) => {
+exports.getGoogleAccessTokenfromAuthCode = async (auth_code) => {
   try {
     console.log("auth_code", auth_code);
     if (!auth_code)
@@ -55,60 +44,135 @@ exports.getYoutubeAccessTokenfromAuthCode = async (auth_code) => {
     };
   }
 };
-
-exports.saveYoutubeAccount = async (req, res) => {
-  console.log(req?.body);
+// **** Manage Youtube Connector ******
+// API to connect Youtube Account
+exports.connectYoutubeAccount = async (req, res) => {
   try {
-    let accountId = req?.body?.accountId,
-      dimensions = req?.body?.dimensions ?? "day",
-      startDate = req?.body?.startDate ?? "2025-02-01",
-      endDate = req?.body?.endDate ?? "2025-02-23";
-    if (!accountId) {
-      return res.REST.BADREQUEST(0, "Account Id not found");
-    }
-    let accountRef = doc(fireDb, "accounts", accountId);
-    let accountData = await getDoc(accountRef);
-    if (!accountData.exists()) {
-      return res.REST.BADREQUEST(0, "Youtube account not found", {
-        accountId,
-        accountData,
-      });
-    }
-    let accountMetadata = accountData?.data()?.metadata;
-    accountMetadata = JSON.parse(accountMetadata);
-    let AccessToken = accountMetadata?.accessToken,
-      IdToken = accountMetadata?.idToken;
-    if (!AccessToken) {
-      return res.REST.BADREQUEST(0, "No Access token found", {
-        accountId,
-        accountData,
-      });
-    }
-    console.log("AccessToken", accountMetadata);
-
-    const youtubeAnalytics = google.youtubeAnalytics("v2");
-    const oauth2Client = new google.auth.OAuth2();
-    oauth2Client.setCredentials({
-      access_token: AccessToken,
-      id_token: IdToken,
+    const youtubeAuthurl = oauth2Client.generateAuthUrl({
+      access_type: "offline",
+      scope: commonConfig.connector.youtube.scopes,
     });
-    const response = await youtubeAnalytics.reports.query({
-      auth: oauth2Client,
-      ids: "channel==MINE",
-      startDate: startDate,
-      endDate: endDate,
-      metrics:
-        "views,likes,dislikes,comments,subscribersGained,subscribersLost,averageViewDuration",
-      dimensions: dimensions,
-      sort: "day",
+    return res.REST.SUCCESS(
+      1,
+      "Auth url generated successfully",
+      youtubeAuthurl
+    );
+  } catch (Err) {
+    clog.error(Err);
+    let errorMessage = Err?.message;
+    return res.REST.SERVERERROR(0, errorMessage, Err);
+  }
+};
+
+// API to validate Youtube Account
+exports.validateConnectYoutubeAccount = async (req, res) => {
+  try {
+
+  } catch (Err) {
+    clog.error(Err);
+    let errorMessage = Err?.message;
+    return res.REST.SERVERERROR(0, errorMessage, Err);
+  }
+};
+
+// **** Manage GDrive Connector ******
+// API to connect Google Drive account
+exports.connectGDriveAccount = async (req, res) => {
+  try {
+    const youtubeAuthurl = oauth2Client.generateAuthUrl({
+      access_type: "offline",
+      scope: commonConfig.connector.drive.scopes,
+    });
+    return res.REST.SUCCESS(
+      1,
+      "Auth url generated successfully",
+      youtubeAuthurl
+    );
+  } catch (Err) {
+    clog.error(Err);
+    let errorMessage = Err?.message;
+    return res.REST.SERVERERROR(0, errorMessage, Err);
+  }
+};
+
+// API to get items list from Google Drive
+exports.getGdriveItemsList = async (req, res) => {
+  try {
+    const { access_token, folderId } = req.body;
+    oauth2Client.setCredentials({ access_token });
+    const drive = google.drive({ version: "v3", auth: oauth2Client });
+
+    // Determine parent folder (root or specified folder)
+    const parentFolder = folderId ? `'${folderId}'` : `'root'`;
+
+    // Query to get both folders and files inside the given folder or root
+    const query = `${parentFolder} in parents and trashed=false`;
+
+    // Fetch folders and files inside the given folder or root
+    const response = await drive.files.list({
+      q: query,
+      pageSize: 20,
+      fields: "files(id, name, mimeType)",
     });
 
-    return res.REST.SUCCESS(1, "Reports fetched successfully", response?.data);
-  } catch (error) {
-    let errorData = error?.response?.data?.error;
-    let errorMessage = errorData?.message ?? "Error fetching report types";
-    console.error("Error fetching report types:", errorData ?? error);
-    return res.REST.SERVERERROR(0, errorMessage, errorData);
+    // Separate folders and files
+    const items = response.data.files || [];
+    const folders = items.filter(
+      (item) => item.mimeType === "application/vnd.google-apps.folder"
+    );
+    const files = items.filter(
+      (item) => item.mimeType !== "application/vnd.google-apps.folder"
+    );
+
+    return res.REST.SUCCESS(1, "Folders and Files fetched successfully", {
+      folders,
+      files,
+    });
+  } catch (Err) {
+    console.error("Google Drive API Error:", Err);
+    return res.REST.SERVERERROR(0, Err?.message || "An error occurred", Err);
+  }
+};
+
+// API to get file data by ID
+exports.getGdriveFileData = async (req, res) => {
+  try {
+    const { access_token, fileId } = req.body;
+    if (!fileId) {
+      return res.REST.BADREQUEST(0, "File ID is required");
+    }
+    oauth2Client.setCredentials({ access_token });
+    const drive = google.drive({ version: "v3", auth: oauth2Client });
+    // Fetch file metadata
+    const response = await drive.files.get({
+      fileId,
+      fields: "id, name, mimeType, size, createdTime, modifiedTime, webViewLink, webContentLink",
+    });
+
+    return res.REST.SUCCESS(1, "File data fetched successfully", response.data);
+  } catch (Err) {
+    console.error("Google Drive API Error:", Err);
+    return res.REST.SERVERERROR(0, Err?.message || "An error occurred", Err);
+  }
+};
+
+// API to delete a file by ID
+exports.deleteGdriveFile = async (req, res) => {
+  try {
+    const { access_token, fileId } = req.query;
+    console.log(req.query)
+    if (!fileId) {
+      return res.REST.BADREQUEST(0, "File ID is required");
+    }
+    oauth2Client.setCredentials({ access_token });
+    const drive = google.drive({ version: "v3", auth: oauth2Client });
+    // Delete the file
+    await drive.files.delete({ fileId });
+
+    return res.REST.SUCCESS(1, "File deleted successfully", { fileId });
+  } catch (Err) {
+    console.error("Google Drive API Error:", Err);
+    return res.REST.SERVERERROR(0, Err?.message || "An error occurred", Err);
   }
 };
 

@@ -7,6 +7,9 @@ type projectEnumsT = {
   firebase_appId: string;
   firebase_measurementId: string;
   google_clientId: string;
+  date_format: string;
+  time_format: string;
+  datetime_format: string;
 };
 
 export const projectEnums: projectEnumsT = {
@@ -17,5 +20,8 @@ export const projectEnums: projectEnumsT = {
   firebase_messagingSenderId: import.meta.env.VITE_APP_FIREBASE_MESSAGING_SENDER_ID,
   firebase_appId: import.meta.env.VITE_APP_FIREBASE_APP_ID,
   firebase_measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENT_ID,
-  google_clientId: import.meta.env.VITE_APP_GOOGLE_CLIENT_ID
+  google_clientId: import.meta.env.VITE_APP_GOOGLE_CLIENT_ID,
+  date_format: "DD-MM-YYYY",
+  time_format: "hh:mmA",
+  datetime_format: "DD-MM-YYYY hh:mmA",
 };
