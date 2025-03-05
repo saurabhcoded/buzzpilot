@@ -156,8 +156,8 @@ export const deleteAccountDoc = async (
     const deleteRes = await API_CALL.post(URL_CONFIG.account.deleteAccount, {
       accountId,
     });
-    if (deleteRes?.data?.status === 1) {
-      resultMessage = `Account deleted successfully.`;
+    if(deleteRes?.data?.status === 1){
+      resultMessage = `Account ${accountId} deleted successfully.`;
       result = true;
     } else {
       resultMessage = deleteRes?.data?.message;
@@ -165,7 +165,7 @@ export const deleteAccountDoc = async (
     }
   } catch (error) {
     console.error(error);
-    resultMessage = "Error deleting account";
+    resultMessage = "Error deleting account:";
     result = false;
   }
   return { status: result, message: resultMessage };
