@@ -1,7 +1,11 @@
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
-export default function YouTubeAnalyticsChart({ data }) {
+export default function YouTubeAnalyticsChart({
+  label,
+  description = "Chart Description",
+  data
+}) {
   if (!data?.rows) return null;
 
   // Extract date labels and metric values
@@ -48,10 +52,8 @@ export default function YouTubeAnalyticsChart({ data }) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6 max-w-full overflow-x-auto custom-scrollbar">
       <div>
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Youtube Reports</h3>
-        <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-          This graph shows the details report of your youtube channel
-        </p>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">{label}</h3>
+        <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">{description}</p>
       </div>
       <hr className="my-3" />
       <div className="min-w-[1000px]">
