@@ -3,6 +3,8 @@ import { projectEnums } from "../../_constants/project_enums";
 import { URL_CONFIG } from "../../_constants/url_config";
 import notify from "../../utils/notify";
 import API_CALL, { API_CALL_FORMDATA } from "../ApiTool";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { fireAuth } from "../../firebase/firebase";
 
 export const createYoutubePost = async (postData: any) => {
   const formData = new FormData();
@@ -79,17 +81,6 @@ function authenticate(authUrl) {
 // Version 1 Fix: Issue: Updating the Logged in User
 export const connectYoutubeAccount = async () => {
   try {
-    const provider = new GoogleAuthProvider();
-    provider.addScope("https://www.googleapis.com/auth/youtube.force-ssl");
-    provider.addScope("https://www.googleapis.com/auth/yt-analytics.readonly");
-
-    // Sign in user with Google OAuth
-    const result = await signInWithPopup(fireAuth, provider);
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-
-    if (!credential) throw new Error("No credentials received");
-
-    return credential;
     const authurl_res = await API_CALL.get(
       URL_CONFIG.account.youtube.getAuthUrl
     );

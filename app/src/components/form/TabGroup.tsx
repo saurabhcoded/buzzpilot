@@ -5,7 +5,7 @@ import { Eye } from "lucide-react";
 type TabGroupPropsType = {
   activeTab: string;
   setActiveTab: Dispatch<SetStateAction<string>>;
-  tabOptions: { label: string; value: string; icon: FC }[];
+  tabOptions: { label: string; value: string; icon: FC<{size:number}> }[];
 };
 const TabGroup = ({
   activeTab,
