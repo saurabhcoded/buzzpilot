@@ -1,34 +1,12 @@
-import {
-  GoogleAuthProvider,
-  OAuthCredential,
-  signInWithPopup,
-} from "firebase/auth";
+import { loadAuth2, loadGapiInsideDOM } from "gapi-script";
+import { projectEnums } from "../../_constants/project_enums";
 import { URL_CONFIG } from "../../_constants/url_config";
 import notify from "../../utils/notify";
 import API_CALL, { API_CALL_FORMDATA } from "../ApiTool";
-import { fireAuth } from "../../firebase/firebase";
-import { loadAuth2, loadGapiInsideDOM } from "gapi-script";
-import { projectEnums } from "../../_constants/project_enums";
 
 export const createYoutubePost = async (postData: any) => {
-  const postTags = postData?.tags
-    .split(",")
-    .map((item: string) => item?.trim?.())
-    .filter(Boolean);
-  const metadata = {
-    snippet: {
-      title: postData?.title,
-      description: postData?.description,
-      tags: postTags,
-      categoryId: "22",
-    },
-    status: {
-      privacyStatus: "public",
-    },
-  };
   const formData = new FormData();
   formData.append("postData", JSON.stringify(postData));
-  formData.append("metadata", JSON.stringify(metadata));
   formData.append("file", postData?.document);
 
   try {

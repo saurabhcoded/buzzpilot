@@ -28,13 +28,16 @@ export const useAuth = () => {
             Object.assign(userData, { details: userDetailData.data() });
             // userData.details = ;
           }
+          const userToken = await userData.getIdToken();
+          localStorage.setItem("authToken", userToken);
+          setUser(userData);
+          setLoading(false);
         } catch (Error) {
           console.error(Error);
+          localStorage.removeItem("authToken");
+          setUser(null);
+          setLoading(false);
         }
-        const userToken = await userData.getIdToken();
-        localStorage.setItem("authToken", userToken);
-        setUser(userData);
-        setLoading(false);
       }
     );
     return unsubscribe;

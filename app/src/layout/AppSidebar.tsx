@@ -1,17 +1,31 @@
-import {useCallback, useEffect, useRef, useState} from "react";
-import {Link, useLocation} from "react-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router";
 
 // Assume these icons are imported from an icon library
-import {resources} from "../_constants/data";
-import {useSidebar} from "../context/SidebarContext";
+import { resources } from "../_constants/data";
+import { useSidebar } from "../context/SidebarContext";
 import {
   CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
   ListIcon,
-  UserCircleIcon
+  PaperPlaneIcon,
+  UserCircleIcon,
 } from "../icons";
+import {
+  AtSign,
+  CalendarDays,
+  Clapperboard,
+  Group,
+  LayoutDashboard,
+  MessageSquareShare,
+  PodcastIcon,
+  Settings,
+  Share,
+  UserCircle,
+  UsersRound,
+} from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -22,42 +36,48 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    icon: <GridIcon />,
+    icon: <LayoutDashboard />,
     name: "Dashboard",
-    path: "/"
+    path: "/",
   },
   {
     name: "Posts",
-    icon: <ListIcon />,
-    path: "/posts"
+    icon: <Clapperboard />,
+    path: "/posts",
   },
   {
-    icon: <UserCircleIcon />,
+    icon: <AtSign />,
     name: "Accounts",
-    path: "/accounts"
+    path: "/accounts",
   },
   {
-    icon: <CalenderIcon />,
+    icon: <CalendarDays />,
     name: "Schedules",
-    path: "/calendar"
-  }
+    path: "/calendar",
+  },
+  {
+    icon: <MessageSquareShare />,
+    name: "Marketing",
+    path: "/marketing",
+  },
+  {
+    icon: <UsersRound />,
+    name: "Manage users",
+    path: "/manageusers",
+  },
 ];
 
 const othersItems: NavItem[] = [
   {
-    icon: <UserCircleIcon />,
+    icon: <UserCircle />,
     name: "User Profile",
-    path: "/profile"
-  }
-  /* {
-    icon: <PieChartIcon />,
+    path: "/profile",
+  },
+  {
+    icon: <Settings />,
     name: "Settings",
-    path: "/line-chart"
-    // subItems: [
-    //   { name: "Line Chart", path: "/line-chart", pro: false },
-    //   { name: "Bar Chart", path: "/bar-chart", pro: false }
-    // ]
-  } */
+    path: "/settings",
+  },
 ];
 
 const AppSidebar: React.FC = () => {
@@ -68,11 +88,16 @@ const AppSidebar: React.FC = () => {
     type: "main" | "others";
     index: number;
   } | null>(null);
-  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
+  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
+    {}
+  );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // const isActive = (path: string) => location.pathname === path;
-  const isActive = useCallback((path: string) => location.pathname === path, [location.pathname]);
+  const isActive = useCallback(
+    (path: string) => location.pathname === path,
+    [location.pathname]
+  );
 
   useEffect(() => {
     let submenuMatched = false;
@@ -84,7 +109,7 @@ const AppSidebar: React.FC = () => {
             if (isActive(subItem.path)) {
               setOpenSubmenu({
                 type: menuType as "main" | "others",
-                index
+                index,
               });
               submenuMatched = true;
             }
@@ -104,7 +129,7 @@ const AppSidebar: React.FC = () => {
       if (subMenuRefs.current[key]) {
         setSubMenuHeight((prevHeights) => ({
           ...prevHeights,
-          [key]: subMenuRefs.current[key]?.scrollHeight || 0
+          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
         }));
       }
     }
@@ -112,7 +137,11 @@ const AppSidebar: React.FC = () => {
 
   const handleSubmenuToggle = (index: number, menuType: "main" | "others") => {
     setOpenSubmenu((prevOpenSubmenu) => {
-      if (prevOpenSubmenu && prevOpenSubmenu.type === menuType && prevOpenSubmenu.index === index) {
+      if (
+        prevOpenSubmenu &&
+        prevOpenSubmenu.type === menuType &&
+        prevOpenSubmenu.index === index
+      ) {
         return null;
       }
       return { type: menuType, index };
@@ -120,7 +149,7 @@ const AppSidebar: React.FC = () => {
   };
 
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
-    <ul className="flex flex-col gap-4">
+    <ul className="flex flex-col gap-2">
       {items.map((nav, index) => (
         <li key={nav.name}>
           {nav.subItems ? (
@@ -131,7 +160,9 @@ const AppSidebar: React.FC = () => {
                   ? "menu-item-active"
                   : "menu-item-inactive"
               } cursor-pointer ${
-                !isExpanded && !isHovered ? "lg:justify-center" : "lg:justify-start"
+                !isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "lg:justify-start"
               }`}
             >
               <span
@@ -149,7 +180,8 @@ const AppSidebar: React.FC = () => {
               {(isExpanded || isHovered || isMobileOpen) && (
                 <ChevronDownIcon
                   className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType && openSubmenu?.index === index
+                    openSubmenu?.type === menuType &&
+                    openSubmenu?.index === index
                       ? "rotate-180 text-brand-500"
                       : ""
                   }`}
@@ -166,7 +198,9 @@ const AppSidebar: React.FC = () => {
               >
                 <span
                   className={`menu-item-icon-size ${
-                    isActive(nav.path) ? "menu-item-icon-active" : "menu-item-icon-inactive"
+                    isActive(nav.path)
+                      ? "menu-item-icon-active"
+                      : "menu-item-icon-inactive"
                   }`}
                 >
                   {nav.icon}
@@ -187,7 +221,7 @@ const AppSidebar: React.FC = () => {
                 height:
                   openSubmenu?.type === menuType && openSubmenu?.index === index
                     ? `${subMenuHeight[`${menuType}-${index}`]}px`
-                    : "0px"
+                    : "0px",
               }}
             >
               <ul className="mt-2 space-y-1 ml-9">
@@ -245,7 +279,9 @@ const AppSidebar: React.FC = () => {
         lg:translate-x-0`}
     >
       <div
-        className={`py-5 hidden sm:flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}
+        className={`py-5 hidden sm:flex ${
+          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+        }`}
       >
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
@@ -254,8 +290,8 @@ const AppSidebar: React.FC = () => {
                 className="dark:hidden object-contain"
                 src={resources.full_logo}
                 alt="Logo"
-                width={120}
-                height={30}
+                width={180}
+                height={40}
               />
               <img
                 className="hidden dark:block object-contain"
@@ -276,7 +312,9 @@ const AppSidebar: React.FC = () => {
             <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+                  !isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
@@ -290,10 +328,16 @@ const AppSidebar: React.FC = () => {
             <div className="mt-10">
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+                  !isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
                 }`}
               >
-                {isExpanded || isHovered || isMobileOpen ? "Others" : <HorizontaLDots />}
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "Others"
+                ) : (
+                  <HorizontaLDots />
+                )}
               </h2>
               {renderMenuItems(othersItems, "others")}
             </div>

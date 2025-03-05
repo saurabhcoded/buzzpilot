@@ -1,19 +1,22 @@
+import { ColumnDef } from "@tanstack/react-table";
+import { isEmptyArray } from "formik";
 import { useEffect, useState } from "react";
+import { LucideIcons } from "../_constants/data";
+import { deleteAccountDoc, getAccountsList } from "../api/resources";
 import ComponentCard from "../components/common/ComponentCard";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import PageMeta from "../components/common/PageMeta";
-import CreatePostForm from "../components/posts/CreatePostForm";
-import BasicTableOne from "../components/tables/BasicTables/BasicTableOne";
+import BaseTable from "../components/tables/BasicTables/BaseTable";
 import Button from "../components/ui/button/Button";
-import { ColumnDef } from "@tanstack/react-table";
-import { LucideIcons, resources } from "../_constants/data";
+import FallbackCard from "../components/ui/cards/FallbackCard";
+import { useAuth } from "../hooks/useAuth";
+import { AccountInterface } from "../types";
 import notify from "../utils/notify";
 import AddAccountForm from "./AddAccountForm";
-import { deleteAccountDoc, getAccountsList } from "../api/resources";
-import { AccountInterface } from "../types";
-import { useAuth } from "../hooks/useAuth";
-import FallbackCard from "../components/ui/cards/FallbackCard";
-import { isEmptyArray } from "formik";
+import { Link, useNavigate } from "react-router";
+import { Menu } from "lucide-react";
+import { Dropdown } from "../components/ui/dropdown/Dropdown";
+import { DropdownItem } from "../components/ui/dropdown/DropdownItem";
 
 export default function Accounts() {
   const [accountList, setAccountList] = useState<AccountInterface[]>([]);
@@ -25,7 +28,6 @@ export default function Accounts() {
     if (user?.uid) {
       setLoadingAccountList(true);
       const AccountList = await getAccountsList(user?.uid);
-      console.log("AccountList", AccountList);
       setAccountList(AccountList);
       setLoadingAccountList(false);
     }
@@ -66,32 +68,48 @@ export default function Accounts() {
       }
     };
 
+  const [showActionMenu, setShowActionMenu] = useState<boolean | null>(false);
+  const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
+  const handleShowActionMenu = (rowIndex: number) => {
+    setSelectedAccount(rowIndex);
+    setShowActionMenu(true);
+  };
+  const handleCloseActionMenu = () => {
+    setSelectedAccount(null);
+    setShowActionMenu(false);
+  };
+
+  const navigate = useNavigate();
   // Table Columns
   const columns: ColumnDef<AccountInterface>[] = [
     {
       header: "Account",
       accessorKey: "connector",
       cell: ({ row, getValue }) => {
-        const account = getValue() as Order["connector"];
+        const connector = getValue() as Order["connector"];
         return (
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 overflow-hidden">
+          <Link
+            to={`/accounts/${row?.original?.id}`}
+            className="flex items-center gap-3"
+          >
+            <div className="w-8 h-8 overflow-hidden p-1.5 rounded-full border bg-blue-100">
               <img
-                width={40}
-                height={40}
-                src={account.image}
-                alt={account.name}
+                width={"100%"}
+                height={"100%"}
+                className="object-contain"
+                src={connector.image}
+                alt={connector.name}
               />
             </div>
-            <div className="max-w-60">
-              <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                {row?.original?.name} [{account.name}]
+            <div className="flex-1 ">
+              <span className="block font-medium text-gray-800 text-theme-xs dark:text-white/90">
+                {row?.original?.name}
               </span>
               <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
                 {row?.original?.description}
               </span>
             </div>
-          </div>
+          </Link>
         );
       },
     },
@@ -138,28 +156,53 @@ export default function Accounts() {
         const isDeletingAcc =
           deletingAcc?.isDeleting && row?.index === deletingAcc?.rowIndex;
         return (
-          <div className="flex items-center gap-3">
+          <div className="">
             <Button
-              className="bg-success-400 hover:bg-success-500 disabled:bg-success-300 rounded-none"
               size="xs"
-              startIcon={<LucideIcons.Zap size={14} />}
-              onClick={handleTestAccount(AccountData, row?.index)}
-              loading={isTestingAcc}
-              disabled={isTestingAcc}
+              variant="outline"
+              className="rounded-full me-0"
+              onClick={() => handleShowActionMenu(row?.index)}
             >
-              Test
+              <Menu size={12} />
             </Button>
-            <button
-              className="btn btn-circle btn-outline btn-error btn-xs"
-              onClick={handleDeleteAccount(AccountData?.id, row?.index)}
-              disabled={isDeletingAcc}
+            <Dropdown
+              isOpen={row?.index === selectedAccount}
+              onClose={handleCloseActionMenu}
+              className="rounded-md"
             >
-              {isDeletingAcc ? (
-                <LucideIcons.Loader />
-              ) : (
-                <LucideIcons.Trash size={14} />
-              )}
-            </button>
+              <DropdownItem
+                onClick={() => navigate(`/accounts/${row?.original?.id}`)}
+                className="flex items-center gap-x-2 text-nowrap"
+              >
+                <LucideIcons.File size={16} />
+                <span className="text-sm">View details</span>
+              </DropdownItem>
+              <hr />
+              <DropdownItem
+                onClick={handleTestAccount(AccountData, row?.index)}
+                className="flex items-center gap-x-2 text-nowrap"
+              >
+                {isTestingAcc ? (
+                  <LucideIcons.Loader size={16} />
+                ) : (
+                  <LucideIcons.Zap size={16} />
+                )}
+                <span className="text-sm">Test account</span>
+              </DropdownItem>
+              <hr />
+              <DropdownItem
+                disabled={isDeletingAcc}
+                onClick={handleDeleteAccount(AccountData?.id, row?.index)}
+                className="flex items-center gap-x-2 text-nowrap"
+              >
+                {isDeletingAcc ? (
+                  <LucideIcons.Loader size={16} />
+                ) : (
+                  <LucideIcons.Trash size={16} />
+                )}
+                <span className="text-sm">Delete account</span>
+              </DropdownItem>
+            </Dropdown>
           </div>
         );
       },
@@ -179,14 +222,18 @@ export default function Accounts() {
             <div>
               {addAccountOpen ? (
                 <Button
-                  className="bg-red-500 hover:bg-red-600"
+                  className="bg-red-500 hover:bg-red-600 rounded-md"
                   onClick={handleToggleAddAccount}
-                  size="sm"
+                  size="xs"
                 >
                   Cancel
                 </Button>
               ) : (
-                <Button onClick={handleToggleAddAccount} size="sm">
+                <Button
+                  onClick={handleToggleAddAccount}
+                  size="xs"
+                  className="rounded-md"
+                >
                   Add Account
                 </Button>
               )}
@@ -203,7 +250,7 @@ export default function Accounts() {
           ) : isNoDataAvailable ? (
             <FallbackCard loading={loadingAccountList} />
           ) : (
-            <BasicTableOne columns={columns} data={accountList} />
+            <BaseTable columns={columns} data={accountList} />
           )}
         </ComponentCard>
       </div>

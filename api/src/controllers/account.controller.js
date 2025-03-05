@@ -7,7 +7,7 @@ const {
 } = require("firebase/firestore");
 const { backendProjectEnums } = require("../config/config");
 const clog = require("../services/ChalkService");
-const { getYoutubeAccessTokenfromAuthCode } = require("./connector.controller");
+const { getGoogleAccessTokenfromAuthCode } = require("./connector.controller");
 const { fireDb } = require("../services/firebaseService");
 
 let userId = "91S8xRjNxsTQujwxU5kVMBiC4zl2"; //TODO: Take it from Firebase Verifier middleware
@@ -16,7 +16,6 @@ let userId = "91S8xRjNxsTQujwxU5kVMBiC4zl2"; //TODO: Take it from Firebase Verif
 exports.createUserAccount = async (req, res) => {
   try {
     const userData = req?.user;
-    console.log('userData',userData)
     let accountData = {
       name: req.body?.name,
       description: req.body?.description,
@@ -25,6 +24,7 @@ exports.createUserAccount = async (req, res) => {
       connector: req.body?.connectorId,
     };
     let connectorRef = doc(fireDb, "connectors", accountData?.connector);
+    let userRef = doc(fireDb, "users", userData?.uid);
     let connectorDoc = await getDoc(connectorRef);
     let connectorDocData = connectorDoc?.data();
     let authCreds = null;
@@ -35,7 +35,7 @@ exports.createUserAccount = async (req, res) => {
       connectorDocData.connector_id ===
       backendProjectEnums.connectorTypes.youtube
     ) {
-      let authCredsRes = await getYoutubeAccessTokenfromAuthCode(
+      let authCredsRes = await getGoogleAccessTokenfromAuthCode(
         accountData?.metadata?.auth_code
       );
       if (authCredsRes?.status) {
@@ -59,7 +59,7 @@ exports.createUserAccount = async (req, res) => {
 
     // Create Account Doc
     const accountRef = await addDoc(collection(fireDb, "accounts"), {
-      user: userData,
+      user: userRef,
       connector: connectorRef,
       name: accountData.name,
       description: accountData.description,

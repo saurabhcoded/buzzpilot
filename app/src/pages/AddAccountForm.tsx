@@ -119,12 +119,12 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
         const AccountSave = await createAccountDoc(accountData);
         if (AccountSave?.status) {
           notify.success(
-            `YouTube account[${values?.name}] is connected`
+            `YouTube account ${values?.name} is connected`
           );
+          if (isFunction(handleClose)) handleClose?.();
         } else {
           notify.error(AccountSave?.data);
         }
-        if (isFunction(handleClose)) handleClose?.();
       } catch (Err) {
         console.error(Err);
         notify.error(`Error while connecting account`);

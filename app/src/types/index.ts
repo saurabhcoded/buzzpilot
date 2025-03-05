@@ -23,4 +23,5 @@ export interface PostInterface {
   metadata: any;
   updatedAt: string;
   createdAt: string;
+  accountData?: AccountInterface[] | null;
 }

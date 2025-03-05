@@ -1,5 +1,6 @@
 import {
   addDoc,
+  and,
   collection,
   deleteDoc,
   doc,
@@ -27,6 +28,8 @@ export const getConnectorsList = async (): Promise<ConnectorInterface[]> => {
   );
   return connectorList;
 };
+
+// Get All user Accounts list
 export const getAccountsList = async (
   userId: string
 ): Promise<AccountInterface[]> => {
@@ -68,6 +71,50 @@ export const getAccountsList = async (
   );
   return accountsList;
 };
+// Get Account Data by AccountId
+export const getAccountDatabyId = async (
+  userId: string,
+  accountId: string
+): Promise<AccountInterface | null> => {
+  const userRef = doc(fireDb, "users", userId);
+  const querySnapshot = await getDocs(
+    query(
+      collection(fireDb, "accounts"),
+      where("user", "==", userRef),
+      where("id", "==", accountId)
+    )
+  );
+  let accountData = querySnapshot.docs?.[0];
+  if (accountData) {
+    return accountData.data() as AccountInterface;
+  } else {
+    return null;
+  }
+};
+// Get Account Data by comma separated AccountIds
+export const getAccountDatabyIds = async (
+  userId: string,
+  accountIds: string
+): Promise<AccountInterface[]> => {
+  const userRef = doc(fireDb, "users", userId);
+  const accountIdsArr = accountIds.split(",");
+  const accountDataArr = await Promise.all(
+    accountIdsArr.map(async (accountId) => {
+      try {
+        let accountDataRef = await getDoc(doc(fireDb, "accounts", accountId));
+        let accountData = accountDataRef.data();
+        accountData.id = accountDataRef.id;
+        let connectorRef = await getDoc(accountData.connector);
+        accountData.connector = connectorRef.data();
+        return accountData;
+      } catch (err) {
+        return null;
+      }
+    })
+  );
+  // const accountData = querySnapshot.docs.map((doc) => doc.data());
+  return accountDataArr as AccountInterface[];
+};
 
 export const createAccountDoc = async (
   accountData: any
@@ -99,6 +146,7 @@ type deleteAccountType = {
   status: boolean;
   message: string;
 };
+// Delete account document
 export const deleteAccountDoc = async (
   accountId: string
 ): Promise<deleteAccountType> => {
@@ -111,7 +159,7 @@ export const deleteAccountDoc = async (
     if(deleteRes?.data?.status === 1){
       resultMessage = `Account ${accountId} deleted successfully.`;
       result = true;
-    }else{
+    } else {
       resultMessage = deleteRes?.data?.message;
       result = false;
     }
@@ -161,14 +209,20 @@ export const getPostsList = async (
     querySnapshot.docs.map(async (doc) => {
       try {
         let docData = doc.data();
+        let accountData = await getAccountDatabyIds(
+          userId,
+          JSON.parse(docData?.metadata)?.accountId
+        );
         return {
           id: doc.id,
+          accountData,
           ...docData,
         } as PostInterface;
       } catch (Err) {
         console.error(Err);
         return {
           id: doc.id,
+          accountData: null,
           ...doc.data(),
         };
       }

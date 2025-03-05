@@ -1,27 +1,31 @@
 const { google } = require("googleapis");
-const { Readable } = require("stream");
 const fs = require("fs");
-const readline = require("readline");
 const assert = require("assert");
 const { doc, getDoc, setDoc } = require("firebase/firestore");
 const { fireDb } = require("../services/firebaseService");
 const { getValidGoogleAccessToken } = require("../services/connectorService");
+const { deleteTemporaryFiles } = require("../services/UploadService");
 
 exports.uploadVideotoYoutube = async (req, res) => {
   try {
-    const { metadata: _metadata, postData: _postData } = req.body;
-    
-    const videoFile = req.file; // Get uploaded video buffer
+    const { postData: _postData } = req.body;
+    const videoFile = req.files?.videofile?.[0];
+    // const thumbnail = req.files?.thumbnail?.[0];
 
-    if (!videoFile || !_metadata || !_postData) {
+    if (!videoFile || !_postData) {
+      console.log("Missing video file or metadata");
       return res.REST.BADREQUEST(0, "Missing video file or metadata");
     }
+    const videoPath = videoFile.path,
+      videoStream = fs.createReadStream(videoPath);
+    // const thumbnailPath = thumbnail?.path,
+    //   thumbnailStream = fs.createReadStream(thumbnailPath);
     const postData = JSON.parse(_postData);
     const accountId = postData?.accounts?.split(",")?.[0];
     let accountRef = doc(fireDb, "accounts", accountId);
     let accountData = await getDoc(accountRef);
-    console.log("accountData", accountData);
     if (!accountData.exists()) {
+      console.log("Youtube account not found");
       return res.REST.BADREQUEST(0, "Youtube account not found", {
         accountId,
         accountData,
@@ -29,25 +33,33 @@ exports.uploadVideotoYoutube = async (req, res) => {
     }
     let accountMetadata = accountData?.data()?.metadata;
     accountMetadata = JSON.parse(accountMetadata);
-    console.log("accountMetadata", accountMetadata);
 
-    let AccessToken = await getValidGoogleAccessToken(
+    let { access_token, expiry_date } = await getValidGoogleAccessToken(
       accountMetadata?.credentials
     );
-    console.log("AccessToken", AccessToken);
-    if (!AccessToken) {
+    if (!access_token) {
+      console.log("No Access token found");
       return res.REST.BADREQUEST(0, "No Access token found", {
         accountId,
         accountData,
       });
     }
+    let updatedAccountMetadata = {
+      ...accountMetadata,
+      credentials: {
+        ...accountMetadata.credentials,
+        access_token: access_token,
+        expiry_date: expiry_date,
+      },
+    };
+    await setDoc(
+      accountRef,
+      { metadata: JSON.stringify(updatedAccountMetadata) },
+      { merge: true }
+    );
     const oauth2Client = new google.auth.OAuth2({});
-    oauth2Client.setCredentials({ access_token: AccessToken });
+    oauth2Client.setCredentials({ access_token: access_token });
     const youtube = google.youtube({ version: "v3", auth: oauth2Client });
-
-    const bufferStream = new Readable();
-    bufferStream.push(videoFile.buffer);
-    bufferStream.push(null);
 
     // Upload Video Directly from Buffer
     let hashTags = postData?.hashTags;
@@ -59,19 +71,20 @@ exports.uploadVideotoYoutube = async (req, res) => {
           title: postData?.title,
           description: finalDescription,
           tags: postData.tags?.split(","),
-          categoryId: "22", // Category: People & Blogs
+          categoryId: "22",
         },
         status: {
           privacyStatus: postData?.privacy || "public",
         },
       },
       media: {
-        body: bufferStream,
+        body: videoStream,
       },
     });
 
     let postId = response.data.id,
       youtubeLink = `https://www.youtube.com/watch?v=${postId}`;
+
     const postRef = doc(fireDb, "posts", postId);
     let postMetadata = {
       postUrl: youtubeLink,
@@ -88,6 +101,7 @@ exports.uploadVideotoYoutube = async (req, res) => {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
+    deleteTemporaryFiles();
     return res.REST.SUCCESS(1, "Video Uploaded Successfully", {
       videoId: response.data.id,
       youtubeLink,

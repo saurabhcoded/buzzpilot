@@ -20,7 +20,7 @@ export const avatars: { [key: string]: string } = {
 };
 
 export const resources: { [key: string]: string } = {
-  full_logo: "/images/logo/logo.png",
+  full_logo: "/images/logo/logo2.png",
   full_dark_logo: "/images/logo/logo-dark.png",
   icon_logo: "/images/logo/logo-icon.png",
   icon_dark_logo: "/images/logo/logo-icon-dark.png",

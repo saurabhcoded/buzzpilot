@@ -2,10 +2,14 @@ const { doc, getDoc } = require("firebase/firestore");
 const { fireDb } = require("../services/firebaseService");
 const { google } = require("googleapis");
 const clog = require("../services/ChalkService");
+const { getValidGoogleAccessToken } = require("../services/connectorService");
 
 const getReportDetails = async (oauth2Client, jobId) => {
   try {
-    const youtubeReporting = google.youtubereporting({ version: "v1", auth: oauth2Client });
+    const youtubeReporting = google.youtubereporting({
+      version: "v1",
+      auth: oauth2Client,
+    });
     const response = await youtubeReporting.jobs.reports.list({ jobId });
     return response.data.reports;
   } catch (error) {
@@ -25,20 +29,28 @@ exports.getReportData = async (req, res) => {
     let accountRef = doc(fireDb, "accounts", accountId);
     let accountData = await getDoc(accountRef);
     if (!accountData.exists()) {
-      return res.REST.BADREQUEST(0, "Youtube account not found", { accountId, accountData });
+      return res.REST.BADREQUEST(0, "Youtube account not found", {
+        accountId,
+        accountData,
+      });
     }
     let accountMetadata = accountData?.data()?.metadata;
     accountMetadata = JSON.parse(accountMetadata);
-    let AccessToken = accountMetadata?.accessToken,
-      IdToken = accountMetadata?.idToken;
+    let { access_token: AccessToken } = await getValidGoogleAccessToken(
+      accountMetadata?.credentials
+    );
     if (!AccessToken) {
-      return res.REST.BADREQUEST(0, "No Access token found", { accountId, accountData });
+      return res.REST.BADREQUEST(0, "No Access token found", {
+        accountId,
+        accountData,
+      });
     }
-    console.log("AccessToken", accountMetadata);
 
     const youtubeAnalytics = google.youtubeAnalytics("v2");
     const oauth2Client = new google.auth.OAuth2();
-    oauth2Client.setCredentials({ access_token: AccessToken, id_token: IdToken });
+    oauth2Client.setCredentials({
+      access_token: AccessToken
+    });
     const response = await youtubeAnalytics.reports.query({
       auth: oauth2Client,
       ids: "channel==MINE",
@@ -47,7 +59,7 @@ exports.getReportData = async (req, res) => {
       metrics:
         "views,likes,dislikes,comments,subscribersGained,subscribersLost,averageViewDuration",
       dimensions: dimensions,
-      sort: "day"
+      sort: "day",
     });
 
     return res.REST.SUCCESS(1, "Reports fetched successfully", response?.data);

@@ -17,6 +17,7 @@ exports.commonConfig = {
   googleClientId: process.env.GOOGLE_CLIENT_ID,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
   googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL,
+  postmax_size: process.env.POST_MAX_SIZE,
   connector: {
     youtube: {
       scopes: process.env.YOUTUBE_SCOPES?.split?.(",") ?? [],
