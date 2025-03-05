@@ -28,7 +28,7 @@ export default function UserDropdown() {
         </span>
 
         <span
-          className="block mr-1 font-medium text-theme-sm w-20 text-nowrap overflow-hidden text-ellipsis"
+          className="hidden sm:block mr-1 font-medium text-theme-sm w-20 text-nowrap overflow-hidden text-ellipsis"
           title={isString(user?.displayName) ? user?.displayName : ""}
         >
           {user?.displayName}
