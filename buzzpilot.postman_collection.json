@@ -1,0 +1,372 @@
+{
+	"info": {
+		"_postman_id": "9db325ef-ead8-48ce-9f54-03ae219f4f1d",
+		"name": "buzzpilot",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39740912"
+	},
+	"item": [
+		{
+			"name": "connector",
+			"item": [
+				{
+					"name": "youtube",
+					"item": [
+						{
+							"name": "get_auth_url",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/connector/youtube",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"connector",
+										"youtube"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "drive",
+					"item": [
+						{
+							"name": "get_drive_url",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/connector/gdrive",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"connector",
+										"gdrive"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get drive folders",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"access_token\": \"ya29.a0AeXRPp6ZwY5IiqreswJz0axl2CxUD6fw0oUTZZPssuosRQtDYvuF3wHdP2MbVqhIZOmUyFdvZ9yz5z0FHTdO1vSseRY8xYtle6-LfyWT3tf1JxT1DMgqMdqU7fz8dTOZHMtTmoN0LFNva0qUd2VXmDLn1gLx67ZWKhQ1_lbJaCgYKAUoSARISFQHGX2Mio_eTK1H8qxPbOdgymcL5JA0175\",\r\n    \"folderId\": \"1iFCvWBenIBBuuZO2pKFcJRR-Li2YRjw8\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/connector/gdrive/items",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"connector",
+										"gdrive",
+										"items"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get drive file data",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"access_token\": \"ya29.a0AeXRPp6ZwY5IiqreswJz0axl2CxUD6fw0oUTZZPssuosRQtDYvuF3wHdP2MbVqhIZOmUyFdvZ9yz5z0FHTdO1vSseRY8xYtle6-LfyWT3tf1JxT1DMgqMdqU7fz8dTOZHMtTmoN0LFNva0qUd2VXmDLn1gLx67ZWKhQ1_lbJaCgYKAUoSARISFQHGX2Mio_eTK1H8qxPbOdgymcL5JA0175\",\r\n    \"fileId\": \"1grJCK2DLSwDnaglHu9YyJDulu_D_BULV\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/connector/gdrive/itemdata",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"connector",
+										"gdrive",
+										"itemdata"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete gdrive file",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"access_token\": \"ya29.a0AeXRPp6ZwY5IiqreswJz0axl2CxUD6fw0oUTZZPssuosRQtDYvuF3wHdP2MbVqhIZOmUyFdvZ9yz5z0FHTdO1vSseRY8xYtle6-LfyWT3tf1JxT1DMgqMdqU7fz8dTOZHMtTmoN0LFNva0qUd2VXmDLn1gLx67ZWKhQ1_lbJaCgYKAUoSARISFQHGX2Mio_eTK1H8qxPbOdgymcL5JA0175\",\r\n    \"folderId\": \"1L1mmdDTtC8ASdHw2cvfo8mtsBXjO-RaE\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/connector/gdrive/delete?access_token=ya29.a0AeXRPp6ZwY5IiqreswJz0axl2CxUD6fw0oUTZZPssuosRQtDYvuF3wHdP2MbVqhIZOmUyFdvZ9yz5z0FHTdO1vSseRY8xYtle6-LfyWT3tf1JxT1DMgqMdqU7fz8dTOZHMtTmoN0LFNva0qUd2VXmDLn1gLx67ZWKhQ1_lbJaCgYKAUoSARISFQHGX2Mio_eTK1H8qxPbOdgymcL5JA0175&fileId=1grJCK2DLSwDnaglHu9YyJDulu_D_BULV",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"connector",
+										"gdrive",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "access_token",
+											"value": "ya29.a0AeXRPp6ZwY5IiqreswJz0axl2CxUD6fw0oUTZZPssuosRQtDYvuF3wHdP2MbVqhIZOmUyFdvZ9yz5z0FHTdO1vSseRY8xYtle6-LfyWT3tf1JxT1DMgqMdqU7fz8dTOZHMtTmoN0LFNva0qUd2VXmDLn1gLx67ZWKhQ1_lbJaCgYKAUoSARISFQHGX2Mio_eTK1H8qxPbOdgymcL5JA0175"
+										},
+										{
+											"key": "fileId",
+											"value": "1grJCK2DLSwDnaglHu9YyJDulu_D_BULV"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "accounts",
+			"item": [
+				{
+					"name": "createUserAccount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Saurabhcoded youtube account\",\r\n    \"description\": \"Account Description\",\r\n    \"metadata\": {\r\n        \"auth_code\": \"4/0AQSTgQH_ZZbRYoZogBir7uW0klLgty6EH7Lvuy2mptULbCCIDbtLdlBPmfqbCurGaqkRLg\"\r\n    },\r\n    \"auth_type\": \"oauth\",\r\n    \"connectorId\": \"uXNIBqzC7szlUQmPXjxt\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/account/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"account",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "editUserAccount",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/account/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"account",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAccount",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountId\": \"rakIQEk9gb4Hyu2MK4ot\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/account/delete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"account",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "posts management",
+			"item": [
+				{
+					"name": "create post youtube",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en-GB,en-US;q=0.9,en;q=0.8,hi;q=0.7"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{access_token}}"
+							},
+							{
+								"key": "Connection",
+								"value": "keep-alive"
+							},
+							{
+								"key": "Origin",
+								"value": "http://localhost:3000"
+							},
+							{
+								"key": "Referer",
+								"value": "http://localhost:3000/"
+							},
+							{
+								"key": "Sec-Fetch-Dest",
+								"value": "empty"
+							},
+							{
+								"key": "Sec-Fetch-Mode",
+								"value": "cors"
+							},
+							{
+								"key": "Sec-Fetch-Site",
+								"value": "same-site"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\"Not(A:Brand\";v=\"99\", \"Google Chrome\";v=\"133\", \"Chromium\";v=\"133\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"Windows\""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "postData",
+									"value": "{\"title\":\"MyAnotherPos6878787\",\"description\":\"MyAnotherPos6878787\",\"tags\":\"MyFirstVideo987\",\"hashTags\":\"#MyAnotherPos6878787\",\"accounts\":\"TVW5z7uZMeMWZW69p4PA\",\"isScheduled\":false,\"scheduleTime\":null,\"document\":{},\"privacy\":\"public\"}",
+									"type": "text"
+								},
+								{
+									"key": "videofile",
+									"type": "file",
+									"src": "/D:/saurabh/sampleposts/7mb.mp4"
+								},
+								{
+									"key": "thumbnail",
+									"type": "file",
+									"src": "/C:/Users/codefire.saurabh/Downloads/beach-6517214_640.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/v1/posts/createpost/youtube",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								"createpost",
+								"youtube"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
