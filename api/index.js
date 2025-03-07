@@ -28,7 +28,8 @@ app.get("/", (req, res) => {
   res.send("Hello Node Server🌎 Home...");
 });
 // app.use("/api/v1", api);
-app.use("/api/v1", authenticateFirebaseUser, api);
+app.use("/api/v1", api);
+// app.use("/api/v1", authenticateFirebaseUser, api);
 // We Can add Multiple versions here for api versioning
 
 module.exports = app;
