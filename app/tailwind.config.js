@@ -3,15 +3,16 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
+  mode: "jit",
   theme: {
     fontFamily: {
-      outfit: ["Outfit", "sans-serif"]
+      outfit: ["Outfit", "sans-serif"],
     },
     screens: {
       "2xsm": "375px",
       xsm: "425px",
       "3xl": "2000px",
-      ...defaultTheme.screens
+      ...defaultTheme.screens,
     },
     extend: {
       fontSize: {
@@ -22,7 +23,7 @@ export default {
         "title-sm": ["30px", "38px"],
         "theme-xl": ["20px", "30px"],
         "theme-sm": ["14px", "20px"],
-        "theme-xs": ["12px", "18px"]
+        "theme-xs": ["12px", "18px"],
       },
       colors: {
         current: "currentColor",
@@ -41,7 +42,7 @@ export default {
           700: "#2A31D8",
           800: "#252DAE",
           900: "#262E89",
-          950: "#161950"
+          950: "#161950",
         },
         "blue-light": {
           25: "#F5FBFF",
@@ -55,7 +56,7 @@ export default {
           700: "#026AA2",
           800: "#065986",
           900: "#0B4A6F",
-          950: "#062C41"
+          950: "#062C41",
         },
         gray: {
           dark: "#1A2231",
@@ -70,7 +71,7 @@ export default {
           700: "#344054",
           800: "#1D2939",
           900: "#101828",
-          950: "#0C111D"
+          950: "#0C111D",
         },
         orange: {
           25: "#FFFAF5",
@@ -84,7 +85,7 @@ export default {
           700: "#C4320A",
           800: "#9C2A10",
           900: "#7E2410",
-          950: "#511C10"
+          950: "#511C10",
         },
         success: {
           25: "#F6FEF9",
@@ -98,7 +99,7 @@ export default {
           700: "#027A48",
           800: "#05603A",
           900: "#054F31",
-          950: "#053321"
+          950: "#053321",
         },
         error: {
           25: "#FFFBFA",
@@ -112,7 +113,7 @@ export default {
           700: "#B42318",
           800: "#912018",
           900: "#7A271A",
-          950: "#55160C"
+          950: "#55160C",
         },
         warning: {
           25: "#FFFCF5",
@@ -126,14 +127,14 @@ export default {
           700: "#B54708",
           800: "#93370D",
           900: "#7A2E0E",
-          950: "#4E1D09"
+          950: "#4E1D09",
         },
         "theme-pink": {
-          500: "#EE46BC"
+          500: "#EE46BC",
         },
         "theme-purple": {
-          500: "#7A5AF8"
-        }
+          500: "#7A5AF8",
+        },
       },
       boxShadow: {
         "theme-md":
@@ -150,10 +151,14 @@ export default {
         "focus-ring": "0px 0px 0px 4px rgba(70, 95, 255, 0.12)",
         "slider-navigation":
           "0px 1px 2px 0px rgba(16, 24, 40, 0.10), 0px 1px 3px 0px rgba(16, 24, 40, 0.10)",
-        tooltip: "0px 4px 6px -2px rgba(16, 24, 40, 0.05), -8px 0px 20px 8px rgba(16, 24, 40, 0.05)"
+        tooltip:
+          "0px 4px 6px -2px rgba(16, 24, 40, 0.05), -8px 0px 20px 8px rgba(16, 24, 40, 0.05)",
       },
       dropShadow: {
-        "4xl": ["0 35px 35px rgba(0, 0, 0, 0.25)", "0 45px 65px rgba(0, 0, 0, 0.15)"]
+        "4xl": [
+          "0 35px 35px rgba(0, 0, 0, 0.25)",
+          "0 45px 65px rgba(0, 0, 0, 0.15)",
+        ],
       },
       zIndex: {
         999999: "999999",
@@ -162,7 +167,7 @@ export default {
         999: "999",
         99: "99",
         9: "9",
-        1: "1"
+        1: "1",
       },
       spacing: {
         4.5: "1.125rem",
@@ -177,9 +182,13 @@ export default {
         13: "3.25rem",
         13.5: "3.375rem",
         14.5: "3.625rem",
-        15: "3.75rem"
-      }
-    }
+        15: "3.75rem",
+      },
+    },
   },
-  plugins: [require("@tailwindcss/forms"), require("autoprefixer"), require("daisyui")]
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("autoprefixer"),
+    require("daisyui"),
+  ],
 };

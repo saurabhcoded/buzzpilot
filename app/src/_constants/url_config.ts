@@ -13,4 +13,14 @@ export const URL_CONFIG = {
       createpost: "/posts/createpost/youtube",
     },
   },
+  storage: {
+    drive: {
+      getItemsList: "/connector/gdrive/items",
+      getItemData: "/connector/gdrive/itemdata",
+      deleteItem: "/connector/gdrive/delete",
+      uploadFile: "/connector/gdrive/uploadfile",
+      addFolder: "/connector/gdrive/addfolder",
+      renameItem: "/connector/gdrive/rename",
+    },
+  },
 };

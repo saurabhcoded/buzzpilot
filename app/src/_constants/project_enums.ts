@@ -10,6 +10,10 @@ type projectEnumsT = {
   date_format: string;
   time_format: string;
   datetime_format: string;
+  storageItemTypes: {
+    file: string;
+    folder: string;
+  };
 };
 
 export const projectEnums: projectEnumsT = {
@@ -17,11 +21,16 @@ export const projectEnums: projectEnumsT = {
   firebase_authDomain: import.meta.env.VITE_APP_FIREBASE_AUTH_DOMAIN,
   firebase_projectId: import.meta.env.VITE_APP_FIREBASE_PROJECT_ID,
   firebase_storageBucket: import.meta.env.VITE_APP_FIREBASE_STORAGE_BUCKET,
-  firebase_messagingSenderId: import.meta.env.VITE_APP_FIREBASE_MESSAGING_SENDER_ID,
+  firebase_messagingSenderId: import.meta.env
+    .VITE_APP_FIREBASE_MESSAGING_SENDER_ID,
   firebase_appId: import.meta.env.VITE_APP_FIREBASE_APP_ID,
   firebase_measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENT_ID,
   google_clientId: import.meta.env.VITE_APP_GOOGLE_CLIENT_ID,
   date_format: "DD-MM-YYYY",
   time_format: "hh:mmA",
   datetime_format: "DD-MM-YYYY hh:mmA",
+  storageItemTypes: {
+    file: "file",
+    folder: "folder",
+  },
 };

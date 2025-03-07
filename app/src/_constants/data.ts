@@ -19,7 +19,7 @@ export const avatars: { [key: string]: string } = {
     "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740219175/avatars/Asset_1_qzevon.svg"
 };
 
-export const resources: { [key: string]: string } = {
+export const resources: { [key: string]: any } = {
   full_logo: "/images/logo/logo2.png",
   full_dark_logo: "/images/logo/logo-dark.png",
   icon_logo: "/images/logo/logo-icon.png",
@@ -35,7 +35,15 @@ export const resources: { [key: string]: string } = {
   linkedinLogo:
     "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740247323/connectors/174857_oohiip.png",
   youtubeDemo:
-    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740252184/WhatsApp_Image_2025-02-23_at_12.52.41_AM_zbj5rt.jpg"
+    "https://res.cloudinary.com/dcjuqulfd/image/upload/v1740252184/WhatsApp_Image_2025-02-23_at_12.52.41_AM_zbj5rt.jpg",
+  storage: {
+    folder: {
+      default: "/images/icons/folder-icon.svg",
+    },
+    file: {
+      default: "/images/icons/file-icon.svg",
+    },
+  },
 };
 
 export const connectorsList: {
