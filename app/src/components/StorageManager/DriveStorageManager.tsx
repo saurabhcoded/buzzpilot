@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
-import StorageManager, { storagelistItemsInterface } from "./StorageManager";
+import React, { useEffect, useRef, useState } from "react";
+import StorageManager, {
+  folderItemInterface,
+  storagelistItemsInterface,
+} from "./StorageManager";
 import { projectEnums } from "../../_constants/project_enums";
 import API_CALL from "../../api/ApiTool";
 import { URL_CONFIG } from "../../_constants/url_config";
@@ -14,7 +17,7 @@ type selectedItem = {
 };
 
 let DriveAccessToken =
-  "ya29.a0AeXRPp5AiDnZnIswfoZG6tP6tRgryvKvVb6HC2ORZ0Tl9Nc08vQBLFaRn5j5jM23qS-Vd5STN5PWMV-xruPyxuMJ8JYnC7EFJk8t-rRg7BLvQwn1Rn38gfXECyseg35DtBrbMl0GapM78An5SwXh7d2i8wEs5nVxPv4vKBzKaCgYKAYASARMSFQHGX2Mi-R8G_3B0qxfPiv5pk3jxpQ0175";
+  "ya29.a0AeXRPp7T776sHMLtm33xuKgvPNvkKPDwr6cP8KiA22d595nKOqGHkkYp68uU6X-sYqxcCmUV5Vp09qiIUZmDUBMU7p9hVLNTs-STB8vCPBpE5FjGNQp2OabzKe0eXC0qF8pIu5TVw2b6vP95hESHKmZjttdd44E3jiV48L5mcwaCgYKATcSARMSFQHGX2Mi-jISOlTRvVcCdWrkKcLVug0177";
 
 const googleDriveListToBuzzpilotStorage = (storageData) => {
   let FilesData = storageData.files.map((item) => {
@@ -37,14 +40,17 @@ const googleDriveListToBuzzpilotStorage = (storageData) => {
   return { files: FilesData, folders: FoldersData };
 };
 const DriveStorageManager = () => {
+  const storageApiRef = useRef(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [listItems, setListItems] = useState<storagelistItemsInterface>({
     files: [],
     folders: [],
   });
-  const [activeFolder, setActiveFolder] = useState<string | null>(null);
+  const [activeFolder, setActiveFolder] = useState<folderItemInterface | null>(
+    null
+  );
   const getListItems = async (folderId: string | undefined) => {
-    setIsLoading(true);
+    storageApiRef.current?.setLoading?.(true);
     try {
       let listItemsResponse = await API_CALL.post(
         URL_CONFIG.storage.drive.getItemsList,
@@ -54,7 +60,6 @@ const DriveStorageManager = () => {
         }
       );
       if (listItemsResponse?.data?.status === 1) {
-        notify.success(listItemsResponse?.data?.message);
         let ListItems = googleDriveListToBuzzpilotStorage(
           listItemsResponse?.data?.data
         );
@@ -62,13 +67,34 @@ const DriveStorageManager = () => {
       } else {
         notify.error(listItemsResponse?.data?.message);
       }
-      console.log("listItemsResponse", listItemsResponse);
     } catch (err) {
       console.error(err);
     }
-    setIsLoading(false);
+    storageApiRef.current?.setLoading?.(false);
   };
-  const downloadFileItem = (fileItemId: itemIdType) => {};
+  const downloadFileItem = async (fileItemId: itemIdType) => {
+    storageApiRef.current?.setSelectedLoading?.(true);
+    try {
+      let listItemsResponse = await API_CALL.post(
+        URL_CONFIG.storage.drive.getItemData,
+        {
+          access_token: DriveAccessToken,
+          fileId: fileItemId,
+        }
+      );
+      if (listItemsResponse?.data?.status === 1) {
+        let responseData = listItemsResponse?.data?.data;
+        let downloadUrl =
+          responseData?.webContentLink || responseData?.webViewLink;
+        window.open(downloadUrl, "_blank");
+      } else {
+        notify.error(listItemsResponse?.data?.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    storageApiRef.current?.setSelectedLoading?.(false);
+  };
   const deleteItem = (itemId: itemIdType) => {};
   const uploadFileItem = (fileItemData) => {};
   const createNewFolderItem = (
@@ -77,18 +103,24 @@ const DriveStorageManager = () => {
   ) => {};
   const renameListItem = (itemId: string) => {};
   useEffect(() => {
-    getListItems(activeFolder);
-  }, [activeFolder]);
+    getListItems(activeFolder?.id);
+  }, [activeFolder?.id]);
   return (
-    <div>
+    <div className="min-h-screen">
       <StorageManager
         listItems={listItems}
+        ref={storageApiRef}
+        activeFolder={activeFolder}
+        setActiveFolder={setActiveFolder}
         handlers={{
           onClick: (itemId: itemIdType, itemType: folderItemIdType) => {},
-          onDoubleClick: (itemId: itemIdType, itemType: folderItemIdType) => {
-            console.log("Data", { itemId, itemType });
+          onDoubleClick: (
+            itemId: itemIdType,
+            itemType: folderItemIdType,
+            itemData: folderItemInterface
+          ) => {
             if (itemType === projectEnums.storageItemTypes.folder)
-              setActiveFolder(itemId);
+              setActiveFolder(itemData);
           },
           onDelete: deleteItem,
           onRename: renameListItem,

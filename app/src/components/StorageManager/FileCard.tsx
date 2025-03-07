@@ -1,31 +1,33 @@
 import React from "react";
 import { fileItemInterface } from "./StorageManager";
 import { resources } from "../../_constants/data";
-import { Download, Pencil, Trash } from "lucide-react";
+import { Download, Eye, Pencil, Trash } from "lucide-react";
 import { DropdownComp } from "../ui/dropdown/DropdownComp";
 
-interface fileItemCardInterface extends fileItemInterface {
+interface fileItemCardInterface {
   selected: boolean;
   onClick: Function;
   onDoubleClick: Function;
+  data: fileItemInterface;
 }
 
 const FileCard: React.FC<fileItemCardInterface> = (props) => {
-  const handleClick = (actionid: string) => props?.onClick(actionid, props?.id);
+  const { selected, onClick, onDoubleClick, data } = props;
+  const handleClick = (actionid: string) => onClick(actionid, data?.id);
   return (
     <div
-      onClick={() => props.onClick("click", props?.id)}
-      onDoubleClick={(e) => props.onDoubleClick(e, props?.id)}
-      className={`filecard relative ${props?.selected ? "selected" : ""}`}
+      onClick={() => onClick("click", data?.id)}
+      onDoubleClick={(e) => onDoubleClick(e, data)}
+      className={`filecard relative ${selected ? "selected" : ""}`}
     >
       <div className="absolute top-1 right-1">
-        {props?.selected && (
+        {selected && (
           <DropdownComp
             handleClick={handleClick}
             dropdownList={[
               {
-                icon: <Download size={14} />,
-                label: "Download",
+                icon: <Eye size={14} />,
+                label: "View",
                 id: "download",
               },
               { icon: <Pencil size={14} />, label: "Rename", id: "rename" },
@@ -41,9 +43,9 @@ const FileCard: React.FC<fileItemCardInterface> = (props) => {
       <img
         className="icon"
         src={resources.storage.file.default}
-        alt={props?.name}
+        alt={data?.name}
       />
-      <p className="name">{props?.name}</p>
+      <p className="name">{data?.name}</p>
     </div>
   );
 };

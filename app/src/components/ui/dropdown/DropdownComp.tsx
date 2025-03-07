@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Button from "../button/Button";
 import { Dropdown } from "./Dropdown";
 import { DropdownItem } from "./DropdownItem";
-import { Menu } from "lucide-react";
+import { Menu, Plus } from "lucide-react";
 
 interface DropdownItemProps {
   label: string;
@@ -13,10 +13,14 @@ interface DropdownCompProps {
   handleClick: (id: string) => void;
   dropdownList: Array<DropdownItemProps>;
   className?: string;
+  buttonVariant?: string;
+  buttonLabel?: string;
 }
 
 export const DropdownComp: React.FC<DropdownCompProps> = ({
   handleClick,
+  buttonVariant,
+  buttonLabel,
   dropdownList,
   className = "",
 }) => {
@@ -25,14 +29,20 @@ export const DropdownComp: React.FC<DropdownCompProps> = ({
   const handleClose = () => setShowMenu(false);
   return (
     <div className={`dropdown-comp relative ${className}`}>
-      <Button
-        size="xxs"
-        variant="outline"
-        className="rounded-md bg-white/40 border-0"
-        onClick={handleOpen}
-      >
-        <Menu size={14} />
-      </Button>
+      {buttonVariant === "full" ? (
+        <Button size="sm" className="rounded-md pe-5" onClick={handleOpen}>
+          <Plus size={16} fontWeight={"bold"} /> {buttonLabel}
+        </Button>
+      ) : (
+        <Button
+          size="xxs"
+          variant="outline"
+          className="rounded-md bg-white/40 border-0"
+          onClick={handleOpen}
+        >
+          <Menu size={14} />
+        </Button>
+      )}
       <Dropdown isOpen={isOpen} onClose={handleClose} className="rounded-md">
         {dropdownList.map((item: DropdownItemProps, itemIndex: number) => {
           return (
