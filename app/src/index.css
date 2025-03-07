@@ -586,7 +586,7 @@ span.flatpickr-weekday,
        @apply bg-blue-100;
     }
     .icon {
-      @apply h-[100px] w-full;
+      @apply h-[100px] w-full object-contain;
     }
     .name {
       @apply line-clamp-1 break-all text-xs;

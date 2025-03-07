@@ -9,6 +9,7 @@ interface InputProps {
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   className?: string;
   min?: string;
   max?: string;
@@ -27,6 +28,7 @@ const Input: FC<InputProps> = ({
   value,
   onChange,
   onBlur,
+  onKeyDown,
   className = "",
   min,
   max,
@@ -36,7 +38,7 @@ const Input: FC<InputProps> = ({
   error = false,
   hint,
 }) => {
-  let inputClasses = ` h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-none focus:ring  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 ${className}`;
+  let inputClasses = `${className} h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-none focus:ring  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30`;
 
   if (disabled) {
     inputClasses += ` text-gray-500 border-gray-300 opacity-40 bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 opacity-40`;
@@ -51,6 +53,7 @@ const Input: FC<InputProps> = ({
   return (
     <div className="relative">
       <input
+        autoFocus
         type={type}
         id={id}
         name={name}
@@ -58,6 +61,7 @@ const Input: FC<InputProps> = ({
         value={value}
         onChange={onChange}
         onBlur={onBlur}
+        onKeyDown={onKeyDown}
         min={min}
         max={max}
         step={step}

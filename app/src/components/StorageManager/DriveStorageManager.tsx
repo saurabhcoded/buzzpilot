@@ -17,7 +17,7 @@ type selectedItem = {
 };
 
 let DriveAccessToken =
-  "ya29.a0AeXRPp7T776sHMLtm33xuKgvPNvkKPDwr6cP8KiA22d595nKOqGHkkYp68uU6X-sYqxcCmUV5Vp09qiIUZmDUBMU7p9hVLNTs-STB8vCPBpE5FjGNQp2OabzKe0eXC0qF8pIu5TVw2b6vP95hESHKmZjttdd44E3jiV48L5mcwaCgYKATcSARMSFQHGX2Mi-jISOlTRvVcCdWrkKcLVug0177";
+  "ya29.a0AeXRPp5njLXX59gP5vjVy01aQbulVL3rZ6mZRPR9NR_RcxTd751IFHyvGXYGesy0ylUm-jD1z6TYaX4k-FP1aR0r_gfzxNQsy_XMeAGpHYmopeAHDqihmk6O9km6eiIc1bsdLruDoCGqDChc5cSULTcMUeRPt68onUbnmpRLWAaCgYKAW0SARMSFQHGX2Mi0qYwBARITBUdfJyjH6MkVw0177";
 
 const googleDriveListToBuzzpilotStorage = (storageData) => {
   let FilesData = storageData.files.map((item) => {
@@ -101,7 +101,31 @@ const DriveStorageManager = () => {
     folderName: folderNameType,
     folderItemId: folderItemIdType
   ) => {};
-  const renameListItem = (itemId: string) => {};
+  const renameListItem = async (
+    itemId: string,
+    data: { prevName: string; newName: string }
+  ) => {
+    storageApiRef.current?.setSelectedLoading?.(true);
+    try {
+      let listItemsResponse = await API_CALL.post(
+        URL_CONFIG.storage.drive.renameItem,
+        {
+          access_token: DriveAccessToken,
+          fileId: itemId,
+          newName: data?.newName,
+        }
+      );
+      if (listItemsResponse?.data?.status === 1) {
+        notify.success(listItemsResponse?.data?.message);
+        getListItems(activeFolder?.id);
+      } else {
+        notify.error(listItemsResponse?.data?.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    storageApiRef.current?.setSelectedLoading?.(false);
+  };
   useEffect(() => {
     getListItems(activeFolder?.id);
   }, [activeFolder?.id]);

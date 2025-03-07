@@ -4,13 +4,13 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-import FolderCard from "./FolderCard";
 import FileCard from "./FileCard";
 import Breadcrumb from "../common/BreadCrumb";
 import { isEmptyArray } from "formik";
 import FallbackCard from "../ui/cards/FallbackCard";
 import { DropdownComp } from "../ui/dropdown/DropdownComp";
-import { FilePlus, FolderPlus } from "lucide-react";
+import { ArrowLeft, FilePlus, FolderPlus } from "lucide-react";
+import Button from "../ui/button/Button";
 export type storageItemId = string;
 export type storageItemIdType = string;
 export interface fileItemInterface {
@@ -69,7 +69,7 @@ const StorageManager: React.FC = React.forwardRef(
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
     const handleClick =
       (itemType: storageItemIdType) =>
-      (actiontype: string, itemId: storageItemId) => {
+      (actiontype: string, itemId: storageItemId, data: any) => {
         setSelectedItem(itemId);
         switch (actiontype) {
           case "download":
@@ -77,6 +77,9 @@ const StorageManager: React.FC = React.forwardRef(
             break;
           case "click":
             handlers.onClick();
+            break;
+          case "rename":
+            handlers.onRename(itemId, data);
             break;
 
           default:
@@ -112,6 +115,13 @@ const StorageManager: React.FC = React.forwardRef(
     const isNoDataFound = isEmptyArray(folders) && isEmptyArray(files);
     const handelClickAction = () => {};
     let headerBottomHeight = actions ? 140 : 70;
+    const handleGoback = () => {
+      if (itemsHistory.length > 1) {
+        let lastItem = itemsHistory?.[itemsHistory.length - 2];
+        setActiveFolder(lastItem);
+        setItemsHistory((prev) => prev.slice(0, itemsHistory.length - 1));
+      }
+    };
     return (
       <div className="storageGridWrapper h-full">
         <div className="px-3 h-[70px] w-full justify-between flex items-center bg-blue-50 border-b border-gray-100">
@@ -164,13 +174,40 @@ const StorageManager: React.FC = React.forwardRef(
             </div>
           )}
           {isNoDataFound ? (
-            <div className="flex items-center justify-center w-full">
+            <div className="flex flex-col items-center justify-center w-full">
               <FallbackCard />
+              <div className="flex gap-2 items-center">
+                <Button
+                  size="sm"
+                  className="rounded-md pe-5"
+                  onClick={handleGoback}
+                >
+                  <ArrowLeft size={14} /> Back
+                </Button>
+                <DropdownComp
+                  buttonLabel="Add"
+                  buttonVariant={"full"}
+                  handleClick={handelClickAction}
+                  dropdownList={[
+                    {
+                      label: "New Folder",
+                      id: "file",
+                      icon: <FolderPlus size={14} />,
+                    },
+                    {
+                      label: "File Upload",
+                      id: "file",
+                      icon: <FilePlus size={14} />,
+                    },
+                  ]}
+                />
+              </div>
             </div>
           ) : (
             <div className="flex flex-row flex-wrap gap-3 p-3">
               {folders.map((folder) => (
-                <FolderCard
+                <FileCard
+                  itemType="folder"
                   onClick={handleClick("folder")}
                   onDoubleClick={handleDoubleClick("folder")}
                   selected={isItemSelected(folder?.id)}
@@ -179,6 +216,7 @@ const StorageManager: React.FC = React.forwardRef(
               ))}
               {files.map((file) => (
                 <FileCard
+                  itemType="file"
                   onClick={handleClick("file")}
                   onDoubleClick={handleDoubleClick("file")}
                   selected={isItemSelected(file?.id)}

@@ -49,7 +49,10 @@ export const DropdownComp: React.FC<DropdownCompProps> = ({
             <React.Fragment key={item?.id}>
               {itemIndex > 0 && <hr />}
               <DropdownItem
-                onClick={() => handleClick(item?.id)}
+                onClick={() => {
+                  handleClick(item?.id);
+                  handleClose();
+                }}
                 className="flex items-center gap-x-2 text-nowrap"
               >
                 {Boolean(item?.icon) && item?.icon}

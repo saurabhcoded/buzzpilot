@@ -42,6 +42,11 @@ export const resources: { [key: string]: any } = {
     },
     file: {
       default: "/images/icons/file-icon.svg",
+      docs: "/images/icons/google-docs.png",
+      excel: "/images/icons/google-sheets.png",
+      pdf: "/images/icons/pdf.png",
+      image: "/images/icons/img.png",
+      video: "/images/icons/video.png",
     },
   },
 };
