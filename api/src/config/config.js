@@ -14,16 +14,32 @@ exports.commonConfig = {
   secretKeyID: process.env.AWS_SECRET_KEY_ID,
   accessKeyID: process.env.AWS_ACCESS_KEY_ID,
   allowedCors: process.env.ALLOWED_CORS,
-  googleClientId: process.env.GOOGLE_CLIENT_ID,
-  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL,
   postmax_size: process.env.POST_MAX_SIZE,
+  connectCallbackUrl: process.env.CONNECT_CALLBACK_URL,
   connector: {
+    facebook: {
+      clientSecret: process.env.FACEBOOK_APP_SECRET,
+      clientId: process.env.FACEBOOK_CLIENT_SECRET,
+    },
+    google: {
+      clientSecret: process.env.GOOGLE_CLIENT_ID,
+      clientId: process.env.GOOGLE_CLIENT_SECRET,
+    },
     youtube: {
       scopes: process.env.YOUTUBE_SCOPES?.split?.(",") ?? [],
     },
     drive: {
       scopes: process.env.GOOGLEDRIVE_SCOPES?.split?.(",") ?? [],
+    },
+  },
+};
+
+exports.apiurlConfig = {
+  connector: {
+    facebook: {
+      auth_url: "https://www.facebook.com/v10.0/dialog/oauth",
+      create_post: "https://graph.facebook.com/v10.0/me/feed",
+      getCredentials: "https://graph.facebook.com/v10.0/oauth/access_token",
     },
   },
 };

@@ -1,6 +1,7 @@
 const { google } = require("googleapis");
 const clog = require("../services/ChalkService");
 const { commonConfig } = require("../config/config");
+const { generateFbAuthUrl } = require("./facebook.controller");
 const fs = require("fs");
 // Function will return the callback data and query to frontend
 exports.connectCallbackController = async (req, res) => {
@@ -17,9 +18,9 @@ exports.connectCallbackController = async (req, res) => {
 };
 
 const oauth2Client = new google.auth.OAuth2(
-  commonConfig.googleClientId,
-  commonConfig.googleClientSecret,
-  commonConfig.googleCallbackUrl
+  commonConfig.connector.google.clientId,
+  commonConfig.connector.google.clientSecret,
+  commonConfig.connectCallbackUrl
 );
 
 exports.getGoogleAccessTokenfromAuthCode = async (auth_code) => {
@@ -183,6 +184,22 @@ exports.deleteGdriveFile = async (req, res) => {
   }
 };
 
+// **** Manage GDrive Connector ******
+// API to connect Google Drive account
+exports.connectFbAccount = async (req, res) => {
+  try {
+    const fbAuthUrl = generateFbAuthUrl();
+    return res.REST.SUCCESS(
+      1,
+      "Auth url generated successfully",
+      fbAuthUrl
+    );
+  } catch (Err) {
+    clog.error(Err);
+    let errorMessage = Err?.message;
+    return res.REST.SERVERERROR(0, errorMessage, Err);
+  }
+};
 // API to add folder
 exports.addGdriveFolder = async (req, res) => {
   try {
