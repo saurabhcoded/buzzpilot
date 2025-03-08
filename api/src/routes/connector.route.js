@@ -1,5 +1,5 @@
 const express = require("express");
-const connectorController = require("../controllers/connector.controller");
+const connectorController = require("../controllers/connector/connector.controller");
 const { commonConfig } = require("../config/config");
 const { createUploadService } = require("../services/UploadService");
 const connectorRouter = express.Router();

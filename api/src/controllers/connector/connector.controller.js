@@ -1,6 +1,6 @@
 const { google } = require("googleapis");
-const clog = require("../services/ChalkService");
-const { commonConfig } = require("../config/config");
+const clog = require("../../services/ChalkService");
+const { commonConfig } = require("../../config/config");
 const { generateFbAuthUrl } = require("./facebook.controller");
 const fs = require("fs");
 // Function will return the callback data and query to frontend

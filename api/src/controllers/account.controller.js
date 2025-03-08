@@ -7,7 +7,9 @@ const {
 } = require("firebase/firestore");
 const { backendProjectEnums } = require("../config/config");
 const clog = require("../services/ChalkService");
-const { getGoogleAccessTokenfromAuthCode } = require("./connector.controller");
+const {
+  getGoogleAccessTokenfromAuthCode,
+} = require("./connector/connector.controller");
 const { fireDb } = require("../services/firebaseService");
 
 // To Create the Account of User
