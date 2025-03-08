@@ -10,8 +10,6 @@ const clog = require("../services/ChalkService");
 const { getGoogleAccessTokenfromAuthCode } = require("./connector.controller");
 const { fireDb } = require("../services/firebaseService");
 
-let userId = "91S8xRjNxsTQujwxU5kVMBiC4zl2"; //TODO: Take it from Firebase Verifier middleware
-
 // To Create the Account of User
 exports.createUserAccount = async (req, res) => {
   try {

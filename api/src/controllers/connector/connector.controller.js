@@ -1,6 +1,7 @@
 const { google } = require("googleapis");
-const clog = require("../services/ChalkService");
-const { commonConfig } = require("../config/config");
+const clog = require("../../services/ChalkService");
+const { commonConfig } = require("../../config/config");
+const { generateFbAuthUrl } = require("./facebook.controller");
 
 // Function will return the callback data and query to frontend
 exports.connectCallbackController = async (req, res) => {
@@ -17,9 +18,9 @@ exports.connectCallbackController = async (req, res) => {
 };
 
 const oauth2Client = new google.auth.OAuth2(
-  commonConfig.googleClientId,
-  commonConfig.googleClientSecret,
-  commonConfig.googleCallbackUrl
+  commonConfig.connector.google.clientId,
+  commonConfig.connector.google.clientSecret,
+  commonConfig.connectCallbackUrl
 );
 
 exports.getGoogleAccessTokenfromAuthCode = async (auth_code) => {
@@ -67,7 +68,6 @@ exports.connectYoutubeAccount = async (req, res) => {
 // API to validate Youtube Account
 exports.validateConnectYoutubeAccount = async (req, res) => {
   try {
-
   } catch (Err) {
     clog.error(Err);
     let errorMessage = Err?.message;
@@ -146,7 +146,8 @@ exports.getGdriveFileData = async (req, res) => {
     // Fetch file metadata
     const response = await drive.files.get({
       fileId,
-      fields: "id, name, mimeType, size, createdTime, modifiedTime, webViewLink, webContentLink",
+      fields:
+        "id, name, mimeType, size, createdTime, modifiedTime, webViewLink, webContentLink",
     });
 
     return res.REST.SUCCESS(1, "File data fetched successfully", response.data);
@@ -160,7 +161,7 @@ exports.getGdriveFileData = async (req, res) => {
 exports.deleteGdriveFile = async (req, res) => {
   try {
     const { access_token, fileId } = req.query;
-    console.log(req.query)
+    console.log(req.query);
     if (!fileId) {
       return res.REST.BADREQUEST(0, "File ID is required");
     }
@@ -176,6 +177,19 @@ exports.deleteGdriveFile = async (req, res) => {
   }
 };
 
-// Manage Linkedin Connector
-
-// Manage Instagram Connector
+// **** Manage GDrive Connector ******
+// API to connect Google Drive account
+exports.connectFbAccount = async (req, res) => {
+  try {
+    const fbAuthUrl = generateFbAuthUrl();
+    return res.REST.SUCCESS(
+      1,
+      "Auth url generated successfully",
+      fbAuthUrl
+    );
+  } catch (Err) {
+    clog.error(Err);
+    let errorMessage = Err?.message;
+    return res.REST.SERVERERROR(0, errorMessage, Err);
+  }
+};

@@ -15,8 +15,8 @@ const getValidGoogleAccessToken = async (credentials) => {
 
   // Initialize OAuth2 client
   const oauth2Client = new google.auth.OAuth2(
-    commonConfig.googleClientId,
-    commonConfig.googleClientSecret
+    commonConfig.connector.google.clientId,
+    commonConfig.conn
   );
   oauth2Client.setCredentials({
     access_token: access_token,
