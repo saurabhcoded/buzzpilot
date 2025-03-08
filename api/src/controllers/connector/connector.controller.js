@@ -1,8 +1,8 @@
 const { google } = require("googleapis");
-const clog = require("../../services/ChalkService");
-const { commonConfig } = require("../../config/config");
+const clog = require("../services/ChalkService");
+const { commonConfig } = require("../config/config");
 const { generateFbAuthUrl } = require("./facebook.controller");
-
+const fs = require("fs");
 // Function will return the callback data and query to frontend
 exports.connectCallbackController = async (req, res) => {
   let code = req?.query?.code;
@@ -76,6 +76,13 @@ exports.validateConnectYoutubeAccount = async (req, res) => {
 };
 
 // **** Manage GDrive Connector ******
+// Function to get Drive Object
+const getDriveObject = (access_token) => {
+  oauth2Client.setCredentials({ access_token });
+  const drive = google.drive({ version: "v3", auth: oauth2Client });
+  return drive;
+};
+
 // API to connect Google Drive account
 exports.connectGDriveAccount = async (req, res) => {
   try {
@@ -193,3 +200,105 @@ exports.connectFbAccount = async (req, res) => {
     return res.REST.SERVERERROR(0, errorMessage, Err);
   }
 };
+// API to add folder
+exports.addGdriveFolder = async (req, res) => {
+  try {
+    const { folderName, access_token, parentFolderId } = req.body;
+    if (!folderName) {
+      return res.REST.BADREQUEST(0, "Folder name is required");
+    }
+
+    // Authenticate with Google Drive API (assumes OAuth2 setup)
+    const drive = getDriveObject(access_token);
+
+    // Create the folder
+    const folderMetadata = {
+      name: folderName,
+      mimeType: "application/vnd.google-apps.folder",
+      parents: parentFolderId ? [parentFolderId] : [],
+    };
+
+    const folder = await drive.files.create({
+      resource: folderMetadata,
+      fields: "id",
+    });
+    return res.REST.SUCCESS(1, "Folder added successfully", {
+      fileId: folder.data.id,
+    });
+  } catch (Err) {
+    console.error("Google Drive API Error:", Err);
+    return res.REST.SERVERERROR(0, Err?.message || "An error occurred", Err);
+  }
+};
+
+// API to add file
+exports.uploadGdriveFile = async (req, res) => {
+  try {
+    const { folderId, access_token } = req.body;
+
+    if (!req.file) {
+      return res.REST.BADREQUEST(0, "No file uploaded");
+    }
+
+    const drive = getDriveObject(access_token);
+
+    const fileMetadata = {
+      name: req.file.originalname,
+      parents: folderId ? [folderId] : [], // Set folder if provided
+    };
+
+    const media = {
+      mimeType: req.file.mimetype,
+      body: fs.createReadStream(req.file.path),
+    };
+
+    const file = await drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: "id",
+    });
+
+    // Cleanup: Remove the file from local storage after upload
+    fs.unlinkSync(req.file.path);
+
+    return res.REST.SUCCESS(1, "File uploaded successfully", {
+      fileId: file.data.id,
+    });
+  } catch (err) {
+    console.error("Google Drive API Error:", err);
+    return res.REST.SERVERERROR(0, err?.message || "An error occurred", err);
+  }
+};
+
+// To Rename a gdrive file or folder
+exports.renameGdriveItem = async (req, res) => {
+  try {
+    const { fileId, newName, access_token } = req.body;
+
+    if (!fileId || !newName) {
+      return res.REST.BADREQUEST(
+        0,
+        "Missing required parameters: fileId and newName"
+      );
+    }
+    const driveService = getDriveObject(access_token);
+
+    const updatedFile = await driveService.files.update({
+      fileId: fileId,
+      resource: { name: newName },
+      fields: "id, name",
+    });
+
+    return res.REST.SUCCESS(1, "Item renamed successfully", {
+      fileId: updatedFile.data.id,
+      newName: updatedFile.data.name,
+    });
+  } catch (err) {
+    console.error("Google Drive API Error:", err);
+    return res.REST.SERVERERROR(0, err?.message || "An error occurred", err);
+  }
+};
+
+// Manage Linkedin Connector
+
+// Manage Instagram Connector
