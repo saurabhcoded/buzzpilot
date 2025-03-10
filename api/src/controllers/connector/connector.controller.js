@@ -16,6 +16,7 @@ exports.connectCallbackController = async (req, res) => {
   }
   return res.json({ body: req?.body, query: req?.query, credentials });
 };
+console.log("Oauth Cred", commonConfig.connector.google);
 
 const oauth2Client = new google.auth.OAuth2(
   commonConfig.connector.google.clientId,
@@ -189,11 +190,7 @@ exports.deleteGdriveFile = async (req, res) => {
 exports.connectFbAccount = async (req, res) => {
   try {
     const fbAuthUrl = generateFbAuthUrl();
-    return res.REST.SUCCESS(
-      1,
-      "Auth url generated successfully",
-      fbAuthUrl
-    );
+    return res.REST.SUCCESS(1, "Auth url generated successfully", fbAuthUrl);
   } catch (Err) {
     clog.error(Err);
     let errorMessage = Err?.message;
@@ -204,6 +201,7 @@ exports.connectFbAccount = async (req, res) => {
 exports.addGdriveFolder = async (req, res) => {
   try {
     const { folderName, access_token, parentFolderId } = req.body;
+    console.log("reqbody", req?.body);
     if (!folderName) {
       return res.REST.BADREQUEST(0, "Folder name is required");
     }

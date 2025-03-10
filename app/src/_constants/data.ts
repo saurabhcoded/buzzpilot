@@ -47,6 +47,8 @@ export const resources: { [key: string]: any } = {
       pdf: "/images/icons/pdf.png",
       image: "/images/icons/img.png",
       video: "/images/icons/video.png",
+      json: "/images/icons/json-file.png",
+      zip: "/images/icons/zip.png",
     },
   },
 };

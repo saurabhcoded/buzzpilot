@@ -4,20 +4,17 @@ import StorageManager, {
   storagelistItemsInterface,
 } from "./StorageManager";
 import { projectEnums } from "../../_constants/project_enums";
-import API_CALL from "../../api/ApiTool";
+import API_CALL, { API_CALL_FORMDATA } from "../../api/ApiTool";
 import { URL_CONFIG } from "../../_constants/url_config";
 import notify from "../../utils/notify";
+import { obj2Formdata } from "../../utils";
 
 type folderItemIdType = string | undefined;
 type itemIdType = string;
 type folderNameType = string;
-type selectedItem = {
-  itemType: folderItemIdType;
-  itemId: itemIdType | null;
-};
 
 let DriveAccessToken =
-  "ya29.a0AeXRPp5njLXX59gP5vjVy01aQbulVL3rZ6mZRPR9NR_RcxTd751IFHyvGXYGesy0ylUm-jD1z6TYaX4k-FP1aR0r_gfzxNQsy_XMeAGpHYmopeAHDqihmk6O9km6eiIc1bsdLruDoCGqDChc5cSULTcMUeRPt68onUbnmpRLWAaCgYKAW0SARMSFQHGX2Mi0qYwBARITBUdfJyjH6MkVw0177";
+  "ya29.a0AeXRPp568n5_S0jXkPC6GpCSk6LQ9sR819OrQHChEAu1_g30WgkSTnDDQRYeZ4mveDsgwUM4vp0iUuF05IAPI4oizsVz_a3wpARwoKKd7Futy3RszvRc_g-60z2xVrxOa91Syh9Eax4zz6FC8JC_gTpx4RVoujNzHHlXz8IRaCgYKAc0SARISFQHGX2MiK568Kh92qArsXNUutj2CtQ0175";
 
 const googleDriveListToBuzzpilotStorage = (storageData) => {
   let FilesData = storageData.files.map((item) => {
@@ -49,14 +46,16 @@ const DriveStorageManager = () => {
   const [activeFolder, setActiveFolder] = useState<folderItemInterface | null>(
     null
   );
-  const getListItems = async (folderId: string | undefined) => {
+
+  // To fetch the list of items withing drive
+  const getListItems = async (folderId?: string | undefined) => {
     storageApiRef.current?.setLoading?.(true);
     try {
       let listItemsResponse = await API_CALL.post(
         URL_CONFIG.storage.drive.getItemsList,
         {
           access_token: DriveAccessToken,
-          folderId: folderId,
+          folderId: folderId ?? activeFolder?.id,
         }
       );
       if (listItemsResponse?.data?.status === 1) {
@@ -72,6 +71,8 @@ const DriveStorageManager = () => {
     }
     storageApiRef.current?.setLoading?.(false);
   };
+
+  // To Handle download and webview of the file item
   const downloadFileItem = async (fileItemId: itemIdType) => {
     storageApiRef.current?.setSelectedLoading?.(true);
     try {
@@ -95,12 +96,78 @@ const DriveStorageManager = () => {
     }
     storageApiRef.current?.setSelectedLoading?.(false);
   };
-  const deleteItem = (itemId: itemIdType) => {};
-  const uploadFileItem = (fileItemData) => {};
-  const createNewFolderItem = (
-    folderName: folderNameType,
-    folderItemId: folderItemIdType
-  ) => {};
+
+  // To Handle delete an Item from drive
+  const deleteItem = async (itemId: itemIdType) => {
+    storageApiRef.current?.setSelectedLoading?.(true);
+    try {
+      let deletUrl =
+        URL_CONFIG.storage.drive.deleteItem +
+        `?access_token=${DriveAccessToken}&fileId=${itemId}`;
+      let listItemsResponse = await API_CALL.delete(deletUrl);
+      if (listItemsResponse?.data?.status === 1) {
+        notify.success(listItemsResponse?.data?.message);
+        getListItems();
+      } else {
+        notify.error(listItemsResponse?.data?.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    storageApiRef.current?.setSelectedLoading?.(false);
+  };
+
+  // Function to upload a new Item
+  const uploadFileItem = async (fileItemData) => {
+    storageApiRef.current?.setLoading?.(true);
+    try {
+      let uploadFormData = obj2Formdata({
+        access_token: DriveAccessToken,
+        folderId: activeFolder?.id,
+        file: fileItemData,
+      });
+
+      let listItemsResponse = await API_CALL_FORMDATA.post(
+        URL_CONFIG.storage.drive.uploadFile,
+        uploadFormData
+      );
+      if (listItemsResponse?.data?.status === 1) {
+        notify.success(listItemsResponse?.data?.message);
+        getListItems();
+      } else {
+        notify.error(listItemsResponse?.data?.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    storageApiRef.current?.setLoading?.(false);
+  };
+
+  // To Create a new Folder
+  const createNewFolderItem = async (folderName: folderNameType) => {
+    storageApiRef.current?.setLoading?.(true);
+    try {
+      let listItemsResponse = await API_CALL.post(
+        URL_CONFIG.storage.drive.addFolder,
+        {
+          access_token: DriveAccessToken,
+          folderName: folderName,
+          parentFolderId: activeFolder?.id,
+        }
+      );
+      if (listItemsResponse?.data?.status === 1) {
+        notify.success(listItemsResponse?.data?.message);
+        getListItems();
+      } else {
+        notify.error(listItemsResponse?.data?.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    storageApiRef.current?.setLoading?.(false);
+  };
+
+  // To Rename an Item
   const renameListItem = async (
     itemId: string,
     data: { prevName: string; newName: string }
@@ -117,7 +184,7 @@ const DriveStorageManager = () => {
       );
       if (listItemsResponse?.data?.status === 1) {
         notify.success(listItemsResponse?.data?.message);
-        getListItems(activeFolder?.id);
+        getListItems();
       } else {
         notify.error(listItemsResponse?.data?.message);
       }

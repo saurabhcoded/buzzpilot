@@ -27,8 +27,12 @@ const getImagebyMimeType = (mimeType: string) => {
     return imageResources.pdf;
   } else if (mimeType.includes("spreadsheet") || mimeType.includes("excel")) {
     return imageResources.excel;
-  } else if (mimeType.includes("word")) {
+  } else if (mimeType.includes("word") || mimeType.includes("document")) {
     return imageResources.docs;
+  } else if (mimeType.includes("json")) {
+    return imageResources.json;
+  } else if (mimeType.includes("zip")) {
+    return imageResources.zip;
   } else {
     return imageResources.default;
   }
@@ -105,6 +109,7 @@ const FileCard: React.FC<fileItemCardInterface> = (props) => {
       onClick={() => onClick("click", data?.id)}
       onDoubleClick={(e) => onDoubleClick(e, data)}
       className={`filecard relative ${selected ? "selected" : ""}`}
+      title={data?.name}
     >
       <div className="absolute top-1 right-1">
         {selected && (

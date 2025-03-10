@@ -11,6 +11,7 @@ import FallbackCard from "../ui/cards/FallbackCard";
 import { DropdownComp } from "../ui/dropdown/DropdownComp";
 import { ArrowLeft, FilePlus, FolderPlus } from "lucide-react";
 import Button from "../ui/button/Button";
+import AddFolderWindow from "./AddFolderWindow";
 export type storageItemId = string;
 export type storageItemIdType = string;
 export interface fileItemInterface {
@@ -67,6 +68,8 @@ const StorageManager: React.FC = React.forwardRef(
     const [loading, setLoading] = useState({ all: false, selected: false });
     const [itemsHistory, setItemsHistory] = useState([]);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
+    const [isAddFolderOpen, setIsAddFolderOpen] = useState<boolean>(false);
+
     const handleClick =
       (itemType: storageItemIdType) =>
       (actiontype: string, itemId: storageItemId, data: any) => {
@@ -80,6 +83,9 @@ const StorageManager: React.FC = React.forwardRef(
             break;
           case "rename":
             handlers.onRename(itemId, data);
+            break;
+          case "delete":
+            handlers.onDelete(itemId);
             break;
 
           default:
@@ -113,7 +119,11 @@ const StorageManager: React.FC = React.forwardRef(
     );
 
     const isNoDataFound = isEmptyArray(folders) && isEmptyArray(files);
-    const handelClickAction = () => {};
+    const handelClickAction = (action) => {
+      if (action === "addfolder") {
+        setIsAddFolderOpen(true);
+      }
+    };
     let headerBottomHeight = actions ? 140 : 70;
     const handleGoback = () => {
       if (itemsHistory.length > 1) {
@@ -122,6 +132,7 @@ const StorageManager: React.FC = React.forwardRef(
         setItemsHistory((prev) => prev.slice(0, itemsHistory.length - 1));
       }
     };
+
     return (
       <div className="storageGridWrapper h-full">
         <div className="px-3 h-[70px] w-full justify-between flex items-center bg-blue-50 border-b border-gray-100">
@@ -149,12 +160,12 @@ const StorageManager: React.FC = React.forwardRef(
               dropdownList={[
                 {
                   label: "New Folder",
-                  id: "file",
+                  id: "addfolder",
                   icon: <FolderPlus size={14} />,
                 },
                 {
                   label: "File Upload",
-                  id: "file",
+                  id: "uploadfile",
                   icon: <FilePlus size={14} />,
                 },
               ]}
@@ -165,6 +176,12 @@ const StorageManager: React.FC = React.forwardRef(
           className="data-body relative"
           style={{ height: `calc(100% - ${headerBottomHeight}px)` }}
         >
+          {Boolean(isAddFolderOpen) && (
+            <AddFolderWindow
+              onAddFolder={handlers.onAddFolder}
+              setIsAddFolderOpen={setIsAddFolderOpen}
+            />
+          )}
           {loading.all && (
             <div className="absolute inset-0 z-40 bg-white/40 bg-opacity-50 flex items-center justify-center">
               <div className="flex items-center gap-2 text-2xl font-semibold">
@@ -191,12 +208,12 @@ const StorageManager: React.FC = React.forwardRef(
                   dropdownList={[
                     {
                       label: "New Folder",
-                      id: "file",
+                      id: "addfolder",
                       icon: <FolderPlus size={14} />,
                     },
                     {
                       label: "File Upload",
-                      id: "file",
+                      id: "uploadfile",
                       icon: <FilePlus size={14} />,
                     },
                   ]}

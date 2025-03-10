@@ -22,8 +22,8 @@ exports.commonConfig = {
       clientId: process.env.FACEBOOK_CLIENT_SECRET,
     },
     google: {
-      clientSecret: process.env.GOOGLE_CLIENT_ID,
-      clientId: process.env.GOOGLE_CLIENT_SECRET,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID,
     },
     youtube: {
       scopes: process.env.YOUTUBE_SCOPES?.split?.(",") ?? [],
