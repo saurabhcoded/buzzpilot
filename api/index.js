@@ -10,7 +10,7 @@ const authenticateFirebaseUser = require("./src/middleware/fireAuthMiddleWare");
 
 /* ---------- MiddleWares ---------- */
 // Internalisation
-I18nMiddleware(app);
+// I18nMiddleware(app);
 //Security and Cors Middleware
 SecurityMiddleware(app);
 // Logger
