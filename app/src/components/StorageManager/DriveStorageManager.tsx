@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import StorageManager, {
-  folderItemInterface,
+  fileItemInterface,
   storagelistItemsInterface,
 } from "./StorageManager";
 import { projectEnums } from "../../_constants/project_enums";
@@ -12,9 +12,6 @@ import { obj2Formdata } from "../../utils";
 type folderItemIdType = string | undefined;
 type itemIdType = string;
 type folderNameType = string;
-
-let DriveAccessToken =
-  "ya29.a0AeXRPp568n5_S0jXkPC6GpCSk6LQ9sR819OrQHChEAu1_g30WgkSTnDDQRYeZ4mveDsgwUM4vp0iUuF05IAPI4oizsVz_a3wpARwoKKd7Futy3RszvRc_g-60z2xVrxOa91Syh9Eax4zz6FC8JC_gTpx4RVoujNzHHlXz8IRaCgYKAc0SARISFQHGX2MiK568Kh92qArsXNUutj2CtQ0175";
 
 const googleDriveListToBuzzpilotStorage = (storageData) => {
   let FilesData = storageData.files.map((item) => {
@@ -36,14 +33,20 @@ const googleDriveListToBuzzpilotStorage = (storageData) => {
   });
   return { files: FilesData, folders: FoldersData };
 };
-const DriveStorageManager = () => {
+
+type DriveStorageManagerProps = {
+  storageAccountId: string;
+};
+const DriveStorageManager: React.FC<DriveStorageManagerProps> = ({
+  storageAccountId,
+}) => {
   const storageApiRef = useRef(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [listItems, setListItems] = useState<storagelistItemsInterface>({
     files: [],
     folders: [],
   });
-  const [activeFolder, setActiveFolder] = useState<folderItemInterface | null>(
+  const [activeFolder, setActiveFolder] = useState<fileItemInterface | null>(
     null
   );
 
@@ -54,7 +57,7 @@ const DriveStorageManager = () => {
       let listItemsResponse = await API_CALL.post(
         URL_CONFIG.storage.drive.getItemsList,
         {
-          access_token: DriveAccessToken,
+          storageAccountId: storageAccountId,
           folderId: folderId ?? activeFolder?.id,
         }
       );
@@ -79,7 +82,7 @@ const DriveStorageManager = () => {
       let listItemsResponse = await API_CALL.post(
         URL_CONFIG.storage.drive.getItemData,
         {
-          access_token: DriveAccessToken,
+          storageAccountId: storageAccountId,
           fileId: fileItemId,
         }
       );
@@ -103,7 +106,7 @@ const DriveStorageManager = () => {
     try {
       let deletUrl =
         URL_CONFIG.storage.drive.deleteItem +
-        `?access_token=${DriveAccessToken}&fileId=${itemId}`;
+        `?storageAccountId=${storageAccountId}&fileId=${itemId}`;
       let listItemsResponse = await API_CALL.delete(deletUrl);
       if (listItemsResponse?.data?.status === 1) {
         notify.success(listItemsResponse?.data?.message);
@@ -122,7 +125,7 @@ const DriveStorageManager = () => {
     storageApiRef.current?.setLoading?.(true);
     try {
       let uploadFormData = obj2Formdata({
-        access_token: DriveAccessToken,
+        storageAccountId: storageAccountId,
         folderId: activeFolder?.id,
         file: fileItemData,
       });
@@ -150,7 +153,7 @@ const DriveStorageManager = () => {
       let listItemsResponse = await API_CALL.post(
         URL_CONFIG.storage.drive.addFolder,
         {
-          access_token: DriveAccessToken,
+          storageAccountId: storageAccountId,
           folderName: folderName,
           parentFolderId: activeFolder?.id,
         }
@@ -177,7 +180,7 @@ const DriveStorageManager = () => {
       let listItemsResponse = await API_CALL.post(
         URL_CONFIG.storage.drive.renameItem,
         {
-          access_token: DriveAccessToken,
+          storageAccountId: storageAccountId,
           fileId: itemId,
           newName: data?.newName,
         }
@@ -197,7 +200,7 @@ const DriveStorageManager = () => {
     getListItems(activeFolder?.id);
   }, [activeFolder?.id]);
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen rounded-lg border overflow-hidden">
       <StorageManager
         listItems={listItems}
         ref={storageApiRef}
@@ -208,7 +211,7 @@ const DriveStorageManager = () => {
           onDoubleClick: (
             itemId: itemIdType,
             itemType: folderItemIdType,
-            itemData: folderItemInterface
+            itemData: fileItemInterface
           ) => {
             if (itemType === projectEnums.storageItemTypes.folder)
               setActiveFolder(itemData);

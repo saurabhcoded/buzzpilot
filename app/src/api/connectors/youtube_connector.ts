@@ -78,7 +78,7 @@ function authenticate(authUrl) {
   });
 }
 
-// Version 1 Fix: Issue: Updating the Logged in User
+// Connect Youtube Account
 export const connectYoutubeAccount = async () => {
   try {
     const authurl_res = await API_CALL.get(
@@ -110,23 +110,39 @@ export const connectYoutubeAccount = async () => {
   }
 };
 
-// Version 2
-export const connectYoutubeAccountV2 = async () => {
+// Connect Gdrive Account
+export const connectGdriveAccount = async () => {
   try {
-    const gapi = await loadGapiInsideDOM();
-    let connectScopes =
-      "https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/yt-analytics.readonly";
-    let auth2 = await loadAuth2(
-      gapi,
-      projectEnums.google_clientId,
-      connectScopes
+    const authurl_res = await API_CALL.get(
+      URL_CONFIG.account.gdrive.getAuthUrl
     );
-    return auth2;
+    if (authurl_res?.data?.status) {
+      let authenticationUrl = authurl_res?.data?.data;
+      let authResponse: any = await authenticate(
+        authenticationUrl
+      );
+      console.log("authResponse", authResponse);
+      if (authResponse?.status === "success") {
+        return {
+          status: true,
+          message: "Authentication successfull",
+          code: authResponse?.token,
+        };
+      } else {
+        return {
+          status: false,
+          message: "Authentication Failed",
+        };
+      }
+    } else {
+      return { status: false, message: authurl_res?.data?.message };
+    }
   } catch (error) {
     console.error("Error connecting YouTube account:", error);
   }
 };
 
+// Load Youtube Accunt
 export const loadYoutubeAccountReport = async (
   accountId: string,
   configs: { startDate?: string; endDate?: string }

@@ -6,5 +6,6 @@ const acccountRouter = express.Router();
 acccountRouter.post("/create", accountController.createUserAccount);
 acccountRouter.post("/delete", accountController.deleteUserAccount);
 acccountRouter.put("/update", accountController.editUserAccount);
+acccountRouter.get("/list/:type", accountController.getAccountsList);
 
 module.exports = acccountRouter;

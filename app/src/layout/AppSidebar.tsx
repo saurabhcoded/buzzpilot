@@ -17,6 +17,7 @@ import {
   AtSign,
   CalendarDays,
   Clapperboard,
+  Database,
   Group,
   LayoutDashboard,
   MessageSquareShare,
@@ -68,6 +69,11 @@ const navItems: NavItem[] = [
 ];
 
 const othersItems: NavItem[] = [
+  {
+    icon: <Database />,
+    name: "Storage",
+    path: "/storage",
+  },
   {
     icon: <UserCircle />,
     name: "User Profile",

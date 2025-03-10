@@ -19,7 +19,7 @@ import UserProfiles from "./pages/UserProfiles";
 import ManageUsers from "./pages/users/ManageUsers";
 import TermsPage from "./pages/public/TermsPage";
 import PrivacyPolicyPage from "./pages/public/PrivacyPolicyPage";
-import DriveStorageManager from "./components/StorageManager/DriveStorageManager";
+import StoragePage from "./pages/Storage/StoragePage";
 export default function App() {
   return (
     <>
@@ -32,7 +32,6 @@ export default function App() {
         <ScrollToTop />
         <Routes>
           {/* Page for the Oauth Callbacks */}
-          <Route path="storage/gdrive" element={<DriveStorageManager />} />
           <Route path="accounts/callback" element={<CallbackComp />} />
 
           {/* Dashboard Layout */}
@@ -51,8 +50,11 @@ export default function App() {
               <Route path="create" element={<CreatePostForm />} />
             </Route>
 
-            {/* Posts */}
+            {/* Maketting */}
             <Route path="marketing" element={<Maketting />} />
+            {/* Storage */}
+            <Route path="storage" element={<StoragePage />} />
+            {/* Maketting */}
             <Route path="settings" element={<Settings />} />
             <Route path="manageusers" element={<ManageUsers />} />
           </Route>
