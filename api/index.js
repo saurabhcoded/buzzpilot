@@ -3,7 +3,7 @@ let logger = require("morgan");
 let app = express();
 const api = require("./src/routes/api");
 const SecurityMiddleware = require("./src/middleware/securityHeaders");
-const I18nMiddleware = require('./src/middleware/i18nMiddleware');
+// const I18nMiddleware = require('./src/middleware/i18nMiddleware');
 const RestMiddleware = require("./src/middleware/RestMiddleWare");
 const authenticateFirebaseUser = require("./src/middleware/fireAuthMiddleWare");
 // sequelize
