@@ -1,4 +1,5 @@
-const { fireAdmin } = require("../services/firebaseService");
+const { doc } = require("firebase/firestore");
+const { fireAdmin, fireDb } = require("../services/firebaseService");
 
 // Middleware to authenticate Firebase users
 const authenticateFirebaseUser = async (req, res, next) => {
@@ -16,6 +17,7 @@ const authenticateFirebaseUser = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });
     }
     req.user = decodedToken;
+    req.userRef = doc(fireDb,"users",req.user.uid);
     next();
   } catch (error) {
     return res.status(403).json({

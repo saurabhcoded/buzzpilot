@@ -1,4 +1,5 @@
 import React, {
+  ForwardedRef,
   ReactNode,
   useCallback,
   useImperativeHandle,
@@ -16,44 +17,45 @@ export type storageItemId = string;
 export type storageItemIdType = string;
 export interface fileItemInterface {
   id: string;
-  icon?: string | null;
-  name: string;
-  type: string;
-  fileType: string;
-  data: any;
-}
-export interface folderItemInterface {
-  id: string;
   name: string;
   icon?: string | null;
   type: string;
+  fileType?: string;
+  data?: any;
 }
+
 export interface storagelistItemsInterface {
   files: Array<fileItemInterface>;
-  folders: Array<folderItemInterface>;
+  folders: Array<fileItemInterface>;
 }
 
 interface StorageManagerProps {
   listItems: storagelistItemsInterface;
-  activeFolder: folderItemInterface;
-  setActiveFolder: (args: { itemId: string }) => void;
+  activeFolder: fileItemInterface;
+  setActiveFolder: React.Dispatch<React.SetStateAction<fileItemInterface>>;
   actions?: ReactNode;
   handlers: {
-    onClick: VoidFunction;
-    onDoubleClick: (args: {
-      itemId: string;
-      itemType: storageItemIdType;
-      itemData: folderItemInterface;
-    }) => void;
-    onDelete: VoidFunction;
-    onRename: VoidFunction;
-    onDownload: VoidFunction;
-    onAddFolder: VoidFunction;
-    onAddFile: VoidFunction;
+    onClick: (itemId: string, itemType: string) => void;
+    onDoubleClick: (
+      itemId: string,
+      itemType: string,
+      itemData: fileItemInterface
+    ) => void;
+    onDelete: (itemId: string) => Promise<void>;
+    onRename: (
+      itemId: string,
+      data: {
+        prevName: string;
+        newName: string;
+      }
+    ) => Promise<void>;
+    onDownload: (fileItemId: string) => Promise<void>;
+    onAddFolder: (folderName: string) => Promise<void>;
+    onAddFile: (fileItemData: any) => Promise<void>;
   };
 }
 
-const StorageManager: React.FC = React.forwardRef(
+const StorageManager = React.forwardRef(
   (
     {
       listItems,
@@ -62,13 +64,21 @@ const StorageManager: React.FC = React.forwardRef(
       activeFolder,
       setActiveFolder,
     }: StorageManagerProps,
-    apiRef
+    apiRef: ForwardedRef<any>
   ) => {
     let { folders, files } = listItems;
     const [loading, setLoading] = useState({ all: false, selected: false });
     const [itemsHistory, setItemsHistory] = useState([]);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
     const [isAddFolderOpen, setIsAddFolderOpen] = useState<boolean>(false);
+
+    const isEnableGoback = () => {
+      try {
+        return itemsHistory?.length >= 1;
+      } catch (error) {
+        return false;
+      }
+    };
 
     const handleClick =
       (itemType: storageItemIdType) =>
@@ -79,7 +89,7 @@ const StorageManager: React.FC = React.forwardRef(
             handlers.onDownload(itemId);
             break;
           case "click":
-            handlers.onClick();
+            handlers.onClick(itemId, itemType);
             break;
           case "rename":
             handlers.onRename(itemId, data);
@@ -93,7 +103,7 @@ const StorageManager: React.FC = React.forwardRef(
         }
       };
     const handleDoubleClick =
-      (itemType: storageItemIdType) => (e, itemData: folderItemInterface) => {
+      (itemType: storageItemIdType) => (e, itemData: fileItemInterface) => {
         if (itemType === "folder")
           setItemsHistory((prev) => prev?.concat(itemData));
         handlers.onDoubleClick(itemData?.id, itemType, itemData);
@@ -126,7 +136,7 @@ const StorageManager: React.FC = React.forwardRef(
     };
     let headerBottomHeight = actions ? 140 : 70;
     const handleGoback = () => {
-      if (itemsHistory.length > 1) {
+      if (itemsHistory.length >= 1) {
         let lastItem = itemsHistory?.[itemsHistory.length - 2];
         setActiveFolder(lastItem);
         setItemsHistory((prev) => prev.slice(0, itemsHistory.length - 1));
@@ -142,7 +152,7 @@ const StorageManager: React.FC = React.forwardRef(
             </h2>
             <Breadcrumb
               itemsHistory={itemsHistory}
-              onClick={(item, itemIndex) => {
+              onClick={(item: any, itemIndex: number) => {
                 if (item) {
                   setActiveFolder(item);
                 } else {
@@ -152,7 +162,15 @@ const StorageManager: React.FC = React.forwardRef(
               }}
             />
           </div>
-          <div className="action-header">
+          <div className="action-header flex gap-2">
+            <Button
+              size="sm"
+              className="rounded-md pe-5"
+              onClick={handleGoback}
+              disabled={!isEnableGoback()}
+            >
+              <ArrowLeft size={14} /> Back
+            </Button>
             <DropdownComp
               buttonLabel="Add"
               buttonVariant={"full"}

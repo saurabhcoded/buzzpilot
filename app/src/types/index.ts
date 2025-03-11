@@ -5,6 +5,7 @@ export interface ConnectorInterface {
   image: string;
   enabled: boolean;
   connector_id?: string;
+  connector_type: string;
 }
 export interface AccountInterface {
   id: string;

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   fileItemInterface,
-  folderItemInterface,
   storageItemIdType,
 } from "./StorageManager";
 import { resources } from "../../_constants/data";
@@ -14,7 +13,7 @@ interface fileItemCardInterface {
   selected: boolean;
   onClick: Function;
   onDoubleClick: Function;
-  data: folderItemInterface | fileItemInterface;
+  data: fileItemInterface;
 }
 
 const getImagebyMimeType = (mimeType: string) => {

@@ -3,14 +3,14 @@ let logger = require("morgan");
 let app = express();
 const api = require("./src/routes/api");
 const SecurityMiddleware = require("./src/middleware/securityHeaders");
-const I18nMiddleware = require('./src/middleware/i18nMiddleware');
+// const I18nMiddleware = require('./src/middleware/i18nMiddleware');
 const RestMiddleware = require("./src/middleware/RestMiddleWare");
 const authenticateFirebaseUser = require("./src/middleware/fireAuthMiddleWare");
 // sequelize
 
 /* ---------- MiddleWares ---------- */
 // Internalisation
-I18nMiddleware(app);
+// I18nMiddleware(app);
 //Security and Cors Middleware
 SecurityMiddleware(app);
 // Logger
@@ -28,8 +28,7 @@ app.get("/", (req, res) => {
   res.send("Hello Node Server🌎 Home...");
 });
 // app.use("/api/v1", api);
-app.use("/api/v1", api);
-// app.use("/api/v1", authenticateFirebaseUser, api);
+app.use("/api/v1", authenticateFirebaseUser, api);
 // We Can add Multiple versions here for api versioning
 
 module.exports = app;

@@ -9,7 +9,7 @@ export interface breadCrumbInterface {
 
 interface BreadcrumbProps {
   itemsHistory: breadCrumbInterface[];
-  onClick: () => void;
+  onClick: (itemData: any, itemIndex: number) => void;
 }
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ itemsHistory, onClick }) => {
@@ -32,7 +32,6 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ itemsHistory, onClick }) => {
           </button>
         </React.Fragment>
       ))}
-      
     </nav>
   );
 };

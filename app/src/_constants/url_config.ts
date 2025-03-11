@@ -4,9 +4,13 @@ export const URL_CONFIG = {
     youtube: {
       getAuthUrl: "/connector/youtube",
     },
+    gdrive: {
+      getAuthUrl: "/connector/gdrive",
+    },
     createAccount: "/account/create",
     editAccount: "/account/update",
     deleteAccount: "/account/delete",
+    getListAccount: "/account/list/",
   },
   posts: {
     youtube: {

@@ -13,6 +13,7 @@ import { fireDb } from "../firebase/firebase";
 import { AccountInterface, ConnectorInterface, PostInterface } from "../types";
 import API_CALL from "./ApiTool";
 import { URL_CONFIG } from "../_constants/url_config";
+import notify from "../utils/notify";
 
 export const getAvatarsList = () => {
   //  Firestore.
@@ -71,6 +72,17 @@ export const getAccountsList = async (
   );
   return accountsList;
 };
+
+export const getAccountListbyType = async (type = "social") => {
+  let apiUrl = URL_CONFIG.account.getListAccount + type;
+  const res = await API_CALL.get(apiUrl);
+  if (res?.data?.status === 1) {
+    return res?.data?.data as AccountInterface[];
+  } else {
+    notify.error(res?.data?.message);
+    return [];
+  }
+};
 // Get Account Data by AccountId
 export const getAccountDatabyId = async (
   userId: string,
@@ -91,6 +103,7 @@ export const getAccountDatabyId = async (
     return null;
   }
 };
+
 // Get Account Data by comma separated AccountIds
 export const getAccountDatabyIds = async (
   userId: string,
@@ -126,6 +139,7 @@ export const createAccountDoc = async (
       metadata: accountData?.metadata,
       auth_type: accountData?.auth_type,
       connectorId: accountData.connector,
+      account_type: accountData.account_type,
     };
     const createAccountRes = await API_CALL.post(
       URL_CONFIG.account.createAccount,
@@ -156,7 +170,7 @@ export const deleteAccountDoc = async (
     const deleteRes = await API_CALL.post(URL_CONFIG.account.deleteAccount, {
       accountId,
     });
-    if(deleteRes?.data?.status === 1){
+    if (deleteRes?.data?.status === 1) {
       resultMessage = `Account ${accountId} deleted successfully.`;
       result = true;
     } else {

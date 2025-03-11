@@ -14,7 +14,10 @@ import {
   isAccountNameDuplicate,
 } from "../api/resources";
 import { ConnectorInterface } from "../types";
-import { connectYoutubeAccount } from "../api/connectors/youtube_connector";
+import {
+  connectGdriveAccount,
+  connectYoutubeAccount,
+} from "../api/connectors/youtube_connector";
 import { useAuth } from "../hooks/useAuth";
 import API_CALL from "../api/ApiTool";
 
@@ -103,6 +106,7 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
           metadata: null,
           auth_type: values?.auth_type,
           connector: selectedConnector?.id,
+          account_type: selectedConnector?.connector_type ?? "social",
         };
         if (selectedConnector?.connector_id === "youtube") {
           setOauthLoading(true);
@@ -116,11 +120,22 @@ const AddAccountForm = ({ handleClose }: { handleClose: Function }) => {
           }
           setOauthLoading(false);
         }
+
+        if (selectedConnector?.connector_id === "gdrive") {
+          setOauthLoading(true);
+          let credentials = await connectGdriveAccount();
+          if (credentials?.status) {
+            accountData.metadata = { auth_code: credentials?.code };
+          } else {
+            setOauthLoading(false);
+            console.error(credentials);
+            return;
+          }
+          setOauthLoading(false);
+        }
         const AccountSave = await createAccountDoc(accountData);
         if (AccountSave?.status) {
-          notify.success(
-            `YouTube account ${values?.name} is connected`
-          );
+          notify.success(`YouTube account ${values?.name} is connected`);
           if (isFunction(handleClose)) handleClose?.();
         } else {
           notify.error(AccountSave?.data);

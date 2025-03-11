@@ -51,5 +51,6 @@ exports.backendProjectEnums = {
     facebook: "facebook",
     threads: "threads",
     instagram: "instagram",
+    gdrive: "gdrive"
   },
 };
