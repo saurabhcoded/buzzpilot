@@ -14,6 +14,8 @@ import { DropdownItem } from "../components/ui/dropdown/DropdownItem";
 import Button from "../components/ui/button/Button";
 import { Menu } from "lucide-react";
 import { Link } from "react-router";
+import BaseDialog from "../components/Dialog/BaseDialog";
+import CreatePostForm from "../components/posts/CreatePostForm";
 
 const PostsList = () => {
   const [isLoadingpostsList, setIsLoadingPostsList] = useState<boolean>(true);
@@ -186,6 +188,7 @@ const PostsList = () => {
       ) : (
         <BaseTable columns={columns} data={postsList} />
       )}
+
     </div>
   );
 };

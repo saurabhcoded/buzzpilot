@@ -79,8 +79,7 @@ const postFormValidationSchema = Yup.object({
     ),
 });
 
-const CreatePostForm = () => {
-  const { handleCloseCreateMode } = useOutletContext<any>();
+const CreatePostForm = ({ handleCloseCreateMode }) => {
   const { user } = useAuth();
   const {
     values,
@@ -140,156 +139,166 @@ const CreatePostForm = () => {
   );
 
   return (
-    <ComponentCard title="Create New Post">
-      <div className="flex justify-start">
-        <TabGroup
-          activeTab={postFormTab}
-          setActiveTab={setPostFormTab}
-          tabOptions={[
-            { icon: File, label: "Form", value: postformTabOptions?.form },
-            { icon: Eye, label: "Preview", value: postformTabOptions?.preview },
-          ]}
-        />
-      </div>
-      {postFormTab === postformTabOptions.form && (
-        <div className="space-y-6">
-          <div>
-            <Label htmlFor="title">Post title</Label>
-            <Input
-              type="text"
-              name="title"
-              id="title"
-              placeholder="Post title"
-              value={values["title"]}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={isFieldError("title")}
-              hint={getFieldError("title")}
-            />
-          </div>
-          <div>
-            <Label htmlFor="description">Post description</Label>
-            <TextArea
-              name="description"
-              id="description"
-              placeholder="Describe your post"
-              value={values["description"]}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={isFieldError("description")}
-              hint={getFieldError("description")}
-            />
-          </div>
-          <div>
-            <Label htmlFor="description">Post tags</Label>
-            <TextArea
-              name="tags"
-              id="tags"
-              placeholder="Add Post Tags in comma separated"
-              value={values["tags"]}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={isFieldError("tags")}
-              hint={getFieldError("tags")}
-            />
-          </div>
-          <div>
-            <Label htmlFor="description">Hash tags</Label>
-            <TextArea
-              name="hashTags"
-              id="hashTags"
-              placeholder="Add Post Hash Tags"
-              value={values["hashTags"]}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={isFieldError("hashTags")}
-              hint={getFieldError("hashTags")}
-            />
-          </div>
-          <div>
-            <Label>Add media</Label>
-            <FileInput
-              accept="video/*"
-              onChange={(e) => {
-                setFieldTouched("document", true);
-                if (e?.target?.files?.[0]) {
-                  setFieldValue("document", e?.target?.files?.[0]);
-                  // e.target.value = ""; // Resetting the Input
-                }
-                validateField("document");
-              }}
-            />
-            {isFieldError("document") && (
-              <span className="text-red-500 text-sm">
-                {getFieldError("document")}
-              </span>
-            )}
-          </div>
-          <div>
-            <Checkbox
-              id={"privacy"}
-              checked={values["privacy"] === "unlisted"}
-              onChange={(val) => {
-                let value = val ? "unlisted" : "public";
-                setFieldValue("privacy", value);
-                setFieldTouched("privacy", true);
-              }}
-              label={"Is Video private"}
-            />
-          </div>
-          <div>
-            <Checkbox
-              id={"isScheduled"}
-              checked={values["isScheduled"]}
-              onChange={(val) => {
-                setFieldValue("isScheduled", val);
-                setFieldTouched("isScheduled", true);
-              }}
-              label={"Schedule post"}
-            />
-            {values["isScheduled"] && (
-              <div className="mt-4">
-                <Label>Choose post publish date</Label>
-                <Input
-                  type="date"
-                  name="scheduleTime"
-                  id="scheduleTime"
-                  value={values["scheduleTime"]}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={isFieldError("scheduleTime")}
-                  hint={getFieldError("scheduleTime")}
-                />
-              </div>
-            )}
-          </div>
-          <hr />
-          <div>
-            <MultiSelect
-              options={connectorList}
-              label={"Choose Account"}
-              onChange={(selectedAccounts) => {
-                setFieldValue("accounts", selectedAccounts.join(","));
-                setFieldTouched("accounts", true);
-              }}
-            />
-            {isFieldError("accounts") && (
-              <span className="text-red-500 text-sm">
-                {getFieldError("accounts")}
-              </span>
-            )}
-          </div>
-          <Button
-            loading={isSubmitting}
-            disabled={isSubmitting}
-            onClick={handleSubmit}
-          >
-            {values["isScheduled"] ? "Schedule Post" : "Publish Post"}
-          </Button>
+    <div className="min-h-full">
+      <div className="p-3 space-y-2">
+        <div className="flex justify-start">
+          <TabGroup
+            activeTab={postFormTab}
+            setActiveTab={setPostFormTab}
+            tabOptions={[
+              { icon: File, label: "Form", value: postformTabOptions?.form },
+              {
+                icon: Eye,
+                label: "Preview",
+                value: postformTabOptions?.preview,
+              },
+            ]}
+          />
         </div>
-      )}
-      {postFormTab === postformTabOptions.preview && <PostPreview postData={values}/>}
-    </ComponentCard>
+        {postFormTab === postformTabOptions.form && (
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="title">Post title</Label>
+              <Input
+                type="text"
+                name="title"
+                id="title"
+                placeholder="Post title"
+                value={values["title"]}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={isFieldError("title")}
+                hint={getFieldError("title")}
+              />
+            </div>
+            <div>
+              <Label htmlFor="description">Post description</Label>
+              <TextArea
+                name="description"
+                id="description"
+                placeholder="Describe your post"
+                value={values["description"]}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={isFieldError("description")}
+                hint={getFieldError("description")}
+              />
+            </div>
+            <div>
+              <Label htmlFor="description">Post tags</Label>
+              <TextArea
+                name="tags"
+                id="tags"
+                placeholder="Add Post Tags in comma separated"
+                value={values["tags"]}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={isFieldError("tags")}
+                hint={getFieldError("tags")}
+              />
+            </div>
+            <div>
+              <Label htmlFor="description">Hash tags</Label>
+              <TextArea
+                name="hashTags"
+                id="hashTags"
+                placeholder="Add Post Hash Tags"
+                value={values["hashTags"]}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={isFieldError("hashTags")}
+                hint={getFieldError("hashTags")}
+              />
+            </div>
+            <div>
+              <Label>Add media</Label>
+              <FileInput
+                accept="video/*"
+                onChange={(e) => {
+                  setFieldTouched("document", true);
+                  if (e?.target?.files?.[0]) {
+                    setFieldValue("document", e?.target?.files?.[0]);
+                    // e.target.value = ""; // Resetting the Input
+                  }
+                  validateField("document");
+                }}
+              />
+              {isFieldError("document") && (
+                <span className="text-red-500 text-sm">
+                  {getFieldError("document")}
+                </span>
+              )}
+            </div>
+            <div>
+              <Checkbox
+                id={"privacy"}
+                checked={values["privacy"] === "unlisted"}
+                onChange={(val) => {
+                  let value = val ? "unlisted" : "public";
+                  setFieldValue("privacy", value);
+                  setFieldTouched("privacy", true);
+                }}
+                label={"Is Video private"}
+              />
+            </div>
+            <div>
+              <Checkbox
+                id={"isScheduled"}
+                checked={values["isScheduled"]}
+                onChange={(val) => {
+                  setFieldValue("isScheduled", val);
+                  setFieldTouched("isScheduled", true);
+                }}
+                label={"Schedule post"}
+              />
+              {values["isScheduled"] && (
+                <div className="mt-4">
+                  <Label>Choose post publish date</Label>
+                  <Input
+                    type="date"
+                    name="scheduleTime"
+                    id="scheduleTime"
+                    value={values["scheduleTime"]}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={isFieldError("scheduleTime")}
+                    hint={getFieldError("scheduleTime")}
+                  />
+                </div>
+              )}
+            </div>
+            <hr />
+            <div>
+              <MultiSelect
+                options={connectorList}
+                label={"Choose Account"}
+                onChange={(selectedAccounts) => {
+                  setFieldValue("accounts", selectedAccounts.join(","));
+                  setFieldTouched("accounts", true);
+                }}
+              />
+              {isFieldError("accounts") && (
+                <span className="text-red-500 text-sm">
+                  {getFieldError("accounts")}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+        {postFormTab === postformTabOptions.preview && (
+          <PostPreview postData={values} />
+        )}
+      </div>
+      <div className="sticky bottom-0 z-50 w-full bg-white border-t p-2">
+        <Button
+          loading={isSubmitting}
+          disabled={isSubmitting}
+          onClick={handleSubmit}
+        >
+          {values["isScheduled"] ? "Schedule Post" : "Publish Post"}
+        </Button>
+      </div>
+    </div>
   );
 };
 

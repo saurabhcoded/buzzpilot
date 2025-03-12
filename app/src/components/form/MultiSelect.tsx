@@ -1,5 +1,6 @@
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
 
 interface Option {
   value: string;
@@ -48,6 +49,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     (value) => options.find((option) => option.value === value)?.text || ""
   );
 
+  const inputWrapperRef = useRef(null);
+
   return (
     <div className="w-full">
       <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -56,7 +59,11 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
       <div className="relative z-20 inline-block w-full">
         <div className="relative flex flex-col items-center">
-          <div onClick={toggleDropdown} className="w-full">
+          <div
+            onClick={toggleDropdown}
+            className="w-full"
+            ref={inputWrapperRef}
+          >
             <div className="mb-2 flex min-h-11 rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-theme-xs outline-none transition focus:border-brand-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-300">
               <div className="flex flex-wrap flex-auto gap-2">
                 {selectedValuesText.length > 0 ? (
@@ -129,32 +136,13 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           </div>
 
           {isOpen && (
-            <div
-              className="absolute left-0 z-40 w-full overflow-y-auto bg-white rounded-lg shadow top-full max-h-select dark:bg-gray-900"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex flex-col">
-                {options.map((option, index) => (
-                  <div
-                    key={index}
-                    className={`hover:bg-primary/5 w-full cursor-pointer rounded-t border-b border-gray-200 dark:border-gray-800`}
-                    onClick={() => handleSelect(option.value)}
-                  >
-                    <div
-                      className={`relative flex w-full items-center p-2 pl-2 ${
-                        selectedOptions.includes(option.value)
-                          ? "bg-primary/10"
-                          : ""
-                      }`}
-                    >
-                      <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">
-                        {option.text}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <MenuPopoverList
+              options={options}
+              selectedOptions={selectedOptions}
+              handleSelect={handleSelect}
+              anchorEl={inputWrapperRef.current}
+              onClose={toggleDropdown}
+            />
           )}
         </div>
       </div>
@@ -163,3 +151,108 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 };
 
 export default MultiSelect;
+
+type MenuPopoverListProps = {
+  options: Option[];
+  handleSelect: (value: string) => void;
+  selectedOptions: string[];
+  anchorEl: HTMLElement | null;
+  onClose: () => void;
+};
+const MenuPopoverList: React.FC<MenuPopoverListProps> = ({
+  options = [],
+  handleSelect,
+  selectedOptions,
+  anchorEl,
+  onClose,
+}) => {
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({
+    top: 0,
+    left: 0,
+    width: 0,
+    maxHeight: 300,
+    placement: "bottom",
+  });
+
+  useEffect(() => {
+    if (anchorEl) {
+      const rect = anchorEl.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const menuHeight = popoverRef?.current?.offsetHeight ?? 300;
+      // Switch to top if not enough space below
+      const placement =
+        spaceBelow < menuHeight && spaceAbove > spaceBelow ? "top" : "bottom";
+
+      setPosition({
+        top:
+          placement === "bottom"
+            ? rect.bottom + window.scrollY
+            : rect.top + window.scrollY - Math.min(menuHeight, spaceAbove), // Adjust for top placement
+        left: rect.left + window.scrollX,
+        width: rect.width,
+        maxHeight:
+          placement === "bottom"
+            ? Math.min(spaceBelow - 10, menuHeight)
+            : Math.min(spaceAbove - 10, menuHeight),
+        placement,
+      });
+    }
+  }, [anchorEl, popoverRef?.current?.offsetHeight]);
+
+  // Clickaway listener
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target as Node) &&
+        !anchorEl?.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [anchorEl, onClose]);
+
+  if (!anchorEl) return null;
+
+  if (!anchorEl) return null;
+
+  return ReactDOM.createPortal(
+    <div
+      ref={popoverRef}
+      className="absolute z-9999 overflow-y-auto bg-white rounded-lg shadow-lg dark:bg-gray-900"
+      style={{
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        width: `${position.width}px`,
+        maxHeight: `${position.maxHeight}px`,
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex flex-col">
+        {options.map((option, index) => (
+          <div
+            key={index}
+            className={`hover:bg-primary/5 w-full cursor-pointer border-b border-gray-200 dark:border-gray-800 ${
+              selectedOptions.includes(option.value) ? "bg-primary/10" : ""
+            }`}
+            onClick={() => handleSelect(option.value)}
+          >
+            <div className="relative flex w-full items-center p-2">
+              <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">
+                {option.text}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>,
+    document.body
+  );
+};

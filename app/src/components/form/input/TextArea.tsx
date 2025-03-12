@@ -52,7 +52,7 @@ const TextArea: React.FC<TextareaProps> = ({
       />
       {hint && (
         <p
-          className={`mt-2 text-sm ${
+          className={`mt-0 text-xs ${
             error ? "text-error-500" : "text-gray-500 dark:text-gray-400"
           }`}
         >

@@ -9,3 +9,4 @@ export const useModal = (initialState: boolean = false) => {
 
   return { isOpen, openModal, closeModal, toggleModal };
 };
+     
