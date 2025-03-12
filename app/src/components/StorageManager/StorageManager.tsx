@@ -147,7 +147,7 @@ const StorageManager = React.forwardRef(
       <div className="storageGridWrapper h-full">
         <div className="px-3 h-[70px] w-full justify-between flex items-center bg-blue-50 border-b border-gray-100">
           <div className="label-header">
-            <h2 className="text-xl font-semibold mb-1">
+            <h2 className="text-xl font-semibold text-black mb-1">
               {activeFolder?.name ?? "Home"}
             </h2>
             <Breadcrumb
