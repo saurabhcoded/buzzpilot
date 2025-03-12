@@ -198,7 +198,7 @@ const DriveStorageManager: React.FC<DriveStorageManagerProps> = ({
   };
   useEffect(() => {
     getListItems(activeFolder?.id);
-  }, [activeFolder?.id]);
+  }, [activeFolder?.id, storageAccountId]);
   return (
     <div className="min-h-screen rounded-lg border overflow-hidden">
       <StorageManager
