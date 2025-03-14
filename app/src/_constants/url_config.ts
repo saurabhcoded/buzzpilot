@@ -13,9 +13,7 @@ export const URL_CONFIG = {
     getListAccount: "/account/list/",
   },
   posts: {
-    youtube: {
-      createpost: "/posts/createpost/youtube",
-    },
+    createpost: "/posts/createpost",
   },
   storage: {
     drive: {

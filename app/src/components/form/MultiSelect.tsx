@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 
 interface Option {
   value: string;
-  text: string;
+  label: string;
 }
 
 interface MultiSelectProps {
@@ -46,7 +46,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   };
 
   const selectedValuesText = selectedOptions.map(
-    (value) => options.find((option) => option.value === value)?.text || ""
+    (value) => options.find((option) => option.value === value)?.label || ""
   );
 
   const inputWrapperRef = useRef(null);
@@ -246,7 +246,7 @@ const MenuPopoverList: React.FC<MenuPopoverListProps> = ({
           >
             <div className="relative flex w-full items-center p-2">
               <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">
-                {option.text}
+                {option.label}
               </div>
             </div>
           </div>

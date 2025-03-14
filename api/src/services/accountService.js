@@ -14,4 +14,30 @@ const getAccountDatabyId = async (accountId) => {
   }
 };
 
-module.exports = { getAccountDatabyId };
+const validateAccountbyId = async (accountId) => {
+  let accountRef = doc(fireDb, "accounts", accountId);
+  let accountData = await getDoc(accountRef);
+  if (!accountData.exists()) {
+    return false;
+  } else {
+    return true;
+  }
+  // todo update this function for validating token of account also
+};
+
+const validateAccountsList = async (accountIds) => {
+  if (Array.isArray(accountIds)) {
+    let status = accountIds.every(
+      async (item) => await validateAccountbyId(item)
+    );
+    return status;
+  } else {
+    return false;
+  }
+};
+
+module.exports = {
+  getAccountDatabyId,
+  validateAccountbyId,
+  validateAccountsList,
+};

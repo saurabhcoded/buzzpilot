@@ -1,21 +1,19 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { getPostsList } from "../api/resources";
-import { PostInterface } from "../types";
-import BaseTable from "../components/tables/BasicTables/BaseTable";
-import { LucideIcons } from "../_constants/data";
 import { ColumnDef } from "@tanstack/react-table";
 import { isEmptyArray } from "formik";
-import FallbackCard from "../components/ui/cards/FallbackCard";
+import { Menu } from "lucide-react";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
+import { LucideIcons } from "../_constants/data";
 import { projectEnums } from "../_constants/project_enums";
+import { getPostsList } from "../api/resources";
+import BaseTable from "../components/tables/BasicTables/BaseTable";
+import Button from "../components/ui/button/Button";
+import FallbackCard from "../components/ui/cards/FallbackCard";
 import { Dropdown } from "../components/ui/dropdown/Dropdown";
 import { DropdownItem } from "../components/ui/dropdown/DropdownItem";
-import Button from "../components/ui/button/Button";
-import { Menu } from "lucide-react";
-import { Link } from "react-router";
-import BaseDialog from "../components/Dialog/BaseDialog";
-import CreatePostForm from "../components/posts/CreatePostForm";
+import { useAuth } from "../hooks/useAuth";
+import { PostInterface } from "../types";
 
 const PostsList = () => {
   const [isLoadingpostsList, setIsLoadingPostsList] = useState<boolean>(true);
@@ -26,14 +24,8 @@ const PostsList = () => {
       setIsLoadingPostsList(true);
       getPostsList(user?.uid)
         .then((response) => {
-          console.log("response", response);
           if (Array.isArray(response)) {
-            setPostsList(
-              response?.map((post) => {
-                post.metadata = JSON.parse(post.metadata);
-                return post;
-              })
-            );
+            setPostsList(response);
           }
           setIsLoadingPostsList(false);
         })
@@ -188,7 +180,6 @@ const PostsList = () => {
       ) : (
         <BaseTable columns={columns} data={postsList} />
       )}
-
     </div>
   );
 };

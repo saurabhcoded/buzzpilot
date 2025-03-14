@@ -10,6 +10,7 @@ interface InputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   className?: string;
   min?: string;
   max?: string;
@@ -29,6 +30,7 @@ const Input: FC<InputProps> = ({
   onChange,
   onBlur,
   onKeyDown,
+  onFocus,
   className = "",
   min,
   max,
@@ -53,7 +55,6 @@ const Input: FC<InputProps> = ({
   return (
     <div className="relative">
       <input
-        autoFocus
         type={type}
         id={id}
         name={name}
@@ -62,6 +63,7 @@ const Input: FC<InputProps> = ({
         onChange={onChange}
         onBlur={onBlur}
         onKeyDown={onKeyDown}
+        onFocus={onFocus}
         min={min}
         max={max}
         step={step}

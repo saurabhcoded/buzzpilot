@@ -109,24 +109,29 @@ export const getAccountDatabyIds = async (
   userId: string,
   accountIds: string
 ): Promise<AccountInterface[]> => {
-  const userRef = doc(fireDb, "users", userId);
-  const accountIdsArr = accountIds.split(",");
-  const accountDataArr = await Promise.all(
-    accountIdsArr.map(async (accountId) => {
-      try {
-        let accountDataRef = await getDoc(doc(fireDb, "accounts", accountId));
-        let accountData = accountDataRef.data();
-        accountData.id = accountDataRef.id;
-        let connectorRef = await getDoc(accountData.connector);
-        accountData.connector = connectorRef.data();
-        return accountData;
-      } catch (err) {
-        return null;
-      }
-    })
-  );
-  // const accountData = querySnapshot.docs.map((doc) => doc.data());
-  return accountDataArr as AccountInterface[];
+  try {
+    const userRef = doc(fireDb, "users", userId);
+    const accountIdsArr = accountIds.split(",");
+    const accountDataArr = await Promise.all(
+      accountIdsArr.map(async (accountId) => {
+        try {
+          let accountDataRef = await getDoc(doc(fireDb, "accounts", accountId));
+          let accountData = accountDataRef.data();
+          accountData.id = accountDataRef.id;
+          let connectorRef = await getDoc(accountData.connector);
+          accountData.connector = connectorRef.data();
+          return accountData;
+        } catch (err) {
+          return null;
+        }
+      })
+    );
+    // const accountData = querySnapshot.docs.map((doc) => doc.data());
+    return accountDataArr as AccountInterface[];
+  } catch (Err) {
+    console.error(Err);
+    return [];
+  }
 };
 
 export const createAccountDoc = async (
@@ -225,7 +230,7 @@ export const getPostsList = async (
         let docData = doc.data();
         let accountData = await getAccountDatabyIds(
           userId,
-          JSON.parse(docData?.metadata)?.accountId
+          docData?.metadata?.accounts
         );
         return {
           id: doc.id,

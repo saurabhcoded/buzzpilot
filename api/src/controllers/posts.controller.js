@@ -1,10 +1,12 @@
 const { google } = require("googleapis");
 const fs = require("fs");
 const assert = require("assert");
-const { doc, getDoc, setDoc } = require("firebase/firestore");
+const { doc, getDoc, setDoc, collection } = require("firebase/firestore");
 const { fireDb } = require("../services/firebaseService");
 const { getValidGoogleAccessToken } = require("../services/connectorService");
 const { deleteTemporaryFiles } = require("../services/UploadService");
+const { validateAccountsList } = require("../services/accountService");
+const clog = require("../services/ChalkService");
 
 exports.uploadVideotoYoutube = async (req, res) => {
   try {
@@ -112,88 +114,28 @@ exports.uploadVideotoYoutube = async (req, res) => {
   }
 };
 
-// video category IDs for YouTube:
-const categoryIds = {
-  Entertainment: 24,
-  Education: 27,
-  ScienceTechnology: 28,
+exports.createpost = async (req, res) => {
+  try {
+    const postData = req.body;
+    const postRef = doc(collection(fireDb, "posts"));
+    let postObjData = {
+      title: postData?.title,
+      description: postData?.description,
+      isScheduled: postData?.isScheduled,
+      scheduleTime: postData?.scheduleTime ?? Date.now(),
+      isPublished: false, // will be toggled to true if post is published
+      publishTime: null, // will be updated to the time of publishing
+      metadata: {},
+      post_details: postData,
+      user: req?.userRef,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    clog.info(postObjData);
+    const postObj = await setDoc(postRef, postObjData);
+    return res.REST.SUCCESS(1, "Post created successfully", postObj);
+  } catch (error) {
+    console.error("YouTube Upload Error:", error);
+    return res.REST.SERVERERROR(0, "Error while creating post", error);
+  }
 };
-
-// If modifying these scopes, delete your previously saved credentials in client_oauth_token.json
-const SCOPES = ["https://www.googleapis.com/auth/youtube.upload"];
-const TOKEN_PATH = "../" + "client_oauth_token.json";
-
-const videoFilePath = "../vid.mp4";
-const thumbFilePath = "../thumb.png";
-
-// exports.uploadVideo = (title, description, tags) => {
-//   assert(fs.existsSync(videoFilePath));
-//   assert(fs.existsSync(thumbFilePath));
-
-//   // Load client secrets from a local file.
-//   fs.readFile("../client_secret.json", function processClientSecrets(err, content) {
-//     if (err) {
-//       console.log("Error loading client secret file: " + err);
-//       return;
-//     }
-//     // Authorize a client with the loaded credentials, then call the YouTube API.
-//     authorize(JSON.parse(content), (auth) => uploadVideo(auth, title, description, tags));
-//   });
-// };
-
-/**
- * Upload the video file.
- *
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- */
-function uploadVideo(auth, title, description, tags) {
-  const service = google.youtube("v3");
-
-  service.videos.insert(
-    {
-      auth: auth,
-      part: "snippet,status",
-      requestBody: {
-        snippet: {
-          title,
-          description,
-          tags,
-          categoryId: categoryIds.ScienceTechnology,
-          defaultLanguage: "en",
-          defaultAudioLanguage: "en",
-        },
-        status: {
-          privacyStatus: "private",
-        },
-      },
-      media: {
-        body: fs.createReadStream(videoFilePath),
-      },
-    },
-    function (err, response) {
-      if (err) {
-        console.log("The API returned an error: " + err);
-        return;
-      }
-      console.log(response.data);
-
-      console.log("Video uploaded. Uploading the thumbnail now.");
-      service.thumbnails.set(
-        {
-          auth: auth,
-          videoId: response.data.id,
-          media: {
-            body: fs.createReadStream(thumbFilePath),
-          },
-        },
-        function (err, response) {
-          if (err) {
-            console.log("The API returned an error: " + err);
-            return;
-          }
-          console.log(response.data);
-        }
-      );
-    }
-  );
-}

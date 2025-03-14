@@ -16,6 +16,7 @@ export interface AccountInterface {
   active: boolean;
   user: string | any;
   connector: string | any;
+  account_type: "storage" | "social";
 }
 
 export interface PostInterface {

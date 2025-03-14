@@ -8,17 +8,17 @@ import * as Yup from "yup";
 import useFormikErrors from "../../hooks/useFormikErrors";
 import Button from "../ui/button/Button";
 import { createYoutubePost } from "../../api/connectors/youtube_connector";
-import { getIdToken } from "firebase/auth";
 import { useAuth } from "../../hooks/useAuth";
-import { LucideIcons, resources } from "../../_constants/data";
+import { LucideIcons } from "../../_constants/data";
 import Checkbox from "../form/input/Checkbox";
 import MultiSelect from "../form/MultiSelect";
 import { useEffect, useState } from "react";
-import { getAccountsList, getConnectorsList } from "../../api/resources";
-import { useOutletContext } from "react-router";
-import TabGroup from "../form/TabGroup";
-import { Eye, File } from "lucide-react";
-import PostPreview from "./PostPreview";
+import { getAccountListbyType, getAccountsList } from "../../api/resources";
+import Select from "../form/Select";
+import StoragePathSelect from "../StorageManager/StoragePathSelect";
+import { URL_CONFIG } from "../../_constants/url_config";
+import API_CALL from "../../api/ApiTool";
+import notify from "../../utils/notify";
 
 type PostFormTabOptionsType = {
   form: "form";
@@ -29,9 +29,11 @@ export interface postFormValuesInterface {
   description: string;
   tags: string;
   hashTags: string;
+  storageAccount: string;
   accounts: string;
   privacy: string;
   document: any;
+  thumbnail: any;
   isScheduled: boolean;
   scheduleTime: string | null;
 }
@@ -41,10 +43,12 @@ const defaultValues: postFormValuesInterface = {
   description: "",
   tags: "",
   hashTags: "",
+  storageAccount: "",
   accounts: "",
   isScheduled: false,
   scheduleTime: null,
   document: null,
+  thumbnail: null,
   privacy: "public",
 };
 
@@ -53,6 +57,7 @@ const postFormValidationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
   tags: Yup.string().required("Tags are required"),
   hashTags: Yup.string().required("Hash Tags are required"),
+  storageAccount: Yup.string().required("Storage Account is required"),
   accounts: Yup.string().required("Account is required"),
   privacy: Yup.string().required("Privacy is required"),
   isScheduled: Yup.boolean().required("Scheduling option is required"),
@@ -69,18 +74,23 @@ const postFormValidationSchema = Yup.object({
         }
       }
     ),
-  document: Yup.mixed()
-    .required("A video file is required")
-    .test("fileType", "Only video files are allowed", (file: any) =>
-      file ? file.type.startsWith("video/") : false
-    )
-    .test("fileSize", "File size must be under 20MB", (file: any) =>
-      file ? file.size <= 20 * 1024 * 1024 : false
-    ),
+  document: Yup.string().required("Document is required"),
+  thumbnail: Yup.string().required("Thumbnail is required"),
 });
 
 const CreatePostForm = ({ handleCloseCreateMode }) => {
   const { user } = useAuth();
+  const handleCreatePost = async (postData) => {
+    try {
+      let posturl = URL_CONFIG.posts.createpost;
+      let postPayload = postData;
+      let postResponse = await API_CALL.post(posturl, postPayload);
+      return postResponse?.data;
+    } catch (Err) {
+      console.error(Err);
+      return Err;
+    }
+  };
   const {
     values,
     errors,
@@ -91,7 +101,6 @@ const CreatePostForm = ({ handleCloseCreateMode }) => {
     handleSubmit,
     setFieldValue,
     setFieldTouched,
-    validateField,
   } = useFormik({
     initialValues: defaultValues,
     validateOnChange: true,
@@ -99,9 +108,12 @@ const CreatePostForm = ({ handleCloseCreateMode }) => {
     onSubmit: async (values, helpers): Promise<void> => {
       helpers.setSubmitting(true);
       try {
-        const createPostStatus = await createYoutubePost(values);
-        if (createPostStatus) {
+        const postStatus = await handleCreatePost(values);
+        if (postStatus?.status === 1) {
           handleCloseCreateMode?.();
+          notify.success(postStatus?.message);
+        } else {
+          notify.error(postStatus?.message);
         }
       } catch (err) {
         console.log(err);
@@ -109,25 +121,58 @@ const CreatePostForm = ({ handleCloseCreateMode }) => {
       helpers.setSubmitting(false);
     },
   });
+  console.log("form", { errors, values });
   const { isFieldError, getFieldError } = useFormikErrors({
     FormErrors: errors,
     FormTouched: touched,
   });
 
-  const [connectorList, setConnectorList] = useState([]);
+  const [accountsList, setAccountsList] = useState({
+    social: [],
+    storage: [],
+    connectors: [],
+  });
+
   useEffect(() => {
-    if (user?.uid)
-      getAccountsList(user?.uid).then((accounts) => {
-        let formmatedAccount = accounts.map((item) => {
-          return {
-            value: item?.id,
-            text: item?.name,
+    if (user?.uid) {
+      getAccountListbyType("all").then((accounts) => {
+        console.log("accounts", accounts);
+        let socialAccounts = [],
+          storageAccounts = [],
+          connectorAccounts = [];
+        accounts.forEach((accItem) => {
+          let accountItem = {
+            value: accItem?.id,
+            label: accItem?.name,
             selected: false,
-            icon: item?.connector?.image ?? "",
+            icon: accItem?.connector?.image ?? "",
           };
+          if (accItem?.account_type === "social") {
+            socialAccounts.push(accountItem);
+
+            let isAccountExist = connectorAccounts.findIndex(
+              (item) => item?.connector?.id === accItem?.connector?.id
+            );
+            if (isAccountExist >= 0) {
+              connectorAccounts[isAccountExist].accounts.push(accountItem);
+            } else {
+              let connectorAcc = accItem?.connector;
+              connectorAcc.accounts = [accountItem];
+              connectorAccounts.push(connectorAcc);
+            }
+          } else if (accItem?.account_type === "storage") {
+            storageAccounts.push(accountItem);
+          }
         });
-        setConnectorList(formmatedAccount);
+        setAccountsList({
+          social: socialAccounts,
+          storage: storageAccounts,
+          connectors: connectorAccounts,
+        });
       });
+
+      getAccountsList(user?.uid);
+    }
   }, [user?.uid]);
 
   const postformTabOptions: PostFormTabOptionsType = {
@@ -140,23 +185,10 @@ const CreatePostForm = ({ handleCloseCreateMode }) => {
 
   return (
     <div className="min-h-full">
-      <div className="p-3 space-y-2">
-        <div className="flex justify-start">
-          <TabGroup
-            activeTab={postFormTab}
-            setActiveTab={setPostFormTab}
-            tabOptions={[
-              { icon: File, label: "Form", value: postformTabOptions?.form },
-              {
-                icon: Eye,
-                label: "Preview",
-                value: postformTabOptions?.preview,
-              },
-            ]}
-          />
-        </div>
-        {postFormTab === postformTabOptions.form && (
-          <div className="space-y-6">
+      <div className="space-y-2">
+        <div className="grid grid-cols-2">
+          {/* Post Details */}
+          <div className="space-y-6 p-3 ">
             <div>
               <Label htmlFor="title">Post title</Label>
               <Input
@@ -210,37 +242,7 @@ const CreatePostForm = ({ handleCloseCreateMode }) => {
                 hint={getFieldError("hashTags")}
               />
             </div>
-            <div>
-              <Label>Add media</Label>
-              <FileInput
-                accept="video/*"
-                onChange={(e) => {
-                  setFieldTouched("document", true);
-                  if (e?.target?.files?.[0]) {
-                    setFieldValue("document", e?.target?.files?.[0]);
-                    // e.target.value = ""; // Resetting the Input
-                  }
-                  validateField("document");
-                }}
-              />
-              {isFieldError("document") && (
-                <span className="text-red-500 text-sm">
-                  {getFieldError("document")}
-                </span>
-              )}
-            </div>
-            <div>
-              <Checkbox
-                id={"privacy"}
-                checked={values["privacy"] === "unlisted"}
-                onChange={(val) => {
-                  let value = val ? "unlisted" : "public";
-                  setFieldValue("privacy", value);
-                  setFieldTouched("privacy", true);
-                }}
-                label={"Is Video private"}
-              />
-            </div>
+
             <div>
               <Checkbox
                 id={"isScheduled"}
@@ -255,7 +257,7 @@ const CreatePostForm = ({ handleCloseCreateMode }) => {
                 <div className="mt-4">
                   <Label>Choose post publish date</Label>
                   <Input
-                    type="date"
+                    type="datetime-local"
                     name="scheduleTime"
                     id="scheduleTime"
                     value={values["scheduleTime"]}
@@ -267,10 +269,16 @@ const CreatePostForm = ({ handleCloseCreateMode }) => {
                 </div>
               )}
             </div>
-            <hr />
+          </div>
+          <div className="space-y-6 bg-gray-50 p-3 ">
+            {/* Post Account */}
+            <h4 className="text-black">
+              <LucideIcons.Users size={"18"} color="red" className="inline" />{" "}
+              Post accounts
+            </h4>
             <div>
               <MultiSelect
-                options={connectorList}
+                options={accountsList?.social}
                 label={"Choose Account"}
                 onChange={(selectedAccounts) => {
                   setFieldValue("accounts", selectedAccounts.join(","));
@@ -283,11 +291,78 @@ const CreatePostForm = ({ handleCloseCreateMode }) => {
                 </span>
               )}
             </div>
+            <hr />
+            <h4 className="text-black">
+              <LucideIcons.DatabaseZap
+                size={"18"}
+                color="green"
+                className="inline"
+              />{" "}
+              Post Resources
+            </h4>
+            <div>
+              <Label>Choose storage account</Label>
+              <div className="flex">
+                <Select
+                  id="storageAccount"
+                  name="storageAccount"
+                  className="rounded-r-none border-r-0"
+                  value={values?.storageAccount}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  options={accountsList?.storage}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-l-none bg-green-200 hover:bg-green-300 ring-green-500"
+                  startIcon={<LucideIcons.Zap size={16} color="green" />}
+                >
+                  Test
+                </Button>
+              </div>
+              {isFieldError("storageAccount") && (
+                <span className="text-red-500 text-sm">
+                  {getFieldError("  ")}
+                </span>
+              )}
+            </div>
+            <div>
+              <Label>Post Thumbnail</Label>
+              <StoragePathSelect
+                storageAccountId={values?.storageAccount}
+                storageConnector="gdrive"
+                value={values?.thumbnail}
+                onChange={(value) => {
+                  setFieldTouched("thumbnail", true);
+                  setFieldValue("thumbnail", value);
+                }}
+              />
+              {isFieldError("thumbnail") && (
+                <span className="text-red-500 text-sm">
+                  {getFieldError("thumbnail")}
+                </span>
+              )}
+            </div>
+            <div>
+              <Label>Add media</Label>
+              <StoragePathSelect
+                storageAccountId={values?.storageAccount}
+                storageConnector="gdrive"
+                value={values?.document}
+                onChange={(value) => {
+                  setFieldTouched("document", true);
+                  setFieldValue("document", value);
+                }}
+              />
+              {isFieldError("document") && (
+                <span className="text-red-500 text-sm">
+                  {getFieldError("document")}
+                </span>
+              )}
+            </div>
           </div>
-        )}
-        {postFormTab === postformTabOptions.preview && (
-          <PostPreview postData={values} />
-        )}
+        </div>
       </div>
       <div className="sticky bottom-0 z-50 w-full bg-white border-t p-2">
         <Button

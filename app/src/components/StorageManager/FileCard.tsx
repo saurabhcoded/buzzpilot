@@ -1,8 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  fileItemInterface,
-  storageItemIdType,
-} from "./StorageManager";
+import { fileItemInterface, storageItemIdType } from "./StorageManager";
 import { resources } from "../../_constants/data";
 import { Download, Eye, Pencil, Trash } from "lucide-react";
 import { DropdownComp } from "../ui/dropdown/DropdownComp";
@@ -105,7 +102,7 @@ const FileCard: React.FC<fileItemCardInterface> = (props) => {
   }, [data?.name]);
   return (
     <div
-      onClick={() => onClick("click", data?.id)}
+      onClick={() => onClick("click", data?.id, data)}
       onDoubleClick={(e) => onDoubleClick(e, data)}
       className={`filecard relative ${selected ? "selected" : ""}`}
       title={data?.name}

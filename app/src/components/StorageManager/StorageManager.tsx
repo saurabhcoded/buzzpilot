@@ -3,6 +3,7 @@ import React, {
   ReactNode,
   useCallback,
   useImperativeHandle,
+  useMemo,
   useState,
 } from "react";
 import FileCard from "./FileCard";
@@ -33,6 +34,7 @@ interface StorageManagerProps {
   listItems: storagelistItemsInterface;
   activeFolder: fileItemInterface;
   setActiveFolder: React.Dispatch<React.SetStateAction<fileItemInterface>>;
+  onChangeHandler: (path: string) => void;
   actions?: ReactNode;
   handlers: {
     onClick: (itemId: string, itemType: string) => void;
@@ -63,6 +65,7 @@ const StorageManager = React.forwardRef(
       actions,
       activeFolder,
       setActiveFolder,
+      onChangeHandler,
     }: StorageManagerProps,
     apiRef: ForwardedRef<any>
   ) => {
@@ -71,6 +74,15 @@ const StorageManager = React.forwardRef(
     const [itemsHistory, setItemsHistory] = useState([]);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
     const [isAddFolderOpen, setIsAddFolderOpen] = useState<boolean>(false);
+
+    const selectedFile = useMemo(
+      () => files.find((item) => item?.id === selectedItem),
+      [selectedItem, files]
+    );
+    const selectedFolder = useMemo(
+      () => folders.find((item) => item?.id === selectedItem),
+      [selectedItem, files]
+    );
 
     const isEnableGoback = () => {
       try {
@@ -101,6 +113,13 @@ const StorageManager = React.forwardRef(
           default:
             break;
         }
+        if (onChangeHandler) {
+          let currentPath = itemsHistory?.map((item) => item?.name)?.join("/");
+          if (data?.type === "file") {
+            currentPath += `/${data?.name}`;
+          }
+          onChangeHandler(currentPath);
+        }
       };
     const handleDoubleClick =
       (itemType: storageItemIdType) => (e, itemData: fileItemInterface) => {
@@ -109,7 +128,7 @@ const StorageManager = React.forwardRef(
         handlers.onDoubleClick(itemData?.id, itemType, itemData);
       };
     const isItemSelected = useCallback(
-      (itemId) => {
+      (itemId: string) => {
         return selectedItem === itemId;
       },
       [selectedItem]
@@ -119,13 +138,23 @@ const StorageManager = React.forwardRef(
       apiRef,
       () => ({
         itemsHistory: itemsHistory,
+        selectedFile,
         selectedItem,
-        setLoading: (attr: boolean) =>
-          setLoading((prev) => ({ ...prev, all: attr })),
-        setSelectedLoading: (attr: boolean) =>
-          setLoading((prev) => ({ ...prev, selected: attr })),
+        setLoading: (attr: boolean) => {
+          setLoading((prev) => ({ ...prev, all: attr }));
+        },
+        setSelectedLoading: (attr: boolean) => {
+          setLoading((prev) => ({ ...prev, selected: attr }));
+        },
+        getSelectedPath: () => {
+          let currentPath = itemsHistory?.map((item) => item?.name)?.join("/");
+          if (selectedFile) {
+            currentPath += `/${selectedFile?.name}`;
+          }
+          return currentPath;
+        },
       }),
-      [itemsHistory, selectedItem, setLoading]
+      [itemsHistory, selectedItem, selectedFile, setLoading]
     );
 
     const isNoDataFound = isEmptyArray(folders) && isEmptyArray(files);
